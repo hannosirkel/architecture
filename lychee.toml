@@ -1,0 +1,26 @@
+# Link checking for the architecture repository.
+#
+# Checks internal links strictly. External links are checked except where the
+# answer would be meaningless.
+
+exclude_path = [
+  # A template, not a document. Its links carry {{placeholders}} that only
+  # resolve once the generator substitutes them.
+  "templates/agent-baseline.md",
+  "templates/claude-md-pointer.md",
+]
+
+exclude = [
+  # Every repository in this universe is under this account and five of them
+  # are private. An anonymous checker gets 404 for a private repository that
+  # exists, which is a false failure rather than a finding. The audit checks
+  # these repositories directly, with credentials.
+  "^https://github\\.com/hannosirkel/",
+]
+
+# GitHub rate-limits anonymous requests hard enough to make a run flaky.
+max_concurrency = 4
+max_retries = 2
+timeout = 20
+
+accept = ["200", "204", "206", "429"]

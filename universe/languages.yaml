@@ -1,0 +1,85 @@
+# The machine-readable half of standards/languages/*.md.
+#
+# The prose lives in the standards; this file holds only what the generator
+# needs. Adding a language means writing standards/languages/<name>.md, adding
+# an entry here, and declaring it in repositories.yaml.
+#
+# `habit_plugin: null` means Habit Hooks ships no plugin for the language. Those
+# repositories coach with `generic` and gate on their native linters.
+
+schema_version: 1
+
+languages:
+
+  typescript:
+    standard: standards/languages/typescript.md
+    habit_plugin: typescript
+    habit_files:
+      # The plugin's own default is **/*.ts and **/*.tsx. Three repositories
+      # declare typescript for Node.js JavaScript and hold no .ts file, so the
+      # generated list widens it rather than coaching nothing there.
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.js"
+      - "**/*.mjs"
+      - "**/*.cjs"
+      - "!**/node_modules/**"
+      - "!**/.next/**"
+      - "!**/dist/**"
+      - "!**/build/**"
+    linters: [eslint]
+    static_analysis: [tsc]
+    baseline: eslint bulk suppressions
+
+  python:
+    standard: standards/languages/python.md
+    habit_plugin: python
+    habit_files:
+      - "**/*.py"
+      - "!**/.venv/**"
+      - "!**/venv/**"
+      - "!**/site-packages/**"
+    linters: [ruff]
+    static_analysis: [ruff]
+    baseline: "ruff check --add-noqa"
+
+  ansible:
+    standard: standards/languages/ansible.md
+    habit_plugin: null
+    habit_files:
+      - "**/*.yml"
+      - "**/*.yaml"
+      - "!**/.venv/**"
+      - "!**/node_modules/**"
+    linters: [ansible-lint, yamllint]
+    static_analysis: []
+    baseline: "ansible-lint --generate-ignore"
+
+  shell:
+    standard: standards/languages/shell.md
+    habit_plugin: null
+    habit_files:
+      - "**/*.sh"
+      - "**/*.bats"
+    linters: [shellcheck]
+    static_analysis: []
+    baseline: narrow shellcheck disable directives
+
+# Applied to every repository, including those declaring no language.
+generic:
+  habit_plugin: generic
+  # A repository whose declared languages bring no plugin would otherwise scan
+  # nothing and report success. See decisions/006.
+  fallback_files:
+    - "**/*.md"
+    - "**/*.yaml"
+    - "**/*.yml"
+    - "!**/node_modules/**"
+  # jscpd resolves from the project's node_modules/.bin. A repository with no
+  # npm project cannot supply it, and line-count is built in and still runs.
+  needs_npm_project: [jscpd]
+  # The plugin's own default is 200. That is tight for a module in any language
+  # this universe uses, and a threshold met by carving a file at line 200 is
+  # met without making anything clearer — which the tool's own guide says is
+  # not a fix. 400 still catches a file that has genuinely lost cohesion.
+  max_file_lines: 400

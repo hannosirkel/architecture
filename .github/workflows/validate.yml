@@ -1,0 +1,126 @@
+---
+name: Validate
+
+'on':
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  tooling:
+    name: Tooling
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        # actions/setup-python v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+
+      - name: Install tooling dependencies
+        run: python -m pip install --requirement tooling/requirements.txt
+
+      - name: Run the tooling tests
+        run: python -m unittest discover -s tooling -p 'test_*.py' --verbose
+
+      - name: Validate the catalogue
+        run: tooling/universe validate
+
+      - name: Lint
+        run: |
+          set -euo pipefail
+          ruff check .
+          ruff format --check tooling/
+
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Check layout
+        # DavidAnson/markdownlint-cli2-action v24.2.0
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff
+        with:
+          globs: '**/*.md'
+
+      - name: Check links
+        # lycheeverse/lychee-action v2.9.0
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+        with:
+          args: --no-progress --config lychee.toml .
+          fail: true
+
+  baseline-drift:
+    name: Baseline drift
+    # Reports which repositories this push just invalidated. It compares two
+    # generated outputs, so it needs no clones and no token.
+    #
+    # Do not filter this job by path. The generated section depends on the
+    # standards, the catalogue, the templates, profiles.yaml, and the generator
+    # itself; a path filter goes blind exactly where breakage is most likely.
+    # See decisions/005.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        # actions/setup-python v7.0.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13'
+
+      - name: Install tooling dependencies
+        run: python -m pip install --requirement tooling/requirements.txt
+
+      - name: Report what this push invalidated
+        run: |
+          set -euo pipefail
+          if ! git rev-parse --verify --quiet HEAD~1 >/dev/null; then
+            echo "no parent commit; nothing to compare"
+            exit 0
+          fi
+          tooling/universe drift --before HEAD~1 --after HEAD \
+            | tee -a "${GITHUB_STEP_SUMMARY}"
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - name: Download pinned gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: >-
+            551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          set -euo pipefail
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl --fail --silent --show-error --location \
+            --output "$archive" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archive}"
+          echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check --strict
+          tar -xzf "$archive" gitleaks
+          ./gitleaks git --redact --verbose

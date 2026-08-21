@@ -1,0 +1,29 @@
+# ruff settings for the conformance tooling. See standards/languages/python.md.
+
+line-length = 90
+target-version = "py311"
+
+exclude = [".venv", "venv"]
+
+# tooling/universe is Python without a .py extension. Without this the CLI
+# entry point would silently go unlinted.
+extend-include = ["tooling/universe"]
+
+[lint]
+select = [
+  "E",    # pycodestyle
+  "F",    # pyflakes
+  "I",    # import order
+  "UP",   # pyupgrade
+  "B",    # bugbear
+  "SIM",  # simplify
+  "RUF",
+]
+
+[lint.per-file-ignores]
+# Tests reach into private helpers deliberately: the marker and direct-push
+# rules are the behaviour under test, not an implementation detail.
+"tooling/test_universe.py" = ["SLF001"]
+
+[format]
+docstring-code-format = true

@@ -1,0 +1,34 @@
+{
+  // Layout checking for the architecture repository.
+  // Wording is a review concern; see standards/documentation.md.
+  "config": {
+    "default": true,
+
+    // Prose wraps at 80 columns by convention, but a table row or a pinned
+    // action SHA cannot. Enforcing a hard limit would force either a broken
+    // table or a truncated SHA.
+    "MD013": false,
+
+    // Decision records deliberately repeat "## Decision" and "## Rationale".
+    // Duplicates within one document still fail.
+    "MD024": { "siblings_only": true },
+
+    // The generated baseline is HTML comment markers plus a table. Inline HTML
+    // is how a marker-delimited region is expressed at all.
+    "MD033": false,
+
+    // A repository README may open with a heading that matches its directory
+    // name rather than a sentence.
+    "MD041": true
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "node_modules/**",
+    // The contract is an approved external input, reproduced verbatim. It is
+    // not this repository's prose to reformat.
+    "initiatives/active/architecture-bootstrap.md",
+    // A fragment spliced into another file, not a document. It has no title of
+    // its own because the file it lands in already has one.
+    "templates/agent-baseline.md"
+  ]
+}
