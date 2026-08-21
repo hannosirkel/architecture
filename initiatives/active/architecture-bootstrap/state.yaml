@@ -190,6 +190,31 @@ top_tier_review:
     CLI crashed on a subcommand no test invoked. §16 item 13 is satisfied for
     the three load-bearing documents.
 
+wave_1:
+  W1-1-architecture: merged as part of phase 2
+  W1-6-plepic:
+    pr: https://github.com/hannosirkel/plepic/pull/38
+    agents_md_local_lines: 65 -> 57
+    ci: pass
+    note: >-
+      Corrected a stale Architecture section that claimed storefront/ was a
+      placeholder and backend/ was not yet present. Both exist and ship.
+      docs/style-guide.md and docs/asset-inventory.md moved into docs/current/
+      as pure renames.
+  W1-7-servitium:
+    pr: https://github.com/hannosirkel/servitium/pull/25
+    agents_md_local_lines: 65 -> 49
+    ci: pass
+    note: deleted docs/AGENTS.md and docs/CLAUDE.md; inbound references fixed
+  W1-9-mihkel:
+    pr: https://github.com/hannosirkel/mihkel/pull/2
+    agents_md_local_lines: 46 -> 53
+    ci: pass
+    note: >-
+      Grew on purpose: the rescued paragraph plus the Local exceptions section.
+      docs/decisions/0004 records the ten-root-document exception. Not one byte
+      of those ten documents moved.
+
 wave_0:
   W0-1-deploys:
     pr: https://github.com/hannosirkel/deploys/pull/17
@@ -336,4 +361,20 @@ deferred:
       deliberately not snoozed. Snoozing code written in the same pull request
       is the gaming the standard warns against.
     handling: ordinary follow-up in architecture
+  - item: >-
+      servitium's AGENTS.md Architecture section lists three frontend
+      applications. It serves four: /dice, /chess, /mtg, and /ludus. Verified
+      against src/, the server routes, and the vite configs.
+    handling: >-
+      ordinary follow-up in servitium. Out of scope for wave 1, which does not
+      rewrite a section it was told to keep.
+  - item: >-
+      plepic's AGENTS.md Toolchain section says the storefront "chooses its own
+      TypeScript version when it lands". It has landed. The pin rationale itself
+      is still accurate; only the tense is wrong.
+    handling: ordinary follow-up in plepic
+  - item: >-
+      servitium does not ignore the public/assets/ directory that npm ci
+      generates. A routine `git add -A` there would commit build output.
+    handling: ordinary follow-up in servitium
 
