@@ -268,6 +268,39 @@ wave_1:
       wave 0 PR fails the same two identically. Filed in the repository as
       docs/issues/mtls-tests-need-openssl-3.5.md.
 
+  W1-2-orange:
+    pr: https://github.com/hannosirkel/orange/pull/22
+    agents_md_local_lines: 481 -> 141
+    ci: pass
+    note: >-
+      Under the 150 ceiling, over the 60 soft target. Reaching 60 would mean
+      deleting content the migration map marks `keep`, so it was not done.
+      Commands moved to docs/current/commands.md; the 139-line delegation policy
+      deleted as centrally covered, after reading the central document in full.
+      Ansible conventions kept in full, because standards/languages/ansible.md
+      now links back here for them.
+    publication_policy_edit: >-
+      Two lines added to publication-policy.toml: hannosirkel/architecture under
+      [git] upstream_repositories and renovatebot.com under [hosts]
+      provider_suffixes. The publication gate blocks the commit otherwise. Both
+      are real third-party references added through the file's own sanctioned
+      mechanism, not live identifiers allowlisted to hide a finding.
+  W1-3-orange-inventory:
+    pr: https://github.com/hannosirkel/orange-inventory/pull/9
+    agents_md_local_lines: 151 -> 113
+    ci: pass
+    note: >-
+      Was over the 150 hard ceiling; now under it.
+    docs_current_move: not-done
+    docs_current_reason: >-
+      Two independent blockers, either sufficient alone. Active working plans
+      under docs/working/ name docs/platform.md and docs/operations.md, several
+      with literal `git add` steps. And inventory/scripts/validate hard-requires
+      all three paths in its required_paths list, which wave 1 may not edit.
+      The audit therefore still reports missing-docs for this repository. A
+      token docs/current/README.md was deliberately not created: it would have
+      hidden the finding that documents the blocker.
+
 wave_0:
   W0-1-deploys:
     pr: https://github.com/hannosirkel/deploys/pull/17
@@ -450,6 +483,15 @@ deferred:
       references/<name>.md is actually read. Then either symlink references/ and
       agents/ beside each SKILL.md, or make that line a repository-root path.
       Not verified by this initiative; reasoned from the layout.
+  - item: >-
+      orange-inventory's docs/recovery.md, docs/platform.md, and
+      docs/operations.md have not moved into docs/current/. Blocked by active
+      working plans that name the paths and by scripts/validate's required_paths
+      list. The audit reports missing-docs until both clear.
+    handling: >-
+      Revisit after the legacy-vm work completes. Wave 2 may edit
+      scripts/validate, but §5.7 protects the active plans regardless, so the
+      move waits on their owner rather than on wave 2.
   - item: >-
       nomadtty's .github/prompts/*.prompt.md (6 files) still point at the removed
       docs/ai/ and .github/instructions/ paths, as do comments in install.sh and
