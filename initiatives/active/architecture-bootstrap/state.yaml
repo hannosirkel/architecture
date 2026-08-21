@@ -1,12 +1,21 @@
 schema_version: 1
 initiative: managed-universe-bootstrap
-status: AWAITING_GATE_1
+status: IMPLEMENTING
 contract_path: initiatives/active/architecture-bootstrap.md
 contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
-current_phase: discovery-complete
-current_gate: planning
-last_completed_step: phase-1-discovery-and-synthesis
-next_action: obtain-operator-approval-of-resolved-plan
+current_phase: phase-2-populate-architecture
+current_gate: merge-and-external-side-effects
+last_completed_step: gate-1-approved
+next_action: write-standards-and-tooling-in-architecture
+
+gate_1:
+  approved: true
+  at: "2026-08-21T21:55:00Z"
+  approved_by: operator
+  decisions:
+    plan: approved as a whole; proceed to wave 0 and phase 2
+    subagent_delegation: authorised, including top-tier review steps of §11
+    open_questions: all proposed defaults accepted (Q2 to Q8)
 last_run:
   runtime: claude-code
   tier: mid
@@ -153,9 +162,29 @@ explicit_skill_invocations:
 completed_steps:
   - phase-0-safe-startup
   - phase-1-discovery-and-synthesis
+  - gate-1-approved
+
+wave_0:
+  W0-1-deploys: dispatched
+  W0-2-myskills: dispatched
+  W0-3-nomadtty: dispatched
+  W0-4-robobook: dispatched
+  W0-5-entpass: dispatched
+  W0-6-architecture-ci: pending
+  W0-7-renovate-preset: pending
+  W0-8-per-repo-renovate: folded-into-wave-1
 
 open_prs: []
 
 blockers: []
 
-operator_action_required: gate-1-approval-of-resolved-plan
+operator_action_required: >-
+  Install the Renovate GitHub App across the twelve repositories. Not doable
+  from a token; recorded for Gate 2.
+
+deferred:
+  - item: >-
+      Three repositories carry a stale comment reading "actions/checkout v4.2.2"
+      beside SHA 3d3c42e5aac5ba805825da76410c181273ba90b1, which is v7.0.1.
+    handling: correct the comments in wave 2 workflow hardening
+
