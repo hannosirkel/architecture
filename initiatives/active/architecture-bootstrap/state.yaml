@@ -3,10 +3,10 @@ initiative: managed-universe-bootstrap
 status: IMPLEMENTING
 contract_path: initiatives/active/architecture-bootstrap.md
 contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
-current_phase: phase-2-complete-awaiting-merge
+current_phase: phase-4-wave-1-governance-conformance
 current_gate: gate-2-merge-and-external-side-effects
-last_completed_step: phase-2-populate-architecture
-next_action: merge-wave-0-and-phase-2, then wave 1
+last_completed_step: top-tier-review-and-its-fixes-merged
+next_action: complete-wave-1, then wave 2
 
 gate_1:
   approved: true
@@ -167,6 +167,28 @@ completed_steps:
   - phase-0-safe-startup
   - phase-1-discovery-and-synthesis
   - gate-1-approved
+  - wave-0-dispatched-and-opened
+  - phase-2-populate-architecture
+  - top-tier-review-of-the-governance-layer
+
+top_tier_review:
+  tier: top
+  runtime: claude-code
+  at: "2026-08-21T23:20:00Z"
+  scope: >-
+    Repository ownership and source-of-truth conflicts, public and private
+    boundary decisions, the three load-bearing documents, exceptions that weaken
+    a baseline, security policy, and proportionality. §11 and §16 item 13.
+  verdict: approve conditionally, blocking on the direct-push audit
+  defects_found: 6
+  defects_fixed: 6
+  evidence: evidence/top-tier-review.md
+  merged_as: https://github.com/hannosirkel/architecture/pull/2
+  note: >-
+    Two of the six were invisible to self-checking. The security standard
+    asserted a fact taken from an evidence file the same agent wrote, and the
+    CLI crashed on a subcommand no test invoked. §16 item 13 is satisfied for
+    the three load-bearing documents.
 
 wave_0:
   W0-1-deploys:
@@ -211,6 +233,7 @@ wave_0:
     pr: https://github.com/hannosirkel/architecture/pull/1
     content: folded into the phase 2 PR
     ci: pass
+    merged: true
   W0-7-renovate-preset:
     pr: https://github.com/hannosirkel/architecture/pull/1
     content: templates/renovate.json, folded into the phase 2 PR
@@ -268,11 +291,49 @@ blockers: []
 
 operator_action_required: >-
   Install the Renovate GitHub App across the twelve repositories. Not doable
-  from a token; recorded for Gate 2.
+  from a token; recorded for Gate 2. Also: review and merge the five wave 0
+  control PRs, which the operator chose to hold at Gate 2.
+
+gate_2:
+  decision: merge architecture only; hold the five wave 0 control PRs for review
+  at: "2026-08-21T22:50:00Z"
+  merged:
+    - https://github.com/hannosirkel/architecture/pull/1
+    - https://github.com/hannosirkel/architecture/pull/2
+  merge_2_rationale: >-
+    Opened after the operator's decision, in the same repository and of the same
+    kind. Merged because wave 1 generates from these templates: without it,
+    eleven repositories would have received content the review had already shown
+    to be defective.
+  nomadtty_playwright: >-
+    Recorded as follow-up in nomadtty, per the operator's decision. Not fixed
+    here; this initiative does not change application code or tests.
 
 deferred:
   - item: >-
       Three repositories carry a stale comment reading "actions/checkout v4.2.2"
       beside SHA 3d3c42e5aac5ba805825da76410c181273ba90b1, which is v7.0.1.
+      standards/security.md calls a wrong comment worse than none, so the
+      universe knowingly violates its own standard until this lands.
     handling: correct the comments in wave 2 workflow hardening
+  - item: >-
+      servitium/.github/workflows/deploy-test.yml has no top-level permissions
+      block, only job-level ones. A job added later would inherit the repository
+      default rather than nothing.
+    handling: add it in wave 2; recorded in standards/security.md
+  - item: >-
+      deploys' kubeconform step resolves schemas from kubernetes-json-schema at
+      master, unpinned to a Kubernetes version, so the gate's strictness can
+      drift with upstream and it depends on network reachability.
+    handling: pin -kubernetes-version in wave 2
+  - item: >-
+      nomadtty's Playwright spec calls `openssl x509 -req -not_before/-not_after`,
+      which the runner's OpenSSL rejects. Publish gates on CI success, so
+      releases are blocked. Surfaced by the repository's first-ever CI run.
+    handling: ordinary follow-up work in nomadtty, routed by §5.8
+  - item: >-
+      Four Habit Hooks coaching findings on tooling/ are accepted and
+      deliberately not snoozed. Snoozing code written in the same pull request
+      is the gaming the standard warns against.
+    handling: ordinary follow-up in architecture
 

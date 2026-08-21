@@ -1,11 +1,26 @@
 # Open questions
 
-Questions the operator must answer, or that the resolved plan answers under a
-stated assumption. Each says what happens if nobody answers.
+**All eight are answered.** The operator approved the resolved plan at Gate 1,
+authorised subagent delegation, and accepted every proposed default. This file
+is kept as the record of what was asked and what was decided.
+
+| Question | Outcome |
+| --- | --- |
+| Q1 subagent delegation and top-tier review | authorised; the review ran and found six defects |
+| Q2 Habit Hooks `files` and `jscpd` | proposal accepted; see decisions/006 |
+| Q3 `deploys` branch-protection floor | proposal accepted; named exception in standards/security.md |
+| Q4 `robobook`'s `CLAUDE.md` symlink | proposal accepted; replaced by the generated pointer |
+| Q5 `mihkel`'s ten root documents | proposal accepted; exception recorded as a local decision |
+| Q6 `nomadtty`'s `change-trace.md` | kept, not deleted |
+| Q7 `plepic`'s `docs/superpowers/` | moot: another session retired the plans mid-run |
+| Q8 `deploys` declares `shell` | proposal accepted; evidence beats the contract's illustration |
 
 ## Q1 — May this session delegate to subagents, and to a top tier?
 
-**Status:** blocking for three deliverables, not for the plan itself.
+**Answered: option 1.** Delegation authorised. The §11 review ran at the top
+tier and found six defects, two of which self-checking could not have caught.
+§16 item 13 is satisfied for the three load-bearing documents. See
+`evidence/top-tier-review.md`.
 
 §11 requires a top-tier (Fable/Sol) review of authority boundaries, public and
 private classifications, migration of shared standards, and the final
@@ -108,6 +123,12 @@ disputed; this one is proposed rather than done.
 for a later decision. Deleting without an answer is the worse error.
 
 ## Q7 — `plepic`'s `docs/superpowers/` versus Orange's convention
+
+**Overtaken by events.** Another session merged the Stripe work and retired the
+plans into the README while this initiative was running. `docs/superpowers/` no
+longer exists in `plepic`, and the registered working path was removed from the
+catalogue. The convention below still stands for the next repository that tracks
+tool-generated plans.
 
 Orange's convention ignores `docs/superpowers/` and routes tool-generated plans
 to the private inventory. `plepic` tracks them in the public repository. §5.10
