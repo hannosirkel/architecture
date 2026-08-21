@@ -68,6 +68,7 @@ class Universe:
     languages: dict = field(default_factory=dict)
     generic: dict = field(default_factory=dict)
     baseline: dict = field(default_factory=dict)
+    standards: dict = field(default_factory=dict)
     notable_local_work: list = field(default_factory=list)
 
 
@@ -93,6 +94,7 @@ def load(root: Path | None = None) -> Universe:
     repos_doc = _read_yaml(root / "universe" / "repositories.yaml")
     profiles_doc = _read_yaml(root / "profiles.yaml")
     languages_doc = _read_yaml(root / "universe" / "languages.yaml")
+    standards_doc = _read_yaml(root / "standards" / "index.yaml")
     return Universe(
         root=root,
         repositories=repos_doc.get("repositories") or {},
@@ -101,6 +103,7 @@ def load(root: Path | None = None) -> Universe:
         baseline=profiles_doc.get("baseline") or {},
         languages=languages_doc.get("languages") or {},
         generic=languages_doc.get("generic") or {},
+        standards=standards_doc.get("standards") or {},
     )
 
 
@@ -207,6 +210,29 @@ def validate(universe: Universe) -> list[Problem]:
                 )
             )
 
+        expected = _expected_publication_status(entry)
+        if status is not None and expected is not None and status != expected:
+            problems.append(
+                Problem(
+                    name,
+                    "stale-publication-status",
+                    f"declared {declared} and currently {remote} implies "
+                    f"`{expected}`, not `{status}`",
+                )
+            )
+
+        for document in entry.get("extra_standards") or []:
+            if document not in universe.standards:
+                problems.append(
+                    Problem(
+                        name,
+                        "unknown-standard",
+                        f"`{document}` is not in standards/index.yaml",
+                    )
+                )
+
+    problems += _check_standards_are_read(universe)
+
     for item in universe.notable_local_work:
         repo = item.get("repository")
         if repo not in universe.repositories:
@@ -242,4 +268,66 @@ def check_working_paths(universe: Universe) -> list[Problem]:
                     "remove the entry from notable_local_work, or restore the path",
                 )
             )
+    return problems
+
+
+def _expected_publication_status(entry: dict) -> str | None:
+    """What `declared` and `current_remote` together already imply.
+
+    `candidate` is the one value they cannot imply: it records an intention to
+    publish that nothing else in the catalogue carries.
+    """
+    if entry.get("publication_status") == "candidate":
+        return "candidate"
+    declared = entry.get("declared_visibility")
+    remote = entry.get("current_remote_visibility")
+    if declared == "private":
+        return "not-applicable"
+    if declared == "public":
+        return "published" if remote == "public" else "currently-private"
+    return None
+
+
+def linked_standards(universe: Universe) -> set[str]:
+    """Every standard some generated AGENTS.md section links."""
+    linked = set(universe.baseline.get("standards") or [])
+    for spec in universe.profiles.values():
+        linked.update(spec.get("standards") or [])
+    for entry in universe.repositories.values():
+        linked.update(entry.get("extra_standards") or [])
+    return linked
+
+
+def _check_standards_are_read(universe: Universe) -> list[Problem]:
+    """No standard exists unless a generated section links it.
+
+    An owner-facing standard is exempt: it is linked from `architecture`'s own
+    local section, which is where its reader already is.
+    """
+    problems = []
+    linked = linked_standards(universe)
+    for document in sorted(linked):
+        if document not in universe.standards:
+            problems.append(
+                Problem(
+                    "universe",
+                    "unknown-standard",
+                    f"`{document}` is linked but absent from standards/index.yaml",
+                )
+            )
+        elif not (universe.root / "standards" / document).is_file():
+            problems.append(
+                Problem("universe", "missing-standard", f"standards/{document}")
+            )
+    for document, spec in sorted(universe.standards.items()):
+        if spec.get("owner_facing") or document in linked:
+            continue
+        problems.append(
+            Problem(
+                "universe",
+                "unlinked-standard",
+                f"standards/{document} is linked from no generated section",
+                "link it from profiles.yaml, or mark it owner_facing",
+            )
+        )
     return problems

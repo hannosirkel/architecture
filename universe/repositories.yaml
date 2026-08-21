@@ -24,18 +24,15 @@ repositories:
     publication_status: not-applicable
     languages: [python]
     npm_project: false
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "bfc5130"
+      # standards/agent-operation.md: durable initiative state is a coordination
+      # record, not a code change. Gating it behind review would stall the
+      # resume path it exists to protect.
+      allowed_paths: ["initiatives/"]
     supports_rulesets: false
-    owns:
-      - universe catalogue and repository relationships
-      - cross-repository standards and profiles
-      - cross-repository decisions and initiative state
-      - shared templates and conformance tooling
-      - the universe audit skill
-    does_not_own:
-      - application source
-      - deployment state
-      - secrets or inventory
-      - reusable skills, other than the audit skill
 
   orange:
     description: Reusable public-safe infrastructure implementation for Orange.
@@ -50,16 +47,10 @@ repositories:
     languages: [ansible, python, shell]
     npm_project: false
     supports_rulesets: false
-    owns:
-      - Ansible roles, playbooks, and reusable defaults
-      - Orange platform current-state documentation and ADRs
-      - the statuspage application and Wazuh Kustomize sources
-      - the reserved-value inventory-example mirror
-      - controller tooling and the publication gate
-    does_not_own:
-      - live private variables or inventory
-      - secrets
-      - cross-repository governance
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "4d052d3"
 
   orange-inventory:
     description: Private live inventory and operating state for Orange.
@@ -75,16 +66,10 @@ repositories:
     languages: [ansible, shell]
     npm_project: false
     supports_rulesets: false
-    owns:
-      - hosts, group and host variables, DNS desired state
-      - the runnable RouterOS artifact
-      - live platform, operations, and recovery documentation
-      - recovery evidence
-      - Orange-local working plans
-    does_not_own:
-      - secrets
-      - reusable roles or generic procedures
-      - cross-repository initiatives
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "2983860"
 
   deploys:
     description: Public GitOps desired state reconciled by Argo CD.
@@ -99,17 +84,17 @@ repositories:
     visibility_reason: >-
       Public because the GitHub plan does not offer private Argo CD source
       access. An operator decision, already made.
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "fb300dd"
+      # standards/security.md: main receives automated image digest pushes from
+      # the plepic and servitium release workflows. A pull-request rule breaks
+      # promotion, so these commits are expected rather than a violation.
+      allowed_subject_pattern: '^deploy\((test|live)\): '
     languages: [shell]
     npm_project: false
     supports_rulesets: true
-    owns:
-      - deployable desired state per application root
-      - promotion and rollback rules
-      - manifest validation
-    does_not_own:
-      - secret values of any kind
-      - application source
-      - Argo CD Application objects, which orange owns
 
   myskills:
     description: Reusable executable agent skills and plugins.
@@ -124,14 +109,10 @@ repositories:
     languages: [shell]
     npm_project: false
     supports_rulesets: false
-    owns:
-      - reusable skills and their wrappers
-      - the installer and its tests
-      - skill catalogue and installation procedure
-    does_not_own:
-      - project plans
-      - universe governance
-      - initiative state
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "12c8092"
 
   plepic:
     description: plepicgames.com Medusa store and storefront.
@@ -145,15 +126,12 @@ repositories:
     publication_status: published
     languages: [typescript, shell]
     npm_project: true
+    extra_standards: [gitops-and-deployment.md]
     supports_rulesets: true
-    owns:
-      - storefront and backend source, content, and design tokens
-      - store architecture, tests, and release procedure
-      - image build and promotion into deploys
-    does_not_own:
-      - Kubernetes manifests, which deploys owns
-      - Argo CD Application objects, which orange owns
-      - secrets or per-environment values
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "97d5ba2"
 
   robobook:
     description: Bookkeeping workflow for Plepic Games OÜ.
@@ -161,7 +139,6 @@ repositories:
     remote: https://github.com/hannosirkel/robobook.git
     local_path: "~/app/robobook"
     default_branch: main
-    local_checkout_note: no primary local checkout; audited from ~/app/.worktrees/robobook-audit
     declared_visibility: public
     current_remote_visibility: public
     public_safe_required: true
@@ -169,13 +146,10 @@ repositories:
     languages: [python]
     npm_project: false
     supports_rulesets: true
-    owns:
-      - bookkeeping skills and their Python implementations
-      - schemas, templates, and reference artifacts
-      - its own tests
-    does_not_own:
-      - real company data, customer data, or credentials
-      - live accounting state
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "1d31cc8"
 
   servitium:
     description: servitium.future.ee source and application documentation.
@@ -189,14 +163,12 @@ repositories:
     publication_status: published
     languages: [typescript, shell]
     npm_project: true
+    extra_standards: [gitops-and-deployment.md]
     supports_rulesets: true
-    owns:
-      - the Node server and the three frontend applications
-      - local architecture, ADRs, and tests
-      - image build and promotion into deploys
-    does_not_own:
-      - Kubernetes manifests, which deploys owns
-      - deployment credentials
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "3d7f3b2"
 
   nomadtty:
     description: Maintained fork of NomadTTY.
@@ -213,12 +185,10 @@ repositories:
     languages: [typescript, shell]
     npm_project: true
     supports_rulesets: true
-    owns:
-      - the local delta from upstream and its rationale
-      - upstream provenance and licence obligations
-      - local build, test, and release procedure
-    does_not_own:
-      - Orange credentials or private host details
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "3eba321"
     fork_posture: >-
       Upstream contribution is not expected. Apply the full governance baseline
       and record the added files in the delta documentation.
@@ -236,14 +206,10 @@ repositories:
     languages: [typescript, python, shell]
     npm_project: false
     supports_rulesets: true
-    owns:
-      - agent identity, prompts, workflows, and skills
-      - n8n workflow generators and their tests
-      - its own durable memory
-    does_not_own:
-      - Discord or provider credentials
-      - the host baseline, which orange manages
-      - private conversation exports
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "fa0dd76"
 
   ai-portal:
     description: ai.future.ee and its subprojects. Unimplemented.
@@ -260,12 +226,6 @@ repositories:
     npm_project: false
     lifecycle: registered-not-implemented
     supports_rulesets: true
-    owns:
-      - nothing yet; the product is unimplemented
-    does_not_own:
-      - family identities or group membership
-      - provider keys or OAuth sessions
-      - private infrastructure variables
 
   entpass:
     description: EntityPass/LEI concept research and development.
@@ -281,11 +241,10 @@ repositories:
     npm_project: false
     lifecycle: early-research
     supports_rulesets: false
-    owns:
-      - business-sensitive research and local plans
-    does_not_own:
-      - universe standards
-      - Orange infrastructure state
+    direct_push:
+      # Direct pushes at or before this commit predate the rule and are
+      # baselined, exactly as a linter baseline records today's findings.
+      baseline_commit: "149bc56"
 
 notable_local_work:
   - repository: orange-inventory

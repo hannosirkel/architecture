@@ -9,7 +9,13 @@
 
 schema_version: 1
 
+# Linked from every generated AGENTS.md section, whatever the profile.
 baseline:
+  standards:
+    - agent-operation.md
+    - security.md
+    - code-quality.md
+    - repository-contract.md
   required_files: [README.md, AGENTS.md, CLAUDE.md]
   required_generated: [".habit-hooks/config.toml"]
   required_checks: [secret-scanning]
@@ -18,6 +24,7 @@ profiles:
 
   governance-private:
     description: Engineering governance for the managed universe.
+    standards: []
     expected_docs: [decisions/]
     additionally_documents:
       - the universe catalogue and repository relationships
@@ -28,6 +35,7 @@ profiles:
 
   platform-public-ready:
     description: Reusable public-safe infrastructure implementation.
+    standards: [gitops-and-deployment.md]
     expected_docs: [docs/current/, docs/decisions/]
     additionally_documents:
       - implemented platform behaviour
@@ -38,6 +46,7 @@ profiles:
 
   inventory-private:
     description: Private live state parameterizing a public platform repository.
+    standards: []
     expected_docs: [docs/current/]
     optional_docs: [docs/working/]
     additionally_documents:
@@ -48,6 +57,7 @@ profiles:
 
   gitops-public:
     description: Public deployable desired state reconciled by Argo CD.
+    standards: [gitops-and-deployment.md]
     expected_docs: []
     additionally_documents:
       - deployment ownership per application root
@@ -61,6 +71,7 @@ profiles:
 
   skills-private:
     description: Reusable executable agent skills and plugins.
+    standards: []
     expected_docs: []
     additionally_documents:
       - the skill catalogue
@@ -71,6 +82,7 @@ profiles:
 
   application-public:
     description: A public application and its own documentation.
+    standards: []
     expected_docs: [docs/current/]
     optional_docs: [docs/decisions/, docs/working/]
     additionally_documents:
@@ -81,6 +93,7 @@ profiles:
 
   fork-public:
     description: A maintained public fork.
+    standards: []
     expected_docs: [docs/current/]
     optional_docs: [docs/decisions/, docs/working/]
     additionally_documents:
@@ -96,6 +109,7 @@ profiles:
 
   research-private:
     description: Early private research with no deployable artifact.
+    standards: []
     expected_docs: []
     optional_docs: [docs/working/]
     additionally_documents: []

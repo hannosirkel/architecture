@@ -100,6 +100,28 @@ class ToolFailureTests(unittest.TestCase):
         self.assertEqual(2, result.returncode)
         self.assertIn("cannot run", result.stderr)
 
+    def test_every_subcommand_runs_from_the_cli(self):
+        """The module tests never invoked main(), so a shadowed name got through.
+
+        render-baseline crashed with an AttributeError and a traceback, which is
+        neither a pass nor the promised loud exit 2.
+        """
+        for args in (
+            ["validate"],
+            ["audit", "architecture"],
+            ["render-baseline", "deploys"],
+            ["sync-baseline", "architecture", "--dry-run"],
+            ["drift", "--before", "HEAD", "--after", "HEAD"],
+        ):
+            with self.subTest(command=args[0]):
+                result = self._run(*args)
+                self.assertNotIn("Traceback", result.stderr)
+                self.assertIn(
+                    result.returncode,
+                    (0, 1),
+                    f"{args[0]} exited {result.returncode}: {result.stderr}",
+                )
+
     def test_the_real_catalogue_validates_from_the_cli(self):
         result = self._run("validate")
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)

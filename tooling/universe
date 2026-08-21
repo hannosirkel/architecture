@@ -35,31 +35,35 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("validate", help="check the catalogue against itself")
 
-    audit = sub.add_parser("audit", help="report conformance across the catalogue")
-    audit.add_argument("repos", nargs="*", help="default: every catalogued repository")
-    audit.add_argument(
+    audit_cmd = sub.add_parser("audit", help="report conformance across the catalogue")
+    audit_cmd.add_argument(
+        "repos", nargs="*", help="default: every catalogued repository"
+    )
+    audit_cmd.add_argument(
         "--path",
         help="audit this directory instead of the catalogue's local_path; "
         "requires exactly one repository. Use it when working in a worktree.",
     )
 
-    sync = sub.add_parser("sync-baseline", help="materialize generated artifacts")
-    sync.add_argument("repos", nargs="*", help="default: every catalogued repository")
-    sync.add_argument("--dry-run", action="store_true", help="report what would change")
-    sync.add_argument(
+    sync_cmd = sub.add_parser("sync-baseline", help="materialize generated artifacts")
+    sync_cmd.add_argument("repos", nargs="*", help="default: every catalogued repository")
+    sync_cmd.add_argument(
+        "--dry-run", action="store_true", help="report what would change"
+    )
+    sync_cmd.add_argument(
         "--path",
         help="write into this directory instead of the catalogue's local_path; "
         "requires exactly one repository. Use it when working in a worktree.",
     )
 
-    render = sub.add_parser("render-baseline", help="print one managed section")
-    render.add_argument("repo")
+    render_cmd = sub.add_parser("render-baseline", help="print one managed section")
+    render_cmd.add_argument("repo")
 
-    drift = sub.add_parser(
+    drift_cmd = sub.add_parser(
         "drift", help="report which repositories a change to this one invalidates"
     )
-    drift.add_argument("--before", required=True, help="git ref before the change")
-    drift.add_argument("--after", default="HEAD", help="git ref after the change")
+    drift_cmd.add_argument("--before", required=True, help="git ref before the change")
+    drift_cmd.add_argument("--after", default="HEAD", help="git ref after the change")
 
     args = parser.parse_args(argv)
 

@@ -40,7 +40,13 @@ class Fixture:
     """A throwaway universe with one repository, on disk."""
 
     def __init__(
-        self, languages=("shell",), npm_project=False, profile="application-public"
+        self,
+        languages=("shell",),
+        npm_project=False,
+        profile="application-public",
+        direct_push=None,
+        extra_standards=None,
+        supports_rulesets=True,
     ):
         self.tmp = Path(tempfile.mkdtemp())
         self.root = self.tmp / "architecture"
@@ -51,6 +57,7 @@ class Fixture:
             "templates/agent-baseline.md",
             "templates/claude-md-pointer.md",
             "universe/languages.yaml",
+            "standards/index.yaml",
             "profiles.yaml",
         ):
             target = self.root / relative
@@ -73,7 +80,13 @@ class Fixture:
             "    publication_status: published\n"
             f"    languages: {languages_yaml}\n"
             f"    npm_project: {'true' if npm_project else 'false'}\n"
-            "    supports_rulesets: true\n",
+            f"    supports_rulesets: {'true' if supports_rulesets else 'false'}\n"
+            + (f"    direct_push:\n{direct_push}" if direct_push else "")
+            + (
+                f"    extra_standards: [{', '.join(extra_standards)}]\n"
+                if extra_standards
+                else ""
+            ),
             encoding="utf-8",
         )
         self.universe = cat.load(self.root)

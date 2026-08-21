@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -9,6 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import universe_audit as audit
+import universe_catalogue as cat
 import universe_render as render
 from test_helpers import LOCAL_CONTENT, ROOT, Fixture, _git
 
@@ -73,6 +75,13 @@ class DocumentationAuditTests(unittest.TestCase):
     def test_an_empty_documentation_directory_fails(self):
         (self.fixture.repo / "docs" / "current").mkdir(parents=True)
         self.assertIn("empty-docs-directory", self._checks())
+
+    def test_an_unimplemented_repository_is_not_asked_for_docs(self):
+        """Requiring docs/current/ of a product that does not exist would force
+        exactly the empty stub the documentation standard forbids."""
+        universe = cat.load(ROOT)
+        problems = audit.audit_repository(universe, "ai-portal")
+        self.assertNotIn("missing-docs", [p.check for p in problems])
 
     def test_a_populated_documentation_directory_passes(self):
         target = self.fixture.repo / "docs" / "current"
@@ -203,7 +212,10 @@ class DirectPushTests(unittest.TestCase):
     def setUp(self):
         self.fixture = Fixture()
         self.addCleanup(self.fixture.close)
-        repo = self.fixture.repo
+        self._init_git(self.fixture.repo)
+
+    @staticmethod
+    def _init_git(repo):
         _git("init", "--initial-branch=main", cwd=repo)
         _git("config", "user.email", "t@example.invalid", cwd=repo)
         _git("config", "user.name", "t", cwd=repo)
@@ -230,16 +242,125 @@ class DirectPushTests(unittest.TestCase):
         self.assertEqual(1, len(problems))
         self.assertEqual("direct-push", problems[0].check)
 
-    def test_initiative_state_committed_to_main_is_whitelisted(self):
+    def _commit_initiative_state(self):
         target = self.fixture.repo / "initiatives" / "active" / "x"
-        target.mkdir(parents=True)
+        target.mkdir(parents=True, exist_ok=True)
         (target / "state.yaml").write_text("status: IMPLEMENTING\n", encoding="utf-8")
         _git("add", "-A", cwd=self.fixture.repo)
         _git("commit", "-m", "state: record progress", cwd=self.fixture.repo)
+
+    def test_initiative_state_is_exempt_only_where_the_catalogue_says_so(self):
+        """The exception is architecture's, not every repository's."""
+        self._commit_initiative_state()
+        problems = audit._audit_default_branch_commits(
+            "example", self._entry(), self.fixture.repo
+        )
+        self.assertEqual(["direct-push"], [p.check for p in problems])
+
+    def test_initiative_state_is_exempt_where_the_catalogue_grants_it(self):
+        fixture = Fixture(direct_push='      allowed_paths: ["initiatives/"]\n')
+        self.addCleanup(fixture.close)
+        self._init_git(fixture.repo)
+        target = fixture.repo / "initiatives" / "active" / "x"
+        target.mkdir(parents=True)
+        (target / "state.yaml").write_text("status: IMPLEMENTING\n", encoding="utf-8")
+        _git("add", "-A", cwd=fixture.repo)
+        _git("commit", "-m", "state: record progress", cwd=fixture.repo)
+        problems = audit._audit_default_branch_commits(
+            "example", fixture.universe.repositories["example"], fixture.repo
+        )
+        self.assertEqual([], problems)
+
+    def test_a_mixed_commit_is_not_exempt(self):
+        """An exempt prefix must not launder an unrelated change alongside it."""
+        fixture = Fixture(direct_push='      allowed_paths: ["initiatives/"]\n')
+        self.addCleanup(fixture.close)
+        self._init_git(fixture.repo)
+        target = fixture.repo / "initiatives" / "active" / "x"
+        target.mkdir(parents=True)
+        (target / "state.yaml").write_text("status: IMPLEMENTING\n", encoding="utf-8")
+        (fixture.repo / "src.sh").write_text("echo hi\n", encoding="utf-8")
+        _git("add", "-A", cwd=fixture.repo)
+        _git("commit", "-m", "state: record progress", cwd=fixture.repo)
+        problems = audit._audit_default_branch_commits(
+            "example", fixture.universe.repositories["example"], fixture.repo
+        )
+        self.assertEqual(["direct-push"], [p.check for p in problems])
+
+    def test_an_automated_push_is_exempt_by_subject_pattern(self):
+        """deploys receives digest pushes that a pull-request rule would break."""
+        fixture = Fixture(
+            direct_push="      allowed_subject_pattern: '^deploy\\(live\\): '\n"
+        )
+        self.addCleanup(fixture.close)
+        self._init_git(fixture.repo)
+        (fixture.repo / "digest.yaml").write_text("sha256: abc\n", encoding="utf-8")
+        _git("add", "-A", cwd=fixture.repo)
+        _git("commit", "-m", "deploy(live): PR #35 sha256:abc", cwd=fixture.repo)
+        problems = audit._audit_default_branch_commits(
+            "example", fixture.universe.repositories["example"], fixture.repo
+        )
+        self.assertEqual([], problems)
+
+    def test_a_squash_merged_pull_request_is_not_a_direct_push(self):
+        """A squash merge is single-parent; only its subject distinguishes it."""
+        (self.fixture.repo / "src.sh").write_text("echo hi\n", encoding="utf-8")
+        _git("add", "-A", cwd=self.fixture.repo)
+        _git(
+            "commit", "-m", "feat: add interactive dice hall (#2)", cwd=self.fixture.repo
+        )
         problems = audit._audit_default_branch_commits(
             "example", self._entry(), self.fixture.repo
         )
         self.assertEqual([], problems)
+
+    def test_history_before_the_baseline_is_not_reported(self):
+        """New-work-first applies to history exactly as it does to a linter."""
+        repo = self.fixture.repo
+        (repo / "old.sh").write_text("echo old\n", encoding="utf-8")
+        _git("add", "-A", cwd=repo)
+        _git("commit", "-m", "feat: an old direct push", cwd=repo)
+        baseline = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+
+        fixture = Fixture(direct_push=f'      baseline_commit: "{baseline}"\n')
+        self.addCleanup(fixture.close)
+        entry = dict(fixture.universe.repositories["example"])
+        entry["local_path"] = str(repo)
+
+        self.assertEqual([], audit._audit_default_branch_commits("example", entry, repo))
+
+        (repo / "new.sh").write_text("echo new\n", encoding="utf-8")
+        _git("add", "-A", cwd=repo)
+        _git("commit", "-m", "feat: a new direct push", cwd=repo)
+        problems = audit._audit_default_branch_commits("example", entry, repo)
+        self.assertEqual(["direct-push"], [p.check for p in problems])
+        self.assertIn("baselined", problems[0].detail)
+
+    def test_the_fix_names_the_ruleset_where_one_is_possible(self):
+        (self.fixture.repo / "src.sh").write_text("echo hi\n", encoding="utf-8")
+        _git("add", "-A", cwd=self.fixture.repo)
+        _git("commit", "-m", "feat: straight to main", cwd=self.fixture.repo)
+        problems = audit._audit_default_branch_commits(
+            "example", self._entry(), self.fixture.repo
+        )
+        self.assertIn("ruleset", problems[0].fix)
+
+    def test_the_fix_names_the_rule_where_a_ruleset_is_impossible(self):
+        fixture = Fixture(supports_rulesets=False)
+        self.addCleanup(fixture.close)
+        self._init_git(fixture.repo)
+        (fixture.repo / "src.sh").write_text("echo hi\n", encoding="utf-8")
+        _git("add", "-A", cwd=fixture.repo)
+        _git("commit", "-m", "feat: straight to main", cwd=fixture.repo)
+        problems = audit._audit_default_branch_commits(
+            "example", fixture.universe.repositories["example"], fixture.repo
+        )
+        self.assertIn("cannot carry a ruleset", problems[0].fix)
 
     def test_a_merged_pull_request_is_not_a_direct_push(self):
         repo = self.fixture.repo
