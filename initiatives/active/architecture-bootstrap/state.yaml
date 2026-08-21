@@ -215,6 +215,42 @@ wave_1:
       docs/decisions/0004 records the ten-root-document exception. Not one byte
       of those ten documents moved.
 
+  W1-4-deploys:
+    pr: https://github.com/hannosirkel/deploys/pull/18
+    agents_md_local_lines: 46
+    note: >-
+      No manifest, overlay, kustomization, or image digest changed; verified by
+      diff. The secrets path is linked, not restated.
+  W1-5-myskills:
+    pr: https://github.com/hannosirkel/myskills/pull/3
+    agents_md_local_lines: 38
+    note: >-
+      The governance baseline broke an existing test: install_test.sh asserted
+      the source repository holds no AGENTS.md, which the repository contract
+      makes permanently impossible. The assertion was removed; the git status
+      check beneath it is the real one and catches create, edit, and delete.
+      93 and 69 tests pass. No CI yet — the workflow is in the unmerged wave 0 PR.
+  W1-8-robobook:
+    pr: https://github.com/hannosirkel/robobook/pull/6
+    agents_md_local_lines: 177 -> 55
+    note: >-
+      CLAUDE.md symlink replaced by the generated pointer; git records
+      120000 -> 100644. Meaning moved into three docs/current/ files rather
+      than deleted. plans/ moved to docs/working/; both plans are active.
+      237 tests pass.
+  W1-11-entpass:
+    pr: https://github.com/hannosirkel/entpass/pull/2
+    agents_md_local_lines: 14
+    audit: clean
+  W1-12-ai-portal:
+    pushed_to_main: be0c7e6
+    agents_md_local_lines: 21
+    audit: clean
+    note: >-
+      Initial commit pushed directly under the empty-repository exception, as
+      §7.5 allows and the commit message states. Exactly five files; no
+      scaffolding. The primary clone's unborn main was left untouched.
+
 wave_0:
   W0-1-deploys:
     pr: https://github.com/hannosirkel/deploys/pull/17
@@ -377,4 +413,28 @@ deferred:
       servitium does not ignore the public/assets/ directory that npm ci
       generates. A routine `git add -A` there would commit build output.
     handling: ordinary follow-up in servitium
+  - item: >-
+      robobook's .claude/skills/ and .opencode/skills/ are single symlinks to
+      skills/<name>/SKILL.md, not drift — deliberate per-runtime adapters with
+      one source of truth. But only SKILL.md is linked, and every SKILL.md ends
+      with `Read references/<name>.md`, a path relative to the skill directory.
+      Through the adapter it resolves only if the runtime follows the symlink to
+      its real path first. If it does not, the agent proceeds without the parser
+      rules, on money-sensitive bookkeeping logic.
+    handling: >-
+      ordinary follow-up in robobook, and worth doing early. First step: invoke
+      one skill through Claude Code and through opencode and observe whether
+      references/<name>.md is actually read. Then either symlink references/ and
+      agents/ beside each SKILL.md, or make that line a repository-root path.
+      Not verified by this initiative; reasoned from the layout.
+  - item: >-
+      The generated managed section prints the universe-wide Habit Hooks install
+      command in every repository, including those declaring no language. That
+      is correct — extras replace rather than add, so a per-repository extras
+      list would silently disable another repository's plugin — but the wording
+      does not say so, and an agent in deploys may read it as a mistake.
+    handling: >-
+      reword templates/agent-baseline.md during wave 2, which re-verifies every
+      repository's generated content anyway. Changing it now would mark ten open
+      pull requests stale for a clarity nudge.
 
