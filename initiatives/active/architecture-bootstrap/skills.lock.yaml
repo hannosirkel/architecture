@@ -1,0 +1,31 @@
+schema_version: 1
+
+myskills:
+  remote: https://github.com/hannosirkel/myskills.git
+  commit: 12c8092be4938f326fde48d3fcaee348cb61b541
+  changed_by_this_initiative: false
+  skills_present:
+    - big-build
+    - big-improve-ui
+  skills_selected: []
+  reason: >-
+    Neither existing skill covers this initiative's needs, and none of the
+    capabilities it needs are reusable beyond this universe. The audit skill
+    lives in architecture/skills/audit-universe/ under the §12 exception. See
+    resolved-plan.md §7.
+
+architecture:
+  audit_skill_path: skills/audit-universe/
+  backing_cli: tooling/universe
+  commit: null
+  status: not-yet-created
+
+workstation_prerequisites:
+  - tool: uv
+    version: "0.12.5"
+    installed_at: "2026-08-21"
+  - tool: habit-hooks
+    version: "1.3.1"
+    extras: [python, typescript]
+    installed_at: "2026-08-21"
+    note: see evidence/habit-hooks-verification.md

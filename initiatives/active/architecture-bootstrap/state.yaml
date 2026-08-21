@@ -1,0 +1,161 @@
+schema_version: 1
+initiative: managed-universe-bootstrap
+status: AWAITING_GATE_1
+contract_path: initiatives/active/architecture-bootstrap.md
+contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
+current_phase: discovery-complete
+current_gate: planning
+last_completed_step: phase-1-discovery-and-synthesis
+next_action: obtain-operator-approval-of-resolved-plan
+last_run:
+  runtime: claude-code
+  tier: mid
+  model: "claude-opus-5[1m]"
+  at: "2026-08-21T21:43:16Z"
+
+repositories:
+  architecture:
+    remote: https://github.com/hannosirkel/architecture.git
+    local_path: ~/app/architecture
+    default_branch: main
+    head: 04ade914e257375f1f4057b05a9182234b73384a
+    declared_visibility: private
+    current_remote_visibility: private
+    accessible: true
+    worktree_clean: true
+  orange:
+    remote: https://github.com/hannosirkel/orange.git
+    local_path: ~/app/orange
+    default_branch: main
+    head: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    declared_visibility: public
+    current_remote_visibility: private
+    accessible: true
+    worktree_clean: true
+  orange-inventory:
+    remote: https://github.com/hannosirkel/orange-inventory.git
+    local_path: ~/app/orange/inventory
+    default_branch: main
+    head: 2983860328f8ea3fc9c969e0253bce9ecd7a361f
+    declared_visibility: private
+    current_remote_visibility: private
+    accessible: true
+    worktree_clean: false
+    dirty_note: two deleted files staged-out in the primary checkout; treat as another session's state
+  deploys:
+    remote: https://github.com/hannosirkel/deploys.git
+    local_path: ~/app/deploys
+    default_branch: main
+    head: 096c5155f7a836e2401cc80d6c655071ca9d4af6
+    declared_visibility: public
+    current_remote_visibility: public
+    accessible: true
+    worktree_clean: true
+  myskills:
+    remote: https://github.com/hannosirkel/myskills.git
+    local_path: ~/app/myskills
+    default_branch: main
+    head: 12c8092be4938f326fde48d3fcaee348cb61b541
+    declared_visibility: private
+    current_remote_visibility: private
+    accessible: true
+    worktree_clean: true
+  plepic:
+    remote: https://github.com/hannosirkel/plepic.git
+    local_path: ~/app/plepic
+    default_branch: main
+    head: 2c82e916a78dadc5b71d477338a4b4b8b5bb610e
+    checked_out_branch: feat/stripe-payment-methods
+    declared_visibility: public
+    current_remote_visibility: public
+    accessible: true
+    worktree_clean: true
+    note: primary checkout sits on active feature work; leave it exactly as found
+  robobook:
+    remote: https://github.com/hannosirkel/robobook.git
+    local_path: null
+    audit_clone: ~/app/.worktrees/robobook-audit
+    default_branch: main
+    head: 1d31cc83b2b4a3b41f1bdf8ff931479b2dd6b439
+    declared_visibility: public
+    current_remote_visibility: public
+    accessible: true
+    worktree_clean: true
+  servitium:
+    remote: https://github.com/hannosirkel/servitium.git
+    local_path: ~/app/servitium
+    default_branch: main
+    head: 75d26531521075b05d083dc7695a84828a52efbb
+    declared_visibility: public
+    current_remote_visibility: public
+    accessible: true
+    worktree_clean: true
+  nomadtty:
+    remote: https://github.com/hannosirkel/nomadtty.git
+    local_path: ~/app/nomadtty
+    default_branch: main
+    head: 3eba32106bedfd28d2f07d6ed6cca25555d2ab57
+    declared_visibility: public
+    current_remote_visibility: public
+    is_fork: true
+    accessible: true
+    worktree_clean: true
+  mihkel:
+    remote: https://github.com/hannosirkel/mihkel.git
+    local_path: ~/app/mihkel
+    default_branch: main
+    head: fa0dd76fe0fb71d00ff1829005370ca9bbd8c7ca
+    declared_visibility: public
+    current_remote_visibility: public
+    accessible: true
+    worktree_clean: true
+  ai-portal:
+    remote: https://github.com/hannosirkel/ai-portal.git
+    local_path: ~/app/ai-portal
+    default_branch: null
+    head: null
+    declared_visibility: public
+    current_remote_visibility: public
+    accessible: true
+    worktree_clean: true
+    note: remote and local main are unborn; no commits exist
+  entpass:
+    remote: https://github.com/hannosirkel/entpass.git
+    local_path: ~/app/entpass
+    default_branch: main
+    head: 149bc56f2aa3df168846de73d91a58c6ae107938
+    declared_visibility: private
+    current_remote_visibility: private
+    accessible: true
+    worktree_clean: true
+
+worktrees:
+  robobook-audit:
+    path: ~/app/.worktrees/robobook-audit
+    kind: read-only-clone
+    created_by: this-initiative
+    purpose: audit robobook, which has no primary local checkout
+
+pre_existing_worktrees_not_owned_here:
+  - path: ~/app/.worktrees/orange/smtp-tls-servername
+    repository: orange
+    branch: fix/plepic-smtp-tls-servername
+  - path: ~/app/.worktrees/orange/smtp-tls-servername/inventory
+    repository: orange-inventory
+    branch: fix/plepic-smtp-tls-servername-inventory
+
+skills_commit: null
+explicit_skill_invocations:
+  - skill: superpowers:executing-plans
+    at: "2026-08-21T21:38:00Z"
+    purpose: framing for executing a written contract
+
+completed_steps:
+  - phase-0-safe-startup
+  - phase-1-discovery-and-synthesis
+
+open_prs: []
+
+blockers: []
+
+operator_action_required: gate-1-approval-of-resolved-plan

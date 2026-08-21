@@ -1,0 +1,520 @@
+# Migration map (§8.2).
+#
+# One entry per proposed move or reduction. Nothing is edited in a governed
+# repository before Gate 1 approves this file.
+#
+# action values:
+#   centralize-and-generate-local-baseline  the text becomes a central standard;
+#                                           the local file keeps a generated
+#                                           managed section and its own rules
+#   centralize-and-link                     the text becomes a central standard;
+#                                           the local file links it
+#   reduce-and-link                         the local file keeps a short local
+#                                           form and links the central standard
+#   relocate-local                          the text stays in its repository but
+#                                           moves to the §5.10 layout
+#   keep                                    the text stays where it is, unchanged
+#   generate                                the file becomes a generated artifact
+#   decide                                  needs an explicit decision record
+
+schema_version: 1
+
+items:
+
+  # ---------------------------------------------------------------- orange ---
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Worktrees (lines 106-159)"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: universe-wide-standard
+    action: centralize-and-generate-local-baseline
+    target_path: standards/agent-operation.md
+    local_replacement: >-
+      Managed baseline carries the ~/app/.worktrees/<repo>/<task> rule. The
+      Orange-specific parts stay local: the .venv symlink, the nested inventory
+      worktree, and the slash-less ignore entries.
+    duplicate_of: orange-inventory/AGENTS.md "Worktrees"
+    risk: medium
+    active_reference_risk: medium
+    note: >-
+      Another session's worktree currently lives at
+      ~/app/.worktrees/orange/smtp-tls-servername. The rule must not change
+      meaning, only location.
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Skills and Superpowers, Subagent delegation (lines 161-299)"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: universe-wide-standard
+    action: centralize-and-link
+    target_path: standards/agent-operation.md
+    local_replacement: link only
+    duplicate_of: orange-inventory/AGENTS.md "Skills and subagents"
+    risk: low
+    active_reference_risk: low
+    note: >-
+      139 lines, none of it Orange-specific. It is the single largest source of
+      the 481-line AGENTS.md that §5.12 names as the case in point.
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Multi-agent safety (lines 431-439)"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: universe-wide-standard
+    action: centralize-and-generate-local-baseline
+    target_path: standards/agent-operation.md
+    local_replacement: managed baseline
+    duplicate_of: orange-inventory/AGENTS.md "Multi-agent safety"
+    risk: low
+    active_reference_risk: low
+    note: >-
+      Says worktrees live under <repo>/.worktrees/, contradicting the same
+      file's Worktrees section. Resolve to ~/app/.worktrees/<repo>/<task>.
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Commands (lines 7-65)"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: repository-specific-current-truth
+    action: relocate-local
+    target_path: orange:docs/current/commands.md
+    local_replacement: >-
+      AGENTS.md names bash scripts/validate and the two bootstrap commands, then
+      links the catalogue.
+    risk: low
+    active_reference_risk: low
+    note: §5.12 names this move explicitly.
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Review Scope & Cutoff (lines 456-481)"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: universe-wide-standard
+    action: centralize-and-link
+    target_path: standards/code-quality.md
+    local_replacement: link only
+    duplicate_of: plepic/AGENTS.md "Review cutoff", servitium/AGENTS.md "Review cutoff"
+    risk: low
+    active_reference_risk: low
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Security (lines 398-413)"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: repository-specific-current-truth
+    action: reduce-and-link
+    target_path: standards/security.md
+    local_replacement: >-
+      The generic secret rules centralize. The Orange-specific rules stay:
+      publication-gate, no_log, the .keys boundary, SSH and exposure policy.
+    risk: medium
+    active_reference_risk: low
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Testing (lines 441-454)"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: uncertain
+    action: reduce-and-link
+    target_path: standards/code-quality.md
+    local_replacement: >-
+      The general rule — minimum testing that demonstrates behavior, no coverage
+      chasing — centralizes. The Ansible-specific rule, ending on one changed=0
+      reconciliation, stays local.
+    risk: low
+    active_reference_risk: low
+
+  - source_repo: orange
+    source_path: AGENTS.md
+    source_section: "Architecture, Current platform, Key design decisions, Ansible conventions, Deployment workflow, Repository layout, Two repositories"
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: repository-specific-current-truth
+    action: keep
+    target_path: orange:AGENTS.md
+    local_replacement: unchanged, trimmed only where it restates docs/current/
+    risk: low
+    active_reference_risk: low
+    note: >-
+      Ansible conventions are a candidate for standards/languages/ansible.md.
+      They are Orange's, not the universe's — orange-inventory has no roles.
+      Keep local; the language standard links to them as the worked example.
+
+  - source_repo: orange
+    source_path: docs/AGENTS.md
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: universe-wide-standard
+    action: centralize-and-link
+    target_path: standards/documentation.md
+    local_replacement: >-
+      Delete. The §5.10 layout, the current/decisions/issues/working semantics,
+      the upkeep rule, and the exclusions are all universe-wide. Orange keeps
+      only its per-file index, which moves into docs/current/README.md.
+    duplicate_of: servitium/docs/AGENTS.md, mihkel/docs/AGENTS.md
+    risk: medium
+    active_reference_risk: low
+    note: >-
+      Three near-identical copies across three repositories. This is the
+      clearest §5.4 unmanaged duplication in the universe.
+
+  - source_repo: orange
+    source_path: docs/CLAUDE.md
+    source_commit: 4d052d3b3f9f7b7dd3f2229ed1fca41c810ad43d
+    classification: stale-or-conflicting-duplication
+    action: decide
+    target_path: null
+    local_replacement: delete
+    risk: low
+    active_reference_risk: low
+    note: >-
+      A nested CLAUDE.md pointing at a docs/AGENTS.md that is being removed.
+      §5.10 keeps root documents few; a second pointer inside docs/ has no
+      reader once the file it points at is gone.
+
+  # ------------------------------------------------------ orange-inventory ---
+
+  - source_repo: orange-inventory
+    source_path: AGENTS.md
+    source_section: "Worktrees, Skills and subagents, Multi-agent safety"
+    source_commit: 2983860328f8ea3fc9c969e0253bce9ecd7a361f
+    classification: stale-or-conflicting-duplication
+    action: reduce-and-link
+    target_path: standards/agent-operation.md
+    local_replacement: >-
+      Managed baseline plus the one genuinely local rule: this repository nests
+      inside the public worktree as a real worktree, never a symlink, because
+      scripts/activate resolves it with pwd -P.
+    risk: medium
+    active_reference_risk: medium
+
+  - source_repo: orange-inventory
+    source_path: AGENTS.md
+    source_section: "What this repository is, Repository layout, Security, Change order, Documentation"
+    source_commit: 2983860328f8ea3fc9c969e0253bce9ecd7a361f
+    classification: repository-specific-current-truth
+    action: keep
+    target_path: orange-inventory:AGENTS.md
+    local_replacement: unchanged
+    risk: low
+    active_reference_risk: low
+    note: >-
+      The two-repository change order is the load-bearing local rule. Do not
+      centralize it; only these two repositories have it.
+
+  - source_repo: orange-inventory
+    source_path: docs/working/2026-08-08-legacy-vm-shop/
+    source_commit: 2983860328f8ea3fc9c969e0253bce9ecd7a361f
+    classification: active-working-state
+    action: keep
+    target_path: null
+    local_replacement: register by link in universe/repositories.yaml only
+    risk: high
+    active_reference_risk: high
+    note: >-
+      §5.7. resume-state.md, journal.md, decisions.md, and ledger.md are another
+      orchestrator's resume path. Read-only. Do not relocate, reformat, or
+      rename. Registered under notable_local_work.
+
+  - source_repo: orange-inventory
+    source_path: docs/
+    source_section: "recovery.md, platform.md, operations.md, recovery-evidence.md"
+    source_commit: 2983860328f8ea3fc9c969e0253bce9ecd7a361f
+    classification: private-environment-state
+    action: relocate-local
+    target_path: orange-inventory:docs/current/
+    local_replacement: >-
+      Move the three current-state files under docs/current/. Leave
+      recovery-evidence.md where it is; it is append-only dated evidence, not
+      current state, and moving it breaks references.
+    risk: medium
+    active_reference_risk: medium
+    note: >-
+      Needs a grep for inbound references across orange and orange-inventory
+      before the move. If any active working plan references these paths,
+      downgrade to `keep`.
+
+  # --------------------------------------------------------------- plepic ---
+
+  - source_repo: plepic
+    source_path: AGENTS.md
+    source_section: "Workflow, Testing, Review cutoff"
+    source_commit: 2c82e916a78dadc5b71d477338a4b4b8b5bb610e
+    classification: universe-wide-standard
+    action: reduce-and-link
+    target_path: standards/agent-operation.md, standards/code-quality.md
+    local_replacement: managed baseline plus the local validate command
+    risk: low
+    active_reference_risk: medium
+    note: >-
+      The primary checkout is on feat/stripe-payment-methods with active
+      transactional-email work. Branch from origin/main in an isolated worktree.
+
+  - source_repo: plepic
+    source_path: AGENTS.md
+    source_section: "Toolchain, Architecture, Security and scope"
+    source_commit: 2c82e916a78dadc5b71d477338a4b4b8b5bb610e
+    classification: repository-specific-current-truth
+    action: keep
+    target_path: plepic:AGENTS.md
+    local_replacement: unchanged
+    risk: low
+    active_reference_risk: low
+    note: >-
+      The TypeScript 5.9 versus 7.x pin rationale is exactly the local operating
+      truth §5.1 keeps local. The Architecture section is stale — it says
+      backend/ is "not yet present" and storefront/ is a placeholder; both
+      exist. Correct it in wave 1 as a documentation fix, not a refactor.
+
+  - source_repo: plepic
+    source_path: docs/superpowers/
+    source_commit: 2c82e916a78dadc5b71d477338a4b4b8b5bb610e
+    classification: active-working-state
+    action: decide
+    target_path: plepic:docs/working/
+    local_replacement: >-
+      §5.10 names docs/working/. Orange's convention ignores docs/superpowers/
+      and routes such artifacts to the private inventory. plepic tracks them.
+      One of the two must give.
+    risk: medium
+    active_reference_risk: high
+    note: >-
+      2026-08-21-transactional-email-lifecycle.md is active. Defer the move
+      until it completes; register the path and decide the convention now.
+
+  # ------------------------------------------------------------ servitium ---
+
+  - source_repo: servitium
+    source_path: docs/AGENTS.md
+    source_commit: 75d26531521075b05d083dc7695a84828a52efbb
+    classification: stale-or-conflicting-duplication
+    action: centralize-and-link
+    target_path: standards/documentation.md
+    local_replacement: delete
+    duplicate_of: orange/docs/AGENTS.md, mihkel/docs/AGENTS.md
+    risk: low
+    active_reference_risk: low
+
+  - source_repo: servitium
+    source_path: docs/CLAUDE.md
+    source_commit: 75d26531521075b05d083dc7695a84828a52efbb
+    classification: stale-or-conflicting-duplication
+    action: decide
+    target_path: null
+    local_replacement: delete
+    risk: low
+    active_reference_risk: low
+
+  - source_repo: servitium
+    source_path: AGENTS.md
+    source_section: "Workflow, Testing, Review cutoff, Documentation"
+    source_commit: 75d26531521075b05d083dc7695a84828a52efbb
+    classification: universe-wide-standard
+    action: reduce-and-link
+    target_path: standards/agent-operation.md, standards/code-quality.md
+    local_replacement: managed baseline plus the local validate command
+    risk: low
+    active_reference_risk: low
+
+  - source_repo: servitium
+    source_path: AGENTS.md
+    source_section: "Architecture, Security and scope"
+    source_commit: 75d26531521075b05d083dc7695a84828a52efbb
+    classification: repository-specific-current-truth
+    action: keep
+    target_path: servitium:AGENTS.md
+    local_replacement: unchanged
+    risk: low
+    active_reference_risk: low
+
+  # --------------------------------------------------------------- mihkel ---
+
+  - source_repo: mihkel
+    source_path: docs/AGENTS.md
+    source_commit: fa0dd76fe0fb71d00ff1829005370ca9bbd8c7ca
+    classification: stale-or-conflicting-duplication
+    action: centralize-and-link
+    target_path: standards/documentation.md
+    local_replacement: >-
+      Delete, except the paragraph explaining how the root instruction files
+      relate to docs/current/. That is local truth and moves into AGENTS.md.
+    duplicate_of: orange/docs/AGENTS.md, servitium/docs/AGENTS.md
+    risk: low
+    active_reference_risk: low
+
+  - source_repo: mihkel
+    source_path: "ACCESS.md, IDENTITY.md, SOUL.md, WORKFLOWS.md, PROJECT_STATE.md, TOOLS.md, USER.md, MEMORY.md, DECISIONS.md, HEARTBEAT.md"
+    source_commit: fa0dd76fe0fb71d00ff1829005370ca9bbd8c7ca
+    classification: repository-specific-current-truth
+    action: decide
+    target_path: mihkel:docs/current/
+    local_replacement: >-
+      Ten root documents against §5.10's "root documents stay few". They are an
+      agent's own operating identity, read at runtime, not documentation about
+      the repository. Proposed: keep them, and record the exception as a
+      decision. Do not restructure a running agent's memory to satisfy a layout
+      rule.
+    risk: high
+    active_reference_risk: high
+
+  - source_repo: mihkel
+    source_path: AGENTS.md
+    source_commit: fa0dd76fe0fb71d00ff1829005370ca9bbd8c7ca
+    classification: repository-specific-current-truth
+    action: reduce-and-link
+    target_path: standards/agent-operation.md
+    local_replacement: managed baseline plus the local rules, which are almost all genuinely local
+    risk: low
+    active_reference_risk: low
+
+  # -------------------------------------------------------------- nomadtty ---
+
+  - source_repo: nomadtty
+    source_path: "CLAUDE.md, .claude/rules/*, .agents/rules/*, gemini/GEMINI.md, .github/copilot-instructions.md, docs/ai/tool-sync-policy.md"
+    source_commit: 3eba32106bedfd28d2f07d6ed6cca25555d2ab57
+    classification: stale-or-conflicting-duplication
+    action: decide
+    target_path: nomadtty:AGENTS.md, nomadtty:docs/
+    local_replacement: >-
+      Reconcile, do not delete (§14). AGENTS.md becomes the single authority
+      with a managed section; CLAUDE.md becomes the standard pointer. The
+      .claude/rules/ content moves into AGENTS.md or docs/current/. The
+      self-updating "dynamic file rule" and the four-way tool sync policy are
+      removed: they exist to keep four rival files in agreement, and there is
+      one file afterwards.
+    risk: high
+    active_reference_risk: medium
+    note: The largest single wave-1 job. Needs its own decision record.
+
+  - source_repo: nomadtty
+    source_path: docs/ai/mistakes.md
+    source_commit: 3eba32106bedfd28d2f07d6ed6cca25555d2ab57
+    classification: repository-specific-current-truth
+    action: relocate-local
+    target_path: nomadtty:docs/current/mistakes.md
+    local_replacement: keep every entry; §14 names this content as worth preserving
+    risk: medium
+    active_reference_risk: medium
+    note: 843 lines of hard-won local operating truth. Content is untouched; only the path changes.
+
+  - source_repo: nomadtty
+    source_path: docs/ai/decision-log.md
+    source_commit: 3eba32106bedfd28d2f07d6ed6cca25555d2ab57
+    classification: repository-specific-decision
+    action: decide
+    target_path: nomadtty:docs/decisions/
+    local_replacement: >-
+      1133 lines in one file against §5.10's numbered per-decision records.
+      Proposed: keep the log as docs/current/decision-log.md and start numbered
+      MADR records for new decisions. Splitting 1133 lines of existing log into
+      individual ADRs is a rewrite, and §1 forbids bulk rewriting.
+    risk: medium
+    active_reference_risk: low
+
+  - source_repo: nomadtty
+    source_path: docs/ai/change-trace.md
+    source_commit: 3eba32106bedfd28d2f07d6ed6cca25555d2ab57
+    classification: completed-historical-evidence
+    action: decide
+    target_path: null
+    local_replacement: >-
+      1166 lines of implementation history. §5.10 says current/ does not narrate
+      history and Git already holds it. Proposed: delete, after confirming no
+      durable fact lives only here. Needs the operator's call.
+    risk: medium
+    active_reference_risk: low
+
+  - source_repo: nomadtty
+    source_path: "docs/ai/project-overview.md, engineering-rules.md, session-start-checklist.md, commit-log-guidance.md"
+    source_commit: 3eba32106bedfd28d2f07d6ed6cca25555d2ab57
+    classification: repository-specific-current-truth
+    action: relocate-local
+    target_path: nomadtty:docs/current/, nomadtty:AGENTS.md
+    local_replacement: >-
+      project-overview.md and engineering-rules.md become docs/current/.
+      session-start-checklist.md and commit-log-guidance.md fold into AGENTS.md
+      or are dropped where the managed baseline already says it.
+    risk: medium
+    active_reference_risk: low
+
+  - source_repo: nomadtty
+    source_path: .claude/skills/
+    source_commit: 3eba32106bedfd28d2f07d6ed6cca25555d2ab57
+    classification: uncertain
+    action: decide
+    target_path: null
+    local_replacement: >-
+      Four repository-local Claude skills. §12 keeps reusable skills in
+      myskills. These are not reusable; they encode this repository's workflow.
+      Proposed: keep as a tool-specific adapter, recorded in the delta docs.
+    risk: low
+    active_reference_risk: low
+
+  # ------------------------------------------------------------- robobook ---
+
+  - source_repo: robobook
+    source_path: "AGENTS.md, CLAUDE.md"
+    source_commit: 1d31cc83b2b4a3b41f1bdf8ff931479b2dd6b439
+    classification: stale-or-conflicting-duplication
+    action: reduce-and-link
+    target_path: robobook:AGENTS.md
+    local_replacement: >-
+      CLAUDE.md is a symlink to AGENTS.md, not a pointer document. Under §7.1 it
+      becomes the generated pointer file. AGENTS.md keeps its local content and
+      gains the managed section.
+    risk: low
+    active_reference_risk: low
+    note: >-
+      A symlink cannot drift, so replacing it is a small loss. See
+      open-questions.md Q4.
+
+  - source_repo: robobook
+    source_path: "plans/, .claude/skills/, .opencode/skills/"
+    source_commit: 1d31cc83b2b4a3b41f1bdf8ff931479b2dd6b439
+    classification: uncertain
+    action: decide
+    target_path: robobook:docs/working/
+    local_replacement: >-
+      plans/ maps onto docs/working/. .claude/skills/ and .opencode/skills/
+      partially mirror skills/ — same skill names, but each omits the agents/
+      and references/ subdirectories. That is drift, not a generated adapter.
+      Propose one authority plus a generator, or symlinks, after reading how
+      the skills are loaded.
+    risk: medium
+    active_reference_risk: medium
+
+  # ----------------------------------------------- every repository, shared ---
+
+  - source_repo: "orange, orange-inventory, plepic, servitium, mihkel"
+    source_path: CLAUDE.md
+    source_commit: multiple
+    classification: generated-local-baseline
+    action: generate
+    target_path: templates/claude-md-pointer.md
+    local_replacement: generated pointer, identical everywhere
+    risk: low
+    active_reference_risk: low
+    note: >-
+      Five repositories already carry the same two-sentence pointer, differing
+      only in line wrapping. Adopt the existing wording as the template rather
+      than inventing new text.
+
+  - source_repo: "all governed repositories"
+    source_path: AGENTS.md
+    source_commit: multiple
+    classification: generated-local-baseline
+    action: generate
+    target_path: templates/agent-baseline.md
+    local_replacement: managed section between markers
+    risk: low
+    active_reference_risk: low
+
+  - source_repo: "deploys, entpass, ai-portal, architecture"
+    source_path: "AGENTS.md, CLAUDE.md"
+    source_commit: multiple
+    classification: generated-local-baseline
+    action: generate
+    target_path: null
+    local_replacement: new files; none of these four has either today
+    risk: low
+    active_reference_risk: low
+    note: entpass and architecture have no README.md either.

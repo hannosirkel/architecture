@@ -1,0 +1,298 @@
+# Draft managed-universe catalogue.
+#
+# This is the Gate 1 proposal. On approval it becomes universe/repositories.yaml
+# and this file is deleted rather than kept as a second copy (§5.2).
+#
+# `languages` is populated from evidence, not from expectation (§7.1). The
+# evidence for each entry is in evidence/language-evidence.md.
+
+schema_version: 1
+
+repositories:
+  architecture:
+    description: Engineering governance for the managed universe.
+    profile: governance-private
+    remote: https://github.com/hannosirkel/architecture.git
+    default_branch: main
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: [python]
+    languages_note: >-
+      Declared ahead of evidence. The tooling/universe CLI lands in Phase 2,
+      before any repository enters wave 2. Re-check at Phase 6.
+    supports_rulesets: false
+    owns:
+      - universe catalogue and repository relationships
+      - cross-repository standards and profiles
+      - cross-repository decisions and initiative state
+      - shared templates and conformance tooling
+      - the universe audit skill
+    does_not_own:
+      - application source
+      - deployment state
+      - secrets or inventory
+      - reusable skills, other than the audit skill
+
+  orange:
+    description: Reusable public-safe infrastructure implementation for Orange.
+    profile: platform-public-ready
+    remote: https://github.com/hannosirkel/orange.git
+    default_branch: main
+    declared_visibility: public
+    current_remote_visibility: private
+    public_safe_required: true
+    publication_status: currently-private
+    languages: [ansible, python, shell]
+    supports_rulesets: false
+    owns:
+      - Ansible roles, playbooks, and reusable defaults
+      - Orange platform current-state documentation and ADRs
+      - the statuspage application and Wazuh Kustomize sources
+      - the reserved-value inventory-example mirror
+      - controller tooling and the publication gate
+    does_not_own:
+      - live private variables or inventory
+      - secrets
+      - cross-repository governance
+
+  orange-inventory:
+    description: Private live inventory and operating state for Orange.
+    profile: inventory-private
+    remote: https://github.com/hannosirkel/orange-inventory.git
+    default_branch: main
+    local_checkout_note: checked out at orange/inventory; a separate repository, not a submodule
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: [ansible, shell]
+    supports_rulesets: false
+    owns:
+      - hosts, group and host variables, DNS desired state
+      - the runnable RouterOS artifact
+      - live platform, operations, and recovery documentation
+      - recovery evidence
+      - Orange-local working plans
+    does_not_own:
+      - secrets
+      - reusable roles or generic procedures
+      - cross-repository initiatives
+
+  deploys:
+    description: Public GitOps desired state reconciled by Argo CD.
+    profile: gitops-public
+    remote: https://github.com/hannosirkel/deploys.git
+    default_branch: main
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    visibility_reason: >-
+      Public because the GitHub plan does not offer private Argo CD source
+      access. An operator decision, already made.
+    languages: [shell]
+    languages_note: >-
+      The contract illustrates deploys as languageless. Evidence contradicts it:
+      plepic/tests/manifests.sh, servitium/tests/manifests.sh, and
+      .githooks/pre-commit are bash and carry the manifest contract assertions.
+    supports_rulesets: true
+    owns:
+      - deployable desired state per application root
+      - promotion and rollback rules
+      - manifest validation
+    does_not_own:
+      - secret values of any kind
+      - application source
+      - Argo CD Application objects, which orange owns
+
+  myskills:
+    description: Reusable executable agent skills and plugins.
+    profile: skills-private
+    remote: https://github.com/hannosirkel/myskills.git
+    default_branch: main
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: candidate
+    languages: [shell]
+    supports_rulesets: false
+    owns:
+      - reusable skills and their wrappers
+      - the installer and its tests
+      - skill catalogue and installation procedure
+    does_not_own:
+      - project plans
+      - universe governance
+      - initiative state
+
+  plepic:
+    description: plepicgames.com Medusa store and storefront.
+    profile: application-public
+    remote: https://github.com/hannosirkel/plepic.git
+    default_branch: main
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    languages: [typescript, shell]
+    supports_rulesets: true
+    owns:
+      - storefront and backend source, content, and design tokens
+      - store architecture, tests, and release procedure
+      - image build and promotion into deploys
+    does_not_own:
+      - Kubernetes manifests, which deploys owns
+      - Argo CD Application objects, which orange owns
+      - secrets or per-environment values
+
+  robobook:
+    description: Bookkeeping workflow for Plepic Games OÜ.
+    profile: application-public
+    remote: https://github.com/hannosirkel/robobook.git
+    default_branch: main
+    local_checkout_note: no primary local checkout; audited from ~/app/.worktrees/robobook-audit
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    languages: [python]
+    supports_rulesets: true
+    owns:
+      - bookkeeping skills and their Python implementations
+      - schemas, templates, and reference artifacts
+      - its own tests
+    does_not_own:
+      - real company data, customer data, or credentials
+      - live accounting state
+
+  servitium:
+    description: servitium.future.ee source and application documentation.
+    profile: application-public
+    remote: https://github.com/hannosirkel/servitium.git
+    default_branch: main
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    languages: [typescript, shell]
+    supports_rulesets: true
+    owns:
+      - the Node server and the three frontend applications
+      - local architecture, ADRs, and tests
+      - image build and promotion into deploys
+    does_not_own:
+      - Kubernetes manifests, which deploys owns
+      - deployment credentials
+
+  nomadtty:
+    description: Maintained fork of NomadTTY.
+    profile: fork-public
+    remote: https://github.com/hannosirkel/nomadtty.git
+    default_branch: main
+    is_fork: true
+    upstream: https://github.com/nomadtty/nomadtty
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    languages: [typescript, shell]
+    supports_rulesets: true
+    owns:
+      - the local delta from upstream and its rationale
+      - upstream provenance and licence obligations
+      - local build, test, and release procedure
+    does_not_own:
+      - Orange credentials or private host details
+    fork_posture: >-
+      Upstream contribution is not expected. Apply the full governance baseline
+      and record the added files in the delta documentation.
+
+  mihkel:
+    description: OpenClaw-based Mihkel agent operating through Discord.
+    profile: application-public
+    remote: https://github.com/hannosirkel/mihkel.git
+    default_branch: main
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    languages: [typescript, python, shell]
+    supports_rulesets: true
+    owns:
+      - agent identity, prompts, workflows, and skills
+      - n8n workflow generators and their tests
+      - its own durable memory
+    does_not_own:
+      - Discord or provider credentials
+      - the host baseline, which orange manages
+      - private conversation exports
+
+  ai-portal:
+    description: ai.future.ee and its subprojects. Unimplemented.
+    profile: application-public
+    remote: https://github.com/hannosirkel/ai-portal.git
+    default_branch: main
+    default_branch_state: unborn
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    languages: []
+    lifecycle: registered-not-implemented
+    supports_rulesets: true
+    owns:
+      - nothing yet; the product is unimplemented
+    does_not_own:
+      - family identities or group membership
+      - provider keys or OAuth sessions
+      - private infrastructure variables
+
+  entpass:
+    description: EntityPass/LEI concept research and development.
+    profile: research-private
+    remote: https://github.com/hannosirkel/entpass.git
+    default_branch: main
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: []
+    lifecycle: early-research
+    supports_rulesets: false
+    owns:
+      - business-sensitive research and local plans
+    does_not_own:
+      - universe standards
+      - Orange infrastructure state
+
+notable_local_work:
+  - repository: orange-inventory
+    path: docs/working/2026-08-08-legacy-vm-shop
+    status: in_progress
+    canonical_state: local
+    note: >-
+      Large active big-build record. resume-state.md, journal.md, decisions.md,
+      and ledger.md are another orchestrator's resume path. Read-only (§5.7).
+  - repository: orange-inventory
+    path: docs/working/2026-08-08-legacy-vm-mail.md
+    status: in_progress
+    canonical_state: local
+  - repository: orange-inventory
+    path: docs/working/2026-08-08-legacy-vm-web.md
+    status: in_progress
+    canonical_state: local
+  - repository: plepic
+    path: docs/superpowers/plans/2026-08-21-transactional-email-lifecycle.md
+    status: in_progress
+    canonical_state: local
+    note: primary checkout sits on feat/stripe-payment-methods
+  - repository: servitium
+    path: docs/working/mtg-life-counter-implementation.md
+    status: unknown
+    canonical_state: local
+  - repository: entpass
+    path: docs/working
+    status: in_progress
+    canonical_state: local
