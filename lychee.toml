@@ -11,11 +11,11 @@ exclude_path = [
 ]
 
 exclude = [
-  # Every repository in this universe is under this account and five of them
-  # are private. An anonymous checker gets 404 for a private repository that
-  # exists, which is a false failure rather than a finding. The audit checks
-  # these repositories directly, with credentials.
-  "^https://github\\.com/hannosirkel/",
+  # Five repositories are private. An anonymous checker gets 404 for a private
+  # repository that exists, which is a false failure rather than a finding.
+  # Narrow to exactly those five: every public repository's links, including
+  # every standards link the generated baseline carries, is checked for real.
+  "^https://github\\.com/hannosirkel/(architecture|orange|orange-inventory|myskills|entpass)(/|$)",
 ]
 
 # GitHub rate-limits anonymous requests hard enough to make a run flaky.

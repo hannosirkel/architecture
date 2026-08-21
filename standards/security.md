@@ -13,7 +13,9 @@ Never commit a password, token, API key, private key, AppRole SecretID,
 kubeconfig, rendered Kubernetes Secret, recovery JSON, or live export.
 
 A private repository is not a secret store. `orange-inventory`, `architecture`,
-`myskills`, and `entpass` are private for access control, not for secrecy.
+`myskills`, and `entpass` are private because their content is not for
+publication. That is not the same as holding secret values, and none of them
+does.
 
 Credentials live outside every repository, in the ignored `.keys/` directory of
 the Orange checkout or in OpenBao.
@@ -42,7 +44,8 @@ publication_status: published | currently-private | candidate | not-applicable
 ```
 
 `declared_visibility` is the content policy. `current_remote_visibility` is what
-GitHub reports. They may differ, and one repository's do.
+GitHub reports. The two may differ. Today `orange` is the one repository where
+they do.
 
 **A repository with `public_safe_required: true` must pass public-content policy
 even while its GitHub repository is private.** `orange` is declared public and
@@ -122,8 +125,11 @@ pull request to a token.
 `plepic/.github/workflows/deploy-test.yml` and
 `servitium/.github/workflows/deploy-test.yml` use `pull_request_target`
 deliberately. Each has a `gate` job that verifies trusted pull-request metadata
-before any later job checks out the head revision, and each declares
-`permissions: {}` at the top level.
+before any later job checks out the head revision, by pinned SHA.
+
+`plepic` declares `permissions: {}` at the top level. **`servitium` does not**:
+it grants at job level only, so a job added later would inherit the repository
+default rather than nothing. Add the top-level block there.
 
 `zizmor` flags that trigger by default. **This is an accepted, reviewed design.**
 Suppress the finding for these two workflows. Do not restructure either pipeline

@@ -143,6 +143,43 @@ class SyncTests(unittest.TestCase):
         self.assertFalse((self.fixture.repo / "CLAUDE.md").exists())
 
 
+class StandardsLinkTests(unittest.TestCase):
+    """A standard an agent needs is linked where that agent reads."""
+
+    def setUp(self):
+        self.universe = cat.load(ROOT)
+
+    def test_the_baseline_standards_appear_in_every_section(self):
+        for name in self.universe.repositories:
+            section = render.render_baseline(self.universe, name)
+            for document in self.universe.baseline["standards"]:
+                with self.subTest(repo=name, standard=document):
+                    self.assertIn(document, section)
+
+    def test_the_gitops_repository_links_the_gitops_standard(self):
+        """Leaving it owner-facing meant the deploys agent never met it."""
+        self.assertIn(
+            "gitops-and-deployment.md", render.render_baseline(self.universe, "deploys")
+        )
+
+    def test_a_publisher_links_the_gitops_standard_despite_its_profile(self):
+        """plepic and robobook share a profile; only one promotes digests."""
+        self.assertIn(
+            "gitops-and-deployment.md", render.render_baseline(self.universe, "plepic")
+        )
+        self.assertNotIn(
+            "gitops-and-deployment.md", render.render_baseline(self.universe, "robobook")
+        )
+
+    def test_every_linked_standard_exists_and_every_standard_is_linked(self):
+        self.assertEqual([], [str(p) for p in cat.validate(self.universe)])
+
+    def test_an_unknown_standard_is_refused(self):
+        self.universe.baseline["standards"] = ["made-up.md"]
+        with self.assertRaises(cat.UniverseError):
+            render.render_baseline(self.universe, "deploys")
+
+
 class HabitConfigTests(unittest.TestCase):
     """§15.16 and decisions/006 — the coach never scans nothing."""
 
@@ -153,6 +190,31 @@ class HabitConfigTests(unittest.TestCase):
         self.assertIn('plugins = ["generic"]', config)
         self.assertIn("files = [", config)
         self.assertIn('"**/*.md"', config)
+
+    def test_generic_coverage_survives_a_language_plugin(self):
+        """A repository that is mostly Markdown was scanning only its code."""
+        fixture = Fixture(languages=("python",))
+        self.addCleanup(fixture.close)
+        config = render.render_habit_config(fixture.universe, "example")
+        self.assertIn('"**/*.py"', config)
+        self.assertIn('"**/*.md"', config)
+
+    def test_a_language_sensor_is_scoped_to_its_own_language(self):
+        """Widening the root files handed Markdown to ruff: 2592 parse errors."""
+        fixture = Fixture(languages=("python",))
+        self.addCleanup(fixture.close)
+        config = render.render_habit_config(fixture.universe, "example")
+        ruff_block = config.split("[sensors.ruff]")[1].split("[sensors.")[0]
+        self.assertIn('"**/*.py"', ruff_block)
+        self.assertNotIn('"**/*.md"', ruff_block)
+        self.assertIn('"**/*.md"', config.split("[sensors.")[0])
+
+    def test_a_languageless_repository_needs_no_sensor_scoping(self):
+        fixture = Fixture(languages=(), profile="research-private")
+        self.addCleanup(fixture.close)
+        config = render.render_habit_config(fixture.universe, "example")
+        self.assertNotIn("[sensors.ruff]", config)
+        self.assertNotIn("[sensors.eslint]", config)
 
     def test_jscpd_is_disabled_without_an_npm_project(self):
         fixture = Fixture(languages=("shell",), npm_project=False)

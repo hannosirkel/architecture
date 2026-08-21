@@ -112,9 +112,11 @@ recurring cost.
 
 Local content is every non-blank line outside the managed markers. The managed
 section is central policy, so a repository cannot shorten it and is not charged
-for it. Blank lines are not counted: removing the managed section leaves one
-behind, and a count that moved with the marker position would measure an
-artifact rather than content.
+for it.
+
+Blank lines do not count either. Removing the managed section leaves a blank
+line behind. A count that moved with the marker position would measure that
+artifact, not the content.
 
 The ceiling gates the outrage; the target coaches the ideal. A hard failure at
 the ideal length would be met by compressing into ambiguity, which costs more.

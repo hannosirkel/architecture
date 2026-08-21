@@ -19,6 +19,16 @@ from universe_catalogue import (
     load,
 )
 
+STANDARD_TITLES = {
+    "agent-operation.md": "Agent operation",
+    "security.md": "Security",
+    "code-quality.md": "Code quality",
+    "repository-contract.md": "Repository contract",
+    "gitops-and-deployment.md": "GitOps and deployment",
+    "documentation.md": "Documentation",
+    "work-routing.md": "Work routing",
+}
+
 ARCHITECTURE_URL = "https://github.com/hannosirkel/architecture"
 STANDARDS_URL = f"{ARCHITECTURE_URL}/blob/main/standards"
 
@@ -58,6 +68,31 @@ def habit_hooks_package(universe: Universe) -> str:
     return f"habit-hooks[{','.join(sorted(plugins))}]"
 
 
+def standards_lines(universe: Universe, entry: dict) -> str:
+    """The standards bullets for one repository's managed section.
+
+    Order is stable: the universe baseline first, then whatever the profile and
+    the repository add. A repository that promotes images needs the GitOps
+    standard even though its profile does not.
+    """
+    documents = list(universe.baseline.get("standards") or [])
+    profile = universe.profiles.get(entry.get("profile")) or {}
+    for document in (profile.get("standards") or []) + (
+        entry.get("extra_standards") or []
+    ):
+        if document not in documents:
+            documents.append(document)
+
+    lines = []
+    for document in documents:
+        spec = universe.standards.get(document)
+        if spec is None:
+            raise UniverseError(f"not in standards/index.yaml: {document}")
+        title = STANDARD_TITLES.get(document, document)
+        lines.append(f"- [{title}]({STANDARDS_URL}/{document}) — {spec['summary']}")
+    return "\n".join(lines) + "\n"
+
+
 def language_standards_line(universe: Universe, entry: dict) -> str:
     languages = entry.get("languages") or []
     if not languages:
@@ -92,6 +127,7 @@ def render_baseline(universe: Universe, name: str) -> str:
         "current_remote_visibility": entry["current_remote_visibility"],
         "public_safe_required": "yes" if entry["public_safe_required"] else "no",
         "languages_display": ", ".join(languages) if languages else "none",
+        "standards_lines": standards_lines(universe, entry),
         "language_standards_line": language_standards_line(universe, entry),
         "default_branch": entry["default_branch"],
         "public_safety_line": safety,
@@ -119,6 +155,7 @@ def render_habit_config(universe: Universe, name: str) -> str:
 
     plugins: list[str] = []
     files: list[str] = []
+    sensor_scopes: dict[str, list[str]] = {}
     for language in languages:
         spec = universe.languages.get(language)
         if spec is None:
@@ -126,21 +163,22 @@ def render_habit_config(universe: Universe, name: str) -> str:
         plugin = spec.get("habit_plugin")
         if plugin and plugin not in plugins:
             plugins.append(plugin)
-        for pattern in spec.get("habit_files") or []:
+        patterns = spec.get("habit_files") or []
+        for pattern in patterns:
             if pattern not in files:
                 files.append(pattern)
+        for sensor in spec.get("habit_sensors") or []:
+            sensor_scopes[sensor] = patterns
 
     generic_plugin = universe.generic.get("habit_plugin", "generic")
     plugins.append(generic_plugin)
 
-    if not any(
-        (universe.languages.get(language) or {}).get("habit_plugin")
-        for language in languages
-    ):
-        # No language plugin applies, so nothing has declared any files.
-        for pattern in universe.generic.get("fallback_files") or []:
-            if pattern not in files:
-                files.append(pattern)
+    # generic declares no files of its own, so its coverage is always added.
+    # Without this a repository declaring one language scans only that language,
+    # and a languageless one scans nothing at all and reports success.
+    for pattern in universe.generic.get("fallback_files") or []:
+        if pattern not in files:
+            files.append(pattern)
 
     lines = [f"# {line}" for line in GENERATED_NOTICE.format(repo=name).splitlines()]
     lines.append("")
@@ -149,6 +187,17 @@ def render_habit_config(universe: Universe, name: str) -> str:
     for pattern in files:
         lines.append(f'  "{pattern}",')
     lines.append("]")
+
+    # A language sensor is scoped to its own language. The root `files` list is
+    # the union, so line-count and jscpd see everything; without these overrides
+    # ruff would be handed Markdown and report thousands of parse errors.
+    for sensor, patterns in sorted(sensor_scopes.items()):
+        lines.append("")
+        lines.append(f"[sensors.{sensor}]")
+        lines.append("files = [")
+        for pattern in patterns:
+            lines.append(f'  "{pattern}",')
+        lines.append("]")
 
     max_lines = universe.generic.get("max_file_lines")
     if max_lines:

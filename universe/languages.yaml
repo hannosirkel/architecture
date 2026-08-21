@@ -14,6 +14,10 @@ languages:
   typescript:
     standard: standards/languages/typescript.md
     habit_plugin: typescript
+    # The plugin's sensor names, so the generated config can scope each one to
+    # this language's files. Without that, a repository whose root `files` also
+    # cover Markdown hands Markdown to eslint.
+    habit_sensors: [eslint, knip, comment]
     habit_files:
       # The plugin's own default is **/*.ts and **/*.tsx. Three repositories
       # declare typescript for Node.js JavaScript and hold no .ts file, so the
@@ -28,20 +32,17 @@ languages:
       - "!**/dist/**"
       - "!**/build/**"
     linters: [eslint]
-    static_analysis: [tsc]
-    baseline: eslint bulk suppressions
 
   python:
     standard: standards/languages/python.md
     habit_plugin: python
+    habit_sensors: [ruff, deptry]
     habit_files:
       - "**/*.py"
       - "!**/.venv/**"
       - "!**/venv/**"
       - "!**/site-packages/**"
     linters: [ruff]
-    static_analysis: [ruff]
-    baseline: "ruff check --add-noqa"
 
   ansible:
     standard: standards/languages/ansible.md
@@ -52,8 +53,6 @@ languages:
       - "!**/.venv/**"
       - "!**/node_modules/**"
     linters: [ansible-lint, yamllint]
-    static_analysis: []
-    baseline: "ansible-lint --generate-ignore"
 
   shell:
     standard: standards/languages/shell.md
@@ -62,8 +61,6 @@ languages:
       - "**/*.sh"
       - "**/*.bats"
     linters: [shellcheck]
-    static_analysis: []
-    baseline: narrow shellcheck disable directives
 
 # Applied to every repository, including those declaring no language.
 generic:

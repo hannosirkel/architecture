@@ -29,10 +29,6 @@ from universe_render import (
 AGENTS_SOFT_TARGET = 60
 AGENTS_HARD_CEILING = 150
 
-# The two cases standards/agent-operation.md whitelists, and nothing else.
-DIRECT_PUSH_WHITELIST_PATHS = ("initiatives/",)
-
-
 # ----------------------------------------------------------------- audit ---
 
 
@@ -226,7 +222,8 @@ def _audit_documentation(universe, name, entry, path) -> list[Problem]:
     problems = []
     profile = universe.profiles.get(entry.get("profile")) or {}
 
-    for expected in profile.get("expected_docs") or []:
+    unimplemented = entry.get("lifecycle") == "registered-not-implemented"
+    for expected in [] if unimplemented else (profile.get("expected_docs") or []):
         target = path / expected
         if not target.exists():
             problems.append(
@@ -259,27 +256,32 @@ def _audit_documentation(universe, name, entry, path) -> list[Problem]:
                     Problem(
                         name,
                         "bad-decision-record",
-                        f"{record.relative_to(path)} has no number, date, "
-                        f"and status header",
+                        f"{record.relative_to(path)} declares no status, so it "
+                        f"reads as current-state prose filed as a decision",
                         "use templates/decision.md",
                     )
                 )
     return problems
 
 
-_DECISION_TITLE = re.compile(r"^#\s*\d+\.\s+\S")
-_DECISION_DATE = re.compile(r"(?mi)^-\s+\*\*date:\*\*\s+\d{4}-\d{2}-\d{2}\s*$")
-_DECISION_STATUS = re.compile(r"(?mi)^-\s+\*\*status:\*\*\s+\S")
+# A status, in any of the forms this universe already uses: the central
+# template's `- **Status:** accepted`, `**Status:** Accepted`, `Status: Accepted`,
+# or a `## Status` section.
+_DECISION_STATUS = re.compile(
+    r"(?mi)^(?:-\s+)?(?:\*\*)?status(?:\*\*)?\s*:\s*\S|^#{1,3}\s+status\s*$"
+)
 
 
 def _has_decision_header(text: str) -> bool:
-    head = text.lstrip()
-    first = head.splitlines()[0] if head.splitlines() else ""
-    return bool(
-        _DECISION_TITLE.match(first)
-        and _DECISION_DATE.search(text)
-        and _DECISION_STATUS.search(text)
-    )
+    """A decision record declares a status.
+
+    The check is deliberately not the full template. Three older formats
+    predate this standard, an accepted decision is append-only, and retrofitting
+    26 records would be the bulk rewriting the framework forbids. What it does
+    catch is the failure the standard names: current-state prose filed as a
+    decision, which declares no status at all.
+    """
+    return bool(_DECISION_STATUS.search(text))
 
 
 _SUFFIX_EVIDENCE = {
@@ -381,15 +383,54 @@ def _audit_languages(universe, name, entry, path) -> list[Problem]:
     return problems
 
 
+def _resolve_ref(path: Path, branch: str) -> str:
+    """Prefer the remote ref.
+
+    The audit skill fetches without pulling, and forbids pulling, so a local
+    branch can be arbitrarily far behind what the audit is meant to describe.
+    """
+    remote = f"origin/{branch}"
+    try:
+        subprocess.run(
+            ["git", "-C", str(path), "rev-parse", "--verify", "--quiet", remote],
+            capture_output=True,
+            check=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return branch
+    return remote
+
+
+# GitHub's squash-merge default subject. A squash merge is a single-parent
+# commit, so nothing structural distinguishes it from a direct push.
+_SQUASH_MERGE = re.compile(r"\(#\d+\)\s*$")
+
+
 def _audit_default_branch_commits(name, entry, path, limit: int = 50) -> list[Problem]:
     """Report commits that reached the default branch without a pull request.
 
     Five private repositories cannot enforce this through a ruleset, so the rule
     is the enforcement and this is the check. See standards/security.md.
+
+    Two exception shapes are read from the catalogue, and nothing is hard-coded:
+    `direct_push.allowed_paths` for a repository whose durable coordination
+    state commits directly, and `direct_push.allowed_subject_pattern` for one
+    that receives automated pushes.
+
+    Known limit: a rebase merge leaves no metadata at all, so it reads as a
+    direct push. The manual audit resolves that against the GitHub API.
     """
     branch = entry.get("default_branch")
     if not branch:
         return []
+    ref = _resolve_ref(path, branch)
+
+    exception = entry.get("direct_push") or {}
+    allowed_paths = tuple(exception.get("allowed_paths") or ())
+    pattern = exception.get("allowed_subject_pattern")
+    allowed_subject = re.compile(pattern) if pattern else None
+    baseline = _baseline_shas(path, exception.get("baseline_commit"))
+
     try:
         out = subprocess.run(
             [
@@ -399,8 +440,8 @@ def _audit_default_branch_commits(name, entry, path, limit: int = 50) -> list[Pr
                 "log",
                 "--first-parent",
                 f"--max-count={limit}",
-                "--format=%h%x1f%p%x1f%s%x1f%D",
-                branch,
+                "--format=%h%x1f%p%x1f%s",
+                ref,
             ],
             capture_output=True,
             text=True,
@@ -410,50 +451,82 @@ def _audit_default_branch_commits(name, entry, path, limit: int = 50) -> list[Pr
         return []
 
     offenders = []
+    baselined = 0
     for line in out.splitlines():
         parts = line.split("\x1f")
         if len(parts) < 3:
             continue
         sha, parents, subject = parts[0], parts[1].split(), parts[2]
+        if sha in baseline:
+            baselined += 1
+            continue
         if len(parents) > 1:
             continue  # a merge commit is a merged pull request
-        if subject.startswith("Merge pull request"):
+        if not parents:
+            continue  # a root commit predates any branch
+        if _SQUASH_MERGE.search(subject):
+            continue  # squash-merged pull request
+        if allowed_subject and allowed_subject.search(subject):
             continue
-        if _is_whitelisted_direct_push(path, sha):
+        if allowed_paths and _only_touches(path, sha, allowed_paths):
             continue
         offenders.append(f"{sha} {subject[:60]}")
 
     if not offenders:
         return []
+    if entry.get("supports_rulesets"):
+        fix = "enable the pull-request rule in this repository's ruleset"
+    else:
+        fix = (
+            "this repository cannot carry a ruleset on the current plan, so the "
+            "rule is the enforcement; see standards/agent-operation.md"
+        )
     return [
         Problem(
             name,
             "direct-push",
-            f"{len(offenders)} of the last {limit} commits reached `{branch}` "
-            f"without a pull request, e.g. {offenders[0]}",
-            "branch and open a pull request; see standards/agent-operation.md",
+            f"{len(offenders)} of the last {limit} commits reached `{ref}` "
+            f"without a pull request, e.g. {offenders[0]}"
+            + (f" ({baselined} older commits baselined)" if baselined else ""),
+            fix,
         )
     ]
 
 
-def _is_whitelisted_direct_push(path: Path, sha: str) -> bool:
-    """Durable initiative state, and an empty repository's first commit."""
+def _only_touches(path: Path, sha: str, prefixes: tuple[str, ...]) -> bool:
+    """True when every path a commit changed sits under one of `prefixes`."""
     try:
         changed = subprocess.run(
-            ["git", "-C", str(path), "show", "--name-only", "--format=%P", sha],
+            ["git", "-C", str(path), "show", "--name-only", "--format=", sha],
             capture_output=True,
             text=True,
             check=True,
         ).stdout.splitlines()
     except (OSError, subprocess.CalledProcessError):
         return False
-    if not changed:
-        return False
-    if not changed[0].strip():
-        return True  # a root commit has no parent
-    paths = [line for line in changed[1:] if line.strip()]
+    paths = [line for line in changed if line.strip()]
     if not paths:
         return False
-    return all(
-        any(p.startswith(prefix) for prefix in DIRECT_PUSH_WHITELIST_PATHS) for p in paths
-    )
+    return all(p.startswith(prefixes) for p in paths)
+
+
+def _baseline_shas(path: Path, baseline_commit: str | None) -> set[str]:
+    """Commits at or before the governance baseline, which are not this initiative's.
+
+    The gate blocks on new work only, using a recorded baseline. That principle
+    governs linters throughout this universe; history is no different. A
+    repository that had 47 direct pushes before the rule existed does not need
+    to be told 47 times, and a check nobody acts on is a check nobody reads.
+    """
+    if not baseline_commit:
+        return set()
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(path), "log", "--format=%h", baseline_commit],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return set()
+    return set(out.split())

@@ -1,0 +1,34 @@
+# The standards, and the one line each gets in a generated AGENTS.md section.
+#
+# A standard exists only if something links it. `profiles.yaml` decides which
+# ones a given repository's baseline links; this file decides how they read.
+#
+# Adding a standard means writing the document, adding it here, and naming it in
+# `profiles.yaml` under `baseline` or a profile.
+
+schema_version: 1
+
+standards:
+
+  agent-operation.md:
+    summary: worktrees, branches, multi-agent safety, delegation
+
+  security.md:
+    summary: secrets, public and private boundaries, workflow hardening
+
+  code-quality.md:
+    summary: gates, coaching, testing, review cutoff
+
+  repository-contract.md:
+    summary: required files, profiles, skills
+
+  gitops-and-deployment.md:
+    summary: promotion by digest, rollback, the sanctioned secrets path
+
+  documentation.md:
+    summary: layout, structure, wording, the AGENTS.md budget
+    owner_facing: true
+
+  work-routing.md:
+    summary: where a change starts
+    owner_facing: true

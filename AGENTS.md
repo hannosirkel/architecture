@@ -13,7 +13,8 @@ Governed by [`architecture`](https://github.com/hannosirkel/architecture).
 | Public-safe required | no |
 | Languages | python |
 
-**Standards that apply here.** Read one before working against it.
+**Standards that apply here.** Read a standard before you change something it
+governs.
 
 - [Agent operation](https://github.com/hannosirkel/architecture/blob/main/standards/agent-operation.md) — worktrees, branches, multi-agent safety, delegation
 - [Security](https://github.com/hannosirkel/architecture/blob/main/standards/security.md) — secrets, public and private boundaries, workflow hardening
@@ -25,7 +26,8 @@ Governed by [`architecture`](https://github.com/hannosirkel/architecture).
 branch from `origin/main`, and open a pull request.
 
 **This repository is private, which is not the same as secret.** Never commit a password, token, key, kubeconfig,
-rendered Secret, or live export. A private repository is not a secret store.
+rendered Secret, or live export. No repository here holds a secret value, and a
+private one is no exception.
 
 **Run `habit-hooks` before declaring an edit done.** If it is not on `PATH`:
 
@@ -68,8 +70,10 @@ at its catalogued `local_path`.
   `tooling/universe drift --before HEAD~1` after changing anything under
   `standards/`, `templates/`, `universe/`, `profiles.yaml`, or `tooling/`.
   Every generated section depends on all five.
-- **A standard exists only if a generated `AGENTS.md` section links it.** A
-  document nothing links is a document nothing reads.
+- **A standard exists only if a generated `AGENTS.md` section links it**, or it
+  is marked `owner_facing` in `standards/index.yaml` and linked below. A
+  document nothing links is a document nothing reads. `tooling/universe
+  validate` enforces this.
 - **Durable initiative state under `initiatives/*/` commits to `main`
   directly.** It is a coordination record, not a code change, and gating it
   behind review would stall the resume path it protects. Everything else here
@@ -82,16 +86,18 @@ at its catalogued `local_path`.
 
 ## Owner-facing standards
 
-Read these here; they are not linked from any application repository's
-generated section, because pushing an owner-facing link into eleven baselines
-would inflate the file the budget keeps short.
+Read these here. They are marked `owner_facing` in `standards/index.yaml` and
+are linked from no generated section, because pushing an owner-facing link into
+eleven baselines would inflate the file the budget keeps short.
 
 - [`standards/documentation.md`](./standards/documentation.md) — layout,
   structure, wording, and the `AGENTS.md` budget.
 - [`standards/work-routing.md`](./standards/work-routing.md) — where a change
   starts.
-- [`standards/gitops-and-deployment.md`](./standards/gitops-and-deployment.md) —
-  promotion and secrets delivery.
+
+`standards/gitops-and-deployment.md` is **not** owner-facing. `deploys` and the
+two repositories that promote digests into it link it from their generated
+sections, because that is where the agent that needs it reads.
 
 ## Where work goes
 

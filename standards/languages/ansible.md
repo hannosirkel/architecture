@@ -37,23 +37,22 @@ Do not write a diff-hunk filter.
 
 ## Conventions
 
-These are Orange's, and Orange is the only repository with roles. They are
-recorded here because a second Ansible repository would inherit them.
+These are the portable ones. Apply them in any repository declaring `ansible`.
 
 - Use fully qualified module names.
 - Use two-space YAML indentation.
-- Put reusable behaviour in public role defaults. Put live fleet and
-  host-category choices in the private inventory's `group_vars/`, with a
-  reserved structural counterpart in `inventory-example/`.
 - Use `command` with `argv` when shell parsing is unnecessary.
 - Mark an inspection or readiness task `changed_when: false`.
 - Validate a nonstandard return code with `failed_when`.
-- Before a server-side apply, run the matching `kubectl diff` and apply only
-  when it returns `1`.
-- Do not treat `serverside-applied` as proof of change. `kubectl` emits it for
-  unchanged resources.
 - Pin versions and checksums. Keep resource, storage, and exposure choices
   explicit.
+
+`orange` is the only repository with roles today, and its operational rules stay
+with it rather than being copied here: the public/private split between role
+defaults and the private inventory's `group_vars/`, the reserved
+`inventory-example/` mirror, and the `kubectl diff` before a server-side apply.
+Read them in
+[`orange/AGENTS.md`](https://github.com/hannosirkel/orange/blob/main/AGENTS.md).
 
 ## Verification
 
