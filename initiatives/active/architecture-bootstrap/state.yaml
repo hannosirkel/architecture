@@ -251,6 +251,23 @@ wave_1:
       §7.5 allows and the commit message states. Exactly five files; no
       scaffolding. The primary clone's unborn main was left untouched.
 
+  W1-10-nomadtty:
+    pr: https://github.com/hannosirkel/nomadtty/pull/2
+    agents_md_local_lines: 55
+    note: >-
+      Four rival instruction systems consolidated to one. 17 hard invariants
+      checked, 17 found, 0 lost — verified by reducing each to its distinctive
+      tokens and requiring them to co-occur in one file, excluding mistakes.md
+      so a citation could not be mistaken for the rule. The same method over the
+      deleted files caught four rules the first attempt was about to lose.
+      mistakes.md, decision-log.md, and change-trace.md moved byte-identical.
+      Broken internal links: 0.
+    ci: >-
+      Two mTLS tests fail on the runner's OpenSSL 3.0, which lacks the
+      -not_before/-not_after flags the spec uses. Pre-existing: the unrelated
+      wave 0 PR fails the same two identically. Filed in the repository as
+      docs/issues/mtls-tests-need-openssl-3.5.md.
+
 wave_0:
   W0-1-deploys:
     pr: https://github.com/hannosirkel/deploys/pull/17
@@ -351,9 +368,15 @@ open_prs:
 blockers: []
 
 operator_action_required: >-
-  Install the Renovate GitHub App across the twelve repositories. Not doable
-  from a token; recorded for Gate 2. Also: review and merge the five wave 0
-  control PRs, which the operator chose to hold at Gate 2.
+  Three things need the operator.
+  1. Install the Renovate GitHub App across the twelve repositories. Not doable
+     from a token.
+  2. Review and merge the wave 0 control PRs, held by choice at Gate 2.
+  3. Repair ~/app/nomadtty/.git/objects: eleven directories are owned by root
+     from a sudo operation on 2026-08-04, so any `git add` in that primary
+     checkout fails. `sudo chown -R hanno:hanno` on them. Wave 1 worked around
+     it with a temporary clone, since removed, but the checkout stays broken
+     until this is done.
 
 gate_2:
   decision: merge architecture only; hold the five wave 0 control PRs for review
@@ -427,6 +450,11 @@ deferred:
       references/<name>.md is actually read. Then either symlink references/ and
       agents/ beside each SKILL.md, or make that line a repository-root path.
       Not verified by this initiative; reasoned from the layout.
+  - item: >-
+      nomadtty's .github/prompts/*.prompt.md (6 files) still point at the removed
+      docs/ai/ and .github/instructions/ paths, as do comments in install.sh and
+      docker-entrypoint.sh. Wave 1 could not touch .github/ or scripts.
+    handling: ordinary follow-up in nomadtty; listed in its upstream.md
   - item: >-
       The generated managed section prints the universe-wide Habit Hooks install
       command in every repository, including those declaring no language. That
