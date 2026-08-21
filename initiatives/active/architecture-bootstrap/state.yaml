@@ -3,10 +3,10 @@ initiative: managed-universe-bootstrap
 status: IMPLEMENTING
 contract_path: initiatives/active/architecture-bootstrap.md
 contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
-current_phase: phase-2-populate-architecture
-current_gate: merge-and-external-side-effects
-last_completed_step: gate-1-approved
-next_action: write-standards-and-tooling-in-architecture
+current_phase: phase-2-complete-awaiting-merge
+current_gate: gate-2-merge-and-external-side-effects
+last_completed_step: phase-2-populate-architecture
+next_action: merge-wave-0-and-phase-2, then wave 1
 
 gate_1:
   approved: true
@@ -73,13 +73,17 @@ repositories:
     remote: https://github.com/hannosirkel/plepic.git
     local_path: ~/app/plepic
     default_branch: main
-    head: 2c82e916a78dadc5b71d477338a4b4b8b5bb610e
-    checked_out_branch: feat/stripe-payment-methods
+    head: 97d5ba2
+    checked_out_branch: main
     declared_visibility: public
     current_remote_visibility: public
     accessible: true
     worktree_clean: true
-    note: primary checkout sits on active feature work; leave it exactly as found
+    note: >-
+      Another session merged the stripe work (#36) and retired its plans (#37)
+      partway through this session. The checkout moved from
+      feat/stripe-payment-methods to main and docs/superpowers/ was deleted.
+      Not our change. The catalogue's notable_local_work entry was removed.
   robobook:
     remote: https://github.com/hannosirkel/robobook.git
     local_path: null
@@ -165,16 +169,100 @@ completed_steps:
   - gate-1-approved
 
 wave_0:
-  W0-1-deploys: dispatched
-  W0-2-myskills: dispatched
-  W0-3-nomadtty: dispatched
-  W0-4-robobook: dispatched
-  W0-5-entpass: dispatched
-  W0-6-architecture-ci: pending
-  W0-7-renovate-preset: pending
+  W0-1-deploys:
+    pr: https://github.com/hannosirkel/deploys/pull/17
+    branch: governance/wave0-controls
+    content: gitleaks in CI, kubeconform behind the existing dry-run build
+    ci: pass
+    evidence: kubeconform rejected a scalar `resources:` field; fixture reverted
+  W0-2-myskills:
+    pr: https://github.com/hannosirkel/myskills/pull/2
+    branch: governance/wave0-ci
+    content: first CI workflow; shellcheck plus gitleaks plus the existing tests
+    ci: pass
+    baselined: 14 shellcheck findings (1 SC2209, 13 SC2015)
+    note: >-
+      The 13 SC2015 use one file-scoped directive in tests/install_test.sh
+      rather than 13 line directives. New SC2015 in that one file will not be
+      caught; every other rule in it still blocks.
+  W0-3-nomadtty:
+    pr: https://github.com/hannosirkel/nomadtty/pull/1
+    branch: governance/wave0-harden
+    content: seven actions pinned to commit SHAs; least-privilege permissions blocks
+    ci: 3 of 4 pass
+    ci_note: >-
+      Playwright fails on a pre-existing portability bug: the spec calls
+      `openssl x509 -req -not_before/-not_after`, which the runner's OpenSSL
+      does not accept. This is the repository's first-ever CI run, so the PR
+      surfaced a latent bug rather than breaking a green build. Not caused by
+      the permissions change. Publish gates on CI success, so releases are
+      blocked until it is fixed. Route as separate follow-up work in nomadtty.
+  W0-4-robobook:
+    pr: https://github.com/hannosirkel/robobook/pull/5
+    branch: governance/wave0-ci
+    content: first CI workflow; gitleaks plus the existing 237 unittest tests
+    ci: pass
+  W0-5-entpass:
+    pr: https://github.com/hannosirkel/entpass/pull/1
+    branch: governance/wave0-ci
+    content: first CI workflow; gitleaks only
+    ci: pass
+  W0-6-architecture-ci:
+    pr: https://github.com/hannosirkel/architecture/pull/1
+    content: folded into the phase 2 PR
+    ci: pass
+  W0-7-renovate-preset:
+    pr: https://github.com/hannosirkel/architecture/pull/1
+    content: templates/renovate.json, folded into the phase 2 PR
   W0-8-per-repo-renovate: folded-into-wave-1
 
-open_prs: []
+phase_2:
+  pr: https://github.com/hannosirkel/architecture/pull/1
+  branch: governance/phase2-populate
+  ci: pass
+  verification:
+    tests: 66 pass
+    ruff: clean
+    markdownlint: 0 issues in 32 files
+    catalogue: clean, 12 repositories validated
+    self_audit: clean
+  deliberate_omissions:
+    - item: schemas/repositories.schema.json
+      reason: >-
+        The Python validator already checks the catalogue. A JSON Schema beside
+        it would be a second copy of the same rules, kept in agreement by hand.
+    - item: new myskills skills
+      reason: >-
+        Nothing this initiative needs is reusable beyond this universe.
+        skills.lock.yaml pins myskills unchanged.
+  accepted_coaching_findings:
+    - item: tooling/universe_audit.py is 459 lines against a 400 threshold
+    - item: three validation functions report as high-complexity
+      reason: >-
+        Each reads as a flat list of independent checks; splitting scatters one
+        readable list. Deliberately not snoozed: snoozing code written in the
+        same pull request is the gaming the standard warns against.
+    - acted_on: >-
+        The substantive finding was acted on. A 1029-line module became three
+        cohesive modules — catalogue, render, audit — and the tests mirror them.
+
+findings_from_the_new_checks:
+  - The link checker rejected a placeholder link in templates/decision.md.
+  - >-
+      The drift reporter refused when the parent commit had no catalogue, which
+      is the state of the first push after the phase 2 branch merges.
+  - >-
+      The catalogue audit caught real drift mid-session: plepic's stripe work
+      merged and its docs/superpowers/ plans were retired, so the registered
+      working path had disappeared. The catalogue entry was removed.
+
+open_prs:
+  - https://github.com/hannosirkel/deploys/pull/17
+  - https://github.com/hannosirkel/myskills/pull/2
+  - https://github.com/hannosirkel/nomadtty/pull/1
+  - https://github.com/hannosirkel/robobook/pull/5
+  - https://github.com/hannosirkel/entpass/pull/1
+  - https://github.com/hannosirkel/architecture/pull/1
 
 blockers: []
 
