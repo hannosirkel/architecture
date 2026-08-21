@@ -177,7 +177,7 @@ repositories:
     local_path: "~/app/nomadtty"
     default_branch: main
     is_fork: true
-    upstream: https://github.com/nomadtty/nomadtty
+    upstream: https://github.com/shifulegend/nomadtty
     declared_visibility: public
     current_remote_visibility: public
     public_safe_required: true
