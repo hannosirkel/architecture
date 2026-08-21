@@ -291,7 +291,12 @@ def baselines_at(repo: Path, ref: str, workspace: Path) -> dict[str, str]:
     """
     destination = workspace / ref.replace("/", "_")
     _export(repo, ref, destination)
-    universe = load(destination)
+    try:
+        universe = load(destination)
+    except UniverseError:
+        # The catalogue did not exist yet at this ref. Every repository is new
+        # rather than changed; that is a report, not a reason to refuse.
+        return {}
     return {name: render_baseline(universe, name) for name in universe.repositories}
 
 

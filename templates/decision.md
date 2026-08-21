@@ -1,7 +1,7 @@
 # NNN. Short title in the imperative
 
 - **Date:** YYYY-MM-DD
-- **Status:** proposed | accepted | superseded by [NNN](./NNN-title.md)
+- **Status:** proposed | accepted | superseded by `[NNN](./NNN-title.md)`
 
 ## Context and problem statement
 

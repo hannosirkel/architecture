@@ -288,6 +288,14 @@ class DriftTests(unittest.TestCase):
         problems = render.drift(self.fixture.root, "HEAD~1", "HEAD", self.workspace)
         self.assertEqual(["baseline-invalidated"], [p.check for p in problems])
 
+    def test_a_parent_without_a_catalogue_reports_new_rather_than_refusing(self):
+        """The first push after the catalogue lands must not crash the job."""
+        (self.fixture.root / "universe" / "repositories.yaml").unlink()
+        _git("add", "-A", cwd=self.fixture.root)
+        _git("commit", "-m", "remove the catalogue", cwd=self.fixture.root)
+        problems = render.drift(self.fixture.root, "HEAD", "HEAD~1", self.workspace)
+        self.assertEqual(["new-repository"], [p.check for p in problems])
+
     def test_a_new_repository_is_reported_as_new(self):
         catalogue = self.fixture.root / "universe" / "repositories.yaml"
         entry = catalogue.read_text(encoding="utf-8").replace(
