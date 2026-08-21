@@ -1,0 +1,53 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate preset for the managed universe. Repositories extend this and add nothing else unless they must.",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":dependencyDashboard",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "timezone": "Europe/Tallinn",
+  "schedule": ["before 6am on monday"],
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2,
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "postUpdateOptions": ["npmDedupe"],
+  "vulnerabilityAlerts": {
+    "description": "A security fix does not wait for the weekly window.",
+    "enabled": true,
+    "schedule": ["at any time"],
+    "labels": ["dependencies", "security"],
+    "prPriority": 10
+  },
+  "docker": {
+    "description": "Pin by digest. deploys needs immutable references, and so does every image this universe builds on.",
+    "pinDigests": true
+  },
+  "packageRules": [
+    {
+      "description": "Group non-major updates so a quiet week is one pull request, not nine.",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "groupName": "non-major dependencies"
+    },
+    {
+      "description": "A major update is reviewed on its own.",
+      "matchUpdateTypes": ["major"],
+      "groupName": null,
+      "labels": ["dependencies", "major"]
+    },
+    {
+      "description": "GitHub Actions are pinned to a commit SHA by standards/security.md. Keep the version comment true when the SHA moves.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "pinDigests": true
+    },
+    {
+      "description": "TypeScript has a peer-dependency range in typescript-eslint. See standards/languages/typescript.md.",
+      "matchPackageNames": ["typescript"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}

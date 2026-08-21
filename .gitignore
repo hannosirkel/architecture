@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv
+venv
+
+# Habit Hooks writes its snooze baseline here; that file is committed. Nothing
+# else in the directory is.
+.habit-hooks/cache/

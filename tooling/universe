@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""universe — validate, audit, and synchronize the managed universe.
+
+    universe validate                 check the catalogue against itself
+    universe audit [repo ...]         report conformance; never fixes
+    universe sync-baseline [repo ...] materialize every generated artifact
+    universe render-baseline <repo>   print one managed section to stdout
+
+Exit codes: 0 clean, 1 findings, 2 the tool could not run.
+
+A tool that cannot run fails loudly and distinctly. It is never reported as a
+pass. See standards/code-quality.md.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+import tempfile
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import universe_audit as audit
+import universe_catalogue as cat
+import universe_render as render
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="universe", description=__doc__)
+    parser.add_argument(
+        "--root", help="architecture repository root (default: discovered)"
+    )
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("validate", help="check the catalogue against itself")
+
+    audit = sub.add_parser("audit", help="report conformance across the catalogue")
+    audit.add_argument("repos", nargs="*", help="default: every catalogued repository")
+    audit.add_argument(
+        "--path",
+        help="audit this directory instead of the catalogue's local_path; "
+        "requires exactly one repository. Use it when working in a worktree.",
+    )
+
+    sync = sub.add_parser("sync-baseline", help="materialize generated artifacts")
+    sync.add_argument("repos", nargs="*", help="default: every catalogued repository")
+    sync.add_argument("--dry-run", action="store_true", help="report what would change")
+    sync.add_argument(
+        "--path",
+        help="write into this directory instead of the catalogue's local_path; "
+        "requires exactly one repository. Use it when working in a worktree.",
+    )
+
+    render = sub.add_parser("render-baseline", help="print one managed section")
+    render.add_argument("repo")
+
+    drift = sub.add_parser(
+        "drift", help="report which repositories a change to this one invalidates"
+    )
+    drift.add_argument("--before", required=True, help="git ref before the change")
+    drift.add_argument("--after", default="HEAD", help="git ref after the change")
+
+    args = parser.parse_args(argv)
+
+    try:
+        universe = cat.load(Path(args.root) if args.root else None)
+    except cat.UniverseError as exc:
+        print(f"universe: cannot run: {exc}", file=sys.stderr)
+        return 2
+
+    try:
+        if args.command == "validate":
+            return _validate(universe)
+        if args.command == "audit":
+            return _audit(universe, args.repos, args.path)
+        if args.command == "sync-baseline":
+            return _sync(universe, args.repos, args.dry_run, args.path)
+        if args.command == "render-baseline":
+            sys.stdout.write(render.render_baseline(universe, args.repo))
+            return 0
+        if args.command == "drift":
+            return _drift(universe, args.before, args.after)
+    except cat.UniverseError as exc:
+        print(f"universe: cannot run: {exc}", file=sys.stderr)
+        return 2
+
+    parser.error("unknown command")
+    return 2
+
+
+def _validate(universe: cat.Universe) -> int:
+    problems = cat.validate(universe) + cat.check_working_paths(universe)
+    return _report(problems, f"{len(universe.repositories)} repositories validated")
+
+
+def _audit(universe: cat.Universe, repos: list[str], path: str | None = None) -> int:
+    names = _select(universe, repos)
+    if path and len(names) != 1:
+        raise cat.UniverseError("--path requires exactly one repository")
+    problems = cat.check_working_paths(universe) if not repos else []
+    for name in names:
+        problems += audit.audit_repository(
+            universe, name, path=Path(path) if path else None
+        )
+    return _report(problems, f"{len(names)} repositories audited")
+
+
+def _sync(
+    universe: cat.Universe, repos: list[str], dry_run: bool, path: str | None = None
+) -> int:
+    names = _select(universe, repos)
+    if path and len(names) != 1:
+        raise cat.UniverseError("--path requires exactly one repository")
+    total = 0
+    for name in names:
+        try:
+            changed = render.sync_baseline(
+                universe, name, dry_run=dry_run, path=Path(path) if path else None
+            )
+        except cat.UniverseError as exc:
+            print(f"{name}: skipped: {exc}", file=sys.stderr)
+            continue
+        if changed:
+            total += len(changed)
+            verb = "would write" if dry_run else "wrote"
+            print(f"{name}: {verb} {', '.join(changed)}")
+    if total == 0:
+        print("nothing to do; every generated artifact is current")
+    return 0
+
+
+def _drift(universe: cat.Universe, before: str, after: str) -> int:
+    with tempfile.TemporaryDirectory() as workspace:
+        problems = render.drift(universe.root, before, after, Path(workspace))
+    if not problems:
+        print(f"clean: {before}..{after} invalidates no repository's baseline")
+        return 0
+    for problem in problems:
+        print(problem)
+    print(
+        f"\n{len(problems)} repositories affected by {before}..{after}. "
+        "This is a report, not a failure."
+    )
+    return 0
+
+
+def _select(universe: cat.Universe, repos: list[str]) -> list[str]:
+    if not repos:
+        return sorted(universe.repositories)
+    for name in repos:
+        if name not in universe.repositories:
+            # A repository outside the catalogue is out of scope by
+            # construction. Refusing is not the same as failing it.
+            raise cat.UniverseError(f"not in the catalogue: {name}")
+    return list(repos)
+
+
+def _report(problems: list[cat.Problem], summary: str) -> int:
+    if not problems:
+        print(f"clean: {summary}")
+        return 0
+    for problem in problems:
+        print(problem)
+    print(f"\n{len(problems)} findings across {summary}")
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

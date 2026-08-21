@@ -1,0 +1,105 @@
+# Repository profiles.
+#
+# A profile is data, not a directory tree (see standards/documentation.md).
+# It says what a repository additionally documents beyond the baseline that
+# standards/repository-contract.md requires of everything.
+#
+# `expected_docs` is what the audit checks for. `optional_docs` is not checked.
+# An empty directory fails conformance either way.
+
+schema_version: 1
+
+baseline:
+  required_files: [README.md, AGENTS.md, CLAUDE.md]
+  required_generated: [".habit-hooks/config.toml"]
+  required_checks: [secret-scanning]
+
+profiles:
+
+  governance-private:
+    description: Engineering governance for the managed universe.
+    expected_docs: [decisions/]
+    additionally_documents:
+      - the universe catalogue and repository relationships
+      - cross-repository standards and profiles
+      - cross-repository initiatives and their durable state
+      - conformance tooling and the audit skill
+    public_safe_required: false
+
+  platform-public-ready:
+    description: Reusable public-safe infrastructure implementation.
+    expected_docs: [docs/current/, docs/decisions/]
+    additionally_documents:
+      - implemented platform behaviour
+      - architectural decisions
+      - provisioning and recovery procedure
+      - the public/private repository boundary
+    public_safe_required: true
+
+  inventory-private:
+    description: Private live state parameterizing a public platform repository.
+    expected_docs: [docs/current/]
+    optional_docs: [docs/working/]
+    additionally_documents:
+      - environment operations
+      - recovery evidence
+      - local working plans
+    public_safe_required: false
+
+  gitops-public:
+    description: Public deployable desired state reconciled by Argo CD.
+    expected_docs: []
+    additionally_documents:
+      - deployment ownership per application root
+      - promotion and rollback rules
+      - validation commands
+      - public-secret constraints
+    public_safe_required: true
+    notes: >-
+      Documentation lives in each application root's README rather than a docs/
+      tree. Creating docs/ here would add a directory with no content.
+
+  skills-private:
+    description: Reusable executable agent skills and plugins.
+    expected_docs: []
+    additionally_documents:
+      - the skill catalogue
+      - skill tests
+      - installation and synchronization
+      - security boundaries of executable behaviour
+    public_safe_required: false
+
+  application-public:
+    description: A public application and its own documentation.
+    expected_docs: [docs/current/]
+    optional_docs: [docs/decisions/, docs/working/]
+    additionally_documents:
+      - local architecture and current behaviour
+      - decisions
+      - build, test, and release procedure
+    public_safe_required: true
+
+  fork-public:
+    description: A maintained public fork.
+    expected_docs: [docs/current/]
+    optional_docs: [docs/decisions/, docs/working/]
+    additionally_documents:
+      - local architecture and current behaviour
+      - decisions
+      - build, test, and release procedure
+      - upstream provenance and licence obligations
+      - the local delta from upstream, and how it is maintained
+    public_safe_required: true
+    notes: >-
+      Not a reduced tier. It carries the same governance files and code-quality
+      gates as application-public, and additionally documents the fork.
+
+  research-private:
+    description: Early private research with no deployable artifact.
+    expected_docs: []
+    optional_docs: [docs/working/]
+    additionally_documents: []
+    public_safe_required: false
+    notes: >-
+      Baseline only. Do not force deployable-application conventions on a
+      project that has not reached that stage.
