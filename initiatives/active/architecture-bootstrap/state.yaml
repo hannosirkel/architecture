@@ -192,7 +192,59 @@ nomadtty:
     It is public, and it must not hold Orange credentials or private host
     details. Ownership facts, not governance mechanics.
 
-audit_after_wave_1:
+audit_after_branch_protection_floor:
+  status: prepared-not-applied
+  reason: >-
+    §13 Gate 2 names a repository ruleset change as needing explicit operator
+    authority. A required status check also names a job, and wave 2 is changing
+    job names right now, so applying the floor before wave 2 merges would block
+    every merge on a context that no longer exists.
+  enforcement_is_real: >-
+    Verified, not assumed. plepic and servitium require one approving review,
+    and the wave 1 pull requests carried one from hannosirkel. The bot has no
+    bypass and no admin permission on those repositories.
+  private_repositories_cannot_carry_one: >-
+    architecture, orange, orange-inventory, myskills, entpass. The rulesets API
+    returns 403 on the current plan. Named accepted risk; the written rule plus
+    the direct-push audit stand in.
+  delta:
+    deploys:
+      has: [deletion, non_fast_forward]
+      add: [required_status_checks]
+      never_add: pull_request
+      reason: >-
+        main receives automated image digest pushes from the plepic and
+        servitium release workflows. A pull-request rule breaks promotion.
+    plepic:
+      has: [deletion, non_fast_forward, "pull_request (1 approval)"]
+      add: [required_status_checks]
+    robobook:
+      has: [deletion, non_fast_forward, "pull_request (0 approvals)"]
+      add: [required_status_checks]
+    servitium:
+      has: [deletion, non_fast_forward, pull_request, required_status_checks]
+      add: []
+      note: the only repository already at the floor
+    mihkel:
+      has: []
+      add: [deletion, non_fast_forward, pull_request, required_status_checks]
+    ai-portal:
+      has: []
+      add: [deletion, non_fast_forward, pull_request, required_status_checks]
+
+wave_2:
+  W2-architecture:
+    pr: https://github.com/hannosirkel/architecture/pull/8
+    merged: true
+    content: zizmor over its own workflows
+    findings_fixed: >-
+      Five artipacked findings: every actions/checkout persisted the token into
+      .git/config, where a later step or an uploaded artifact can reach it. No
+      job here pushes. Fixed rather than suppressed, because the standard
+      baselines history and not defects in the work it is adding.
+    fixture: an unpinned @v7 produces error[unpinned-uses] and exit 14
+
+wave_1:
   findings: 13
   repositories_audited: 11
   skipped: [nomadtty]
@@ -223,6 +275,58 @@ top_tier_review:
     asserted a fact taken from an evidence file the same agent wrote, and the
     CLI crashed on a subcommand no test invoked. §16 item 13 is satisfied for
     the three load-bearing documents.
+
+branch_protection_floor:
+  status: prepared-not-applied
+  reason: >-
+    §13 Gate 2 names a repository ruleset change as needing explicit operator
+    authority. A required status check also names a job, and wave 2 is changing
+    job names right now, so applying the floor before wave 2 merges would block
+    every merge on a context that no longer exists.
+  enforcement_is_real: >-
+    Verified, not assumed. plepic and servitium require one approving review,
+    and the wave 1 pull requests carried one from hannosirkel. The bot has no
+    bypass and no admin permission on those repositories.
+  private_repositories_cannot_carry_one: >-
+    architecture, orange, orange-inventory, myskills, entpass. The rulesets API
+    returns 403 on the current plan. Named accepted risk; the written rule plus
+    the direct-push audit stand in.
+  delta:
+    deploys:
+      has: [deletion, non_fast_forward]
+      add: [required_status_checks]
+      never_add: pull_request
+      reason: >-
+        main receives automated image digest pushes from the plepic and
+        servitium release workflows. A pull-request rule breaks promotion.
+    plepic:
+      has: [deletion, non_fast_forward, "pull_request (1 approval)"]
+      add: [required_status_checks]
+    robobook:
+      has: [deletion, non_fast_forward, "pull_request (0 approvals)"]
+      add: [required_status_checks]
+    servitium:
+      has: [deletion, non_fast_forward, pull_request, required_status_checks]
+      add: []
+      note: the only repository already at the floor
+    mihkel:
+      has: []
+      add: [deletion, non_fast_forward, pull_request, required_status_checks]
+    ai-portal:
+      has: []
+      add: [deletion, non_fast_forward, pull_request, required_status_checks]
+
+wave_2:
+  W2-architecture:
+    pr: https://github.com/hannosirkel/architecture/pull/8
+    merged: true
+    content: zizmor over its own workflows
+    findings_fixed: >-
+      Five artipacked findings: every actions/checkout persisted the token into
+      .git/config, where a later step or an uploaded artifact can reach it. No
+      job here pushes. Fixed rather than suppressed, because the standard
+      baselines history and not defects in the work it is adding.
+    fixture: an unpinned @v7 produces error[unpinned-uses] and exit 14
 
 wave_1:
   W1-1-architecture: merged as part of phase 2
