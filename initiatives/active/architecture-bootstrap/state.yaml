@@ -193,7 +193,28 @@ nomadtty:
     details. Ownership facts, not governance mechanics.
 
 audit_after_branch_protection_floor:
-  status: prepared-not-applied
+  status: blocked-on-a-permission-the-token-does-not-have
+  operator_delegated: true
+  blocked_by: >-
+    GitHub returns 403 "Resource not accessible by integration" on POST
+    /repos/{owner}/{repo}/rulesets. Reproduced on ai-portal and mihkel, so it is
+    the installation and not one repository. The app can read rulesets and
+    cannot write them; it needs Administration: Read and write.
+  operator_options:
+    - grant the installation Administration write, then this can be applied
+    - apply the five rulesets in the GitHub UI
+  payload_ready: >-
+    scratchpad ruleset-ai-portal.json holds the exact shape: deletion,
+    non_fast_forward, pull_request with required_approving_review_count 0, and
+    required_status_checks with strict false and integration_id 15368.
+  choices_made:
+    required_approving_review_count: >-
+      0 for the repositories gaining the rule. The floor's purpose is that no
+      agent commits to a default branch, not that a human reviews every
+      governance change. plepic and servitium already require 1 and keep it.
+    strict_required_status_checks_policy: >-
+      false for new rules. servitium has it true, and that is what put its
+      wave 2 pull request into BEHIND and cost a cycle. Left as it is there.
   reason: >-
     §13 Gate 2 names a repository ruleset change as needing explicit operator
     authority. A required status check also names a job, and wave 2 is changing
@@ -367,7 +388,28 @@ top_tier_review:
     the three load-bearing documents.
 
 branch_protection_floor:
-  status: prepared-not-applied
+  status: blocked-on-a-permission-the-token-does-not-have
+  operator_delegated: true
+  blocked_by: >-
+    GitHub returns 403 "Resource not accessible by integration" on POST
+    /repos/{owner}/{repo}/rulesets. Reproduced on ai-portal and mihkel, so it is
+    the installation and not one repository. The app can read rulesets and
+    cannot write them; it needs Administration: Read and write.
+  operator_options:
+    - grant the installation Administration write, then this can be applied
+    - apply the five rulesets in the GitHub UI
+  payload_ready: >-
+    scratchpad ruleset-ai-portal.json holds the exact shape: deletion,
+    non_fast_forward, pull_request with required_approving_review_count 0, and
+    required_status_checks with strict false and integration_id 15368.
+  choices_made:
+    required_approving_review_count: >-
+      0 for the repositories gaining the rule. The floor's purpose is that no
+      agent commits to a default branch, not that a human reviews every
+      governance change. plepic and servitium already require 1 and keep it.
+    strict_required_status_checks_policy: >-
+      false for new rules. servitium has it true, and that is what put its
+      wave 2 pull request into BEHIND and cost a cycle. Left as it is there.
   reason: >-
     §13 Gate 2 names a repository ruleset change as needing explicit operator
     authority. A required status check also names a job, and wave 2 is changing
@@ -718,6 +760,24 @@ open_prs:
 
 blockers: []
 
+renovate:
+  app_installed: true
+  installed_at: "2026-08-22"
+  observed: >-
+    No onboarding pull request in any repository, which is the expected and
+    correct outcome: Renovate only onboards a repository that has no config,
+    and wave 1 committed renovate.json everywhere. No Dependency Dashboard
+    issue had appeared yet when this was checked, minutes after install.
+  what_to_watch: >-
+    The Dependency Dashboard issue is the confirmation that the shared preset
+    resolved. architecture is private and every repository extends
+    local>hannosirkel/architecture//templates/renovate.json, so the app must
+    have access to architecture or every other repository's config fails.
+  first_pull_requests: >-
+    The preset schedules updates for "before 6am on monday", so silence before
+    then is the design rather than a fault. A security fix does not wait:
+    vulnerabilityAlerts overrides the window with "at any time".
+
 operator_action_required: >-
   Three things need the operator.
   1. Install the Renovate GitHub App across the twelve repositories. Not doable
@@ -747,15 +807,19 @@ gate_2:
 wave_2_summary:
   merged: [architecture, deploys, myskills, entpass, ai-portal, robobook, mihkel]
   awaiting_operator_approval: [plepic, servitium]
-  audit_after: "3 failing, 7 advisory across 11 repositories"
-  remaining_failures: >-
-    orange's ruff gate, still in flight; and plepic's and servitium's shellcheck
-    gates, which are in the two unmerged pull requests. No failure is unaccounted
-    for.
+  audit_after: "0 failing, 8 advisory across 11 repositories"
+  complete: true
+  note: >-
+    Every governed repository now carries a CI gate for each language it
+    declares, with pre-existing findings held in each linter's own baseline.
+    The eight advisory notes are two recorded exceptions, two soft-target
+    reports, three uncategorised-docs notes in the orange pair, and
+    orange-inventory's docs/current move, which its active working plans block.
   branch_protection_verified: >-
     plepic and servitium both refused an unapproved merge with REVIEW_REQUIRED.
     The floor is enforced, not decorative.
 
+findings_from_the_new_gates:
   - repository: architecture
     severity: high
     finding: >-
@@ -776,7 +840,6 @@ wave_2_summary:
       appears as a command. Five tests now cover it, including a suppression
       directive and a step named after the tool.
 
-findings_from_the_new_gates:
   - repository: deploys
     severity: high
     finding: >-
