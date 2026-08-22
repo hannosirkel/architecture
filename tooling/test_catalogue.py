@@ -57,6 +57,22 @@ class CatalogueTests(unittest.TestCase):
         checks = [p.check for p in cat.validate(self.universe)]
         self.assertIn("governance-mismatch", checks)
 
+    def test_an_undeclared_catalogue_field_is_a_finding(self):
+        """default_branch_state was the case: read by nothing, and left in the
+        catalogue asserting something false after it stopped being true."""
+        self.universe.repositories["orange"]["invented_field"] = "x"
+        problems = [p for p in cat.validate(self.universe) if p.check == "unknown-field"]
+        self.assertEqual(1, len(problems))
+        self.assertIn("invented_field", problems[0].detail)
+        self.assertIn("reader", problems[0].fix)
+
+    def test_every_field_in_the_real_catalogue_is_declared(self):
+        universe = cat.load(ROOT)
+        used = set()
+        for entry in universe.repositories.values():
+            used.update(entry)
+        self.assertEqual(set(), used - cat.KNOWN_REPO_FIELDS)
+
     def test_unknown_profile_is_a_finding(self):
         self.universe.repositories["orange"]["profile"] = "made-up"
         checks = [p.check for p in cat.validate(self.universe)]

@@ -24,6 +24,46 @@ PUBLICATION_STATUSES = {
 
 REQUIRED_FILES = ("README.md", "AGENTS.md", "CLAUDE.md")
 
+# Every key a catalogue entry may carry. A key absent from this tuple is either
+# a typo or a field nobody declared a reader for, and §5.9 wants neither. Adding
+# a field means adding it here, which forces the question "what reads this?".
+#
+# default_branch_state was the case that prompted this: it recorded that a
+# repository's main had no commits, nothing ever read it, and it stayed in the
+# catalogue asserting something false after both repositories gained one.
+KNOWN_REPO_FIELDS = frozenset(
+    {
+        # required
+        "description",
+        "profile",
+        "remote",
+        "local_path",
+        "default_branch",
+        "declared_visibility",
+        "current_remote_visibility",
+        "public_safe_required",
+        "publication_status",
+        "languages",
+        "npm_project",
+        "supports_rulesets",
+        # read by the tooling
+        "direct_push",
+        "exceptions",
+        "extra_standards",
+        "governed",
+        "lifecycle",
+        "working_plans",
+        # read by a person: they explain a decision the data cannot
+        "governance_note",
+        "is_fork",
+        "languages_note",
+        "local_checkout_note",
+        "upstream",
+        "visibility_reason",
+        "what_still_applies",
+    }
+)
+
 REQUIRED_REPO_FIELDS = (
     "description",
     "profile",
@@ -189,6 +229,16 @@ def validate(universe: Universe) -> list[Problem]:
                 problems.append(
                     Problem(name, "missing-field", f"`{required}` is not declared")
                 )
+
+        for key in sorted(set(entry) - KNOWN_REPO_FIELDS):
+            problems.append(
+                Problem(
+                    name,
+                    "unknown-field",
+                    f"`{key}` is not a declared catalogue field",
+                    "add it to KNOWN_REPO_FIELDS with a reader, or remove it",
+                )
+            )
 
         profile = entry.get("profile")
         if profile is not None and profile not in universe.profiles:
