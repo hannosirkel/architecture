@@ -3,10 +3,10 @@ initiative: managed-universe-bootstrap
 status: IMPLEMENTING
 contract_path: initiatives/active/architecture-bootstrap.md
 contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
-current_phase: phase-5-wave-2-code-quality-and-security
+current_phase: phase-6-integrated-validation
 current_gate: gate-2-merge-and-external-side-effects
-last_completed_step: wave-1-merged-across-eleven-governed-repositories
-next_action: run-wave-2
+last_completed_step: cold-test-and-its-fixes
+next_action: merge-the-resync-sweep, then phase 7 handoff
 
 gate_1:
   approved: true
@@ -818,6 +818,49 @@ wave_2_summary:
   branch_protection_verified: >-
     plepic and servitium both refused an unapproved merge with REVIEW_REQUIRED.
     The floor is enforced, not decorative.
+
+cold_test:
+  required_by: §16 item 20
+  at: "2026-08-22"
+  repositories: [deploys, orange, mihkel]
+  method: >-
+    Three fresh agents, one repository each, no other repository and no network.
+    Seven questions, answered from that repository alone, with a gap to be
+    reported rather than guessed.
+  result: six of seven, three times
+  evidence: evidence/cold-test.md
+  findings_fixed:
+    - >-
+      Every checkout was stale with a clean git status, so the governance layer
+      was invisible from the working tree. All three named it first. Nine
+      checkouts fast-forwarded; ai-portal and portfolio-bot had an unborn HEAD
+      and were an empty directory to a reader, and are now on main.
+      orange-inventory was left alone, carrying another session's work.
+    - >-
+      Two of three could not say where a working plan belongs. work-routing.md
+      was owner-facing so nothing linked it, and mihkel's governance merge had
+      deleted the only local file that carried the answer. Every section now
+      links it and states the answer outright.
+  findings_routed:
+    - >-
+      deploys holds 3,376 lines of Ruby in heredocs, undeclared and ungated.
+      shellcheck lints 19 lines of 3,246. The two dead assertions already found
+      live in the part no gate can see.
+    - orange's documentation never mentions Plepic.
+    - >-
+      scripts/validate passing no longer means a green pull request; wave 2
+      added CI jobs the local script does not run.
+    - >-
+      mihkel's WORKFLOWS.md contradicts its own managed section on whether to
+      push to main. The governance merge did not update it.
+    - >-
+      mihkel is public and carries RFC1918 addresses, an internal hostname, and
+      a live n8n workflow ID. None is a secret value and gitleaks passes them.
+      Nothing records that the exposure was considered and accepted.
+  note: >-
+    No mechanical check could have found the stale checkouts. Every audit reads
+    origin/<default_branch> by design, so the audit was right while the
+    workstation was wrong. That is the gap the cold test exists to cover.
 
 findings_from_the_new_gates:
   - repository: architecture
