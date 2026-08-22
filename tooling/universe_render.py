@@ -126,11 +126,11 @@ def render_baseline(universe: Universe, name: str) -> str:
         "profile": entry["profile"],
         "declared_visibility": entry["declared_visibility"],
         "current_remote_visibility": entry["current_remote_visibility"],
-        "public_safe_required": "yes" if entry["public_safe_required"] else "no",
         "languages_display": ", ".join(languages) if languages else "none",
         "standards_lines": standards_lines(universe, entry),
         "language_standards_line": language_standards_line(universe, entry),
         "default_branch": entry["default_branch"],
+        "working_plans": entry.get("working_plans") or "`docs/working/`",
         "public_safety_line": safety,
         "habit_hooks_package": habit_hooks_package(universe),
     }

@@ -30,5 +30,4 @@ standards:
     owner_facing: true
 
   work-routing.md:
-    summary: where a change starts
-    owner_facing: true
+    summary: where a change starts, and where a working plan belongs

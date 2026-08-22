@@ -135,7 +135,7 @@ recurring cost.
 | --- | --- | --- |
 | Local content | 60 lines | soft target; the audit reports it and passes |
 | Local content | 150 lines | hard ceiling; conformance fails |
-| Managed section | 40 lines | central budget; exceeding it is a standards defect |
+| Managed section | 45 lines | central budget; exceeding it is a standards defect |
 
 Local content is every non-blank line outside the managed markers. The managed
 section is central policy, so a repository cannot shorten it and is not charged
@@ -147,6 +147,13 @@ artifact, not the content.
 
 The ceiling gates the outrage; the target coaches the ideal. A hard failure at
 the ideal length would be met by compressing into ambiguity, which costs more.
+
+The managed budget was 40 and is 45. It was raised once, on evidence: two cold
+tests opened a repository with no other context and could not say where a
+working plan belongs, so the section gained the answer and the link to the
+standard that owns it. Raising a self-set number because a test proved content
+was missing is not the same as raising it to fit content that was not needed.
+Cut something before raising it again.
 
 Keep an `AGENTS.md` short by moving material, not by deleting meaning:
 

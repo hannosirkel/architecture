@@ -47,6 +47,9 @@ repositories:
     languages: [ansible, python, shell]
     npm_project: false
     supports_rulesets: false
+    working_plans: >-
+      the private `orange-inventory` at `docs/working/`, never here — an Orange
+      plan routinely names live hosts and identities
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
       # baselined, exactly as a linter baseline records today's findings.

@@ -16,6 +16,10 @@ baseline:
     - security.md
     - code-quality.md
     - repository-contract.md
+    # Every agent needs to know where a plan goes, and two cold tests could not
+    # answer it from inside a repository. It was owner-facing, so no generated
+    # section linked it.
+    - work-routing.md
   required_files: [README.md, AGENTS.md, CLAUDE.md]
   required_generated: [".habit-hooks/config.toml"]
   required_checks: [secret-scanning]
