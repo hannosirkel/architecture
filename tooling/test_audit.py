@@ -350,6 +350,26 @@ class LanguageGateTests(unittest.TestCase):
         }
         self.assertIn("missing-gate", checks)
 
+    def test_a_repository_without_renovate_config_is_reported(self):
+        """portfolio-bot shipped without one and nothing noticed until Renovate
+        opened an onboarding pull request saying so."""
+        self.assertIn("no-dependency-automation", self._checks())
+
+    def test_a_renovate_config_not_extending_the_preset_is_reported(self):
+        (self.fixture.repo / "renovate.json").write_text(
+            '{"extends": ["config:recommended"]}\n', encoding="utf-8"
+        )
+        self.assertIn("unshared-dependency-config", self._checks())
+
+    def test_extending_the_shared_preset_is_clean(self):
+        (self.fixture.repo / "renovate.json").write_text(
+            '{"extends": ["local>hannosirkel/architecture//templates/renovate.json"]}\n',
+            encoding="utf-8",
+        )
+        checks = self._checks()
+        self.assertNotIn("no-dependency-automation", checks)
+        self.assertNotIn("unshared-dependency-config", checks)
+
     def test_a_repository_with_no_ci_has_no_secret_scan(self):
         self.assertIn("no-secret-scan", self._checks())
 

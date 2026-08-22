@@ -100,6 +100,7 @@ def _audit_tree(
     problems += _audit_languages(universe, name, entry, path, repo)
     problems += _audit_language_gates(universe, name, entry, path)
     problems += _audit_secret_scanning(name, path)
+    problems += _audit_dependency_automation(name, path)
     problems += _audit_default_branch_commits(name, entry, repo)
     return _apply_exceptions(universe, name, problems)
 
@@ -228,6 +229,43 @@ def _npm_scripts(path: Path, text: str, depth: int = 3) -> list[str]:
             found.append(body)
             pending.update(_NPM_RUN.findall(body))
     return found
+
+
+RENOVATE_PRESET = "local>hannosirkel/architecture//templates/renovate.json"
+
+
+def _audit_dependency_automation(name, path) -> list[Problem]:
+    """Every governed repository extends the shared Renovate preset.
+
+    standards/security.md makes dependency automation unconditional. Without a
+    config Renovate onboards the repository instead, which opens a pull request
+    proposing settings the shared preset already decides — and the repository
+    silently stops inheriting the preset when it changes.
+
+    portfolio-bot shipped without one and nothing noticed until Renovate itself
+    said so.
+    """
+    config = path / "renovate.json"
+    if not config.is_file():
+        return [
+            Problem(
+                name,
+                "no-dependency-automation",
+                "no renovate.json, so it does not extend the shared preset",
+                "add renovate.json extending " + RENOVATE_PRESET,
+            )
+        ]
+    text = config.read_text(encoding="utf-8", errors="ignore")
+    if RENOVATE_PRESET not in text:
+        return [
+            Problem(
+                name,
+                "unshared-dependency-config",
+                "renovate.json does not extend the shared preset",
+                "extend " + RENOVATE_PRESET,
+            )
+        ]
+    return []
 
 
 def _audit_secret_scanning(name, path) -> list[Problem]:
