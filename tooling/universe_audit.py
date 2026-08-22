@@ -6,6 +6,7 @@ repository, routed by standards/work-routing.md.
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import tempfile
@@ -101,11 +102,19 @@ def _audit_tree(
     return problems
 
 
+_NPM_RUN = re.compile(r"npm run ([A-Za-z0-9:_-]+)")
+
+
 def gate_text(path: Path) -> str:
     """Everything a repository's CI could run, as one searchable string.
 
-    Reads the workflows and any validation script they call. A linter invoked
-    from either one counts as a gate.
+    Reads the workflows and any validation script they call, then resolves the
+    `npm run <script>` names it finds against package.json. Without that last
+    step a repository whose validation script says `npm run lint` reads as
+    having no linter, and the audit reports a gate that is demonstrably there.
+
+    Only scripts actually reached are resolved. Pulling in every script a
+    package.json declares would count a linter that nothing runs.
     """
     chunks = []
     for candidate in sorted((path / ".github" / "workflows").glob("*.y*ml")):
@@ -114,7 +123,34 @@ def gate_text(path: Path) -> str:
         target = path / candidate
         if target.is_file():
             chunks.append(target.read_text(encoding="utf-8", errors="ignore"))
+    chunks.extend(_npm_scripts(path, "\n".join(chunks)))
     return "\n".join(chunks)
+
+
+def _npm_scripts(path: Path, text: str, depth: int = 3) -> list[str]:
+    """The bodies of the npm scripts `text` reaches, and what those reach."""
+    manifest = path / "package.json"
+    if not manifest.is_file():
+        return []
+    try:
+        scripts = json.loads(manifest.read_text(encoding="utf-8")).get("scripts") or {}
+    except (OSError, ValueError):
+        return []
+
+    found: list[str] = []
+    seen: set[str] = set()
+    pending = set(_NPM_RUN.findall(text))
+    while pending and depth > 0:
+        depth -= 1
+        current, pending = pending - seen, set()
+        for name in sorted(current):
+            seen.add(name)
+            body = scripts.get(name)
+            if not body:
+                continue
+            found.append(body)
+            pending.update(_NPM_RUN.findall(body))
+    return found
 
 
 def _audit_language_gates(universe, name, entry, path) -> list[Problem]:
