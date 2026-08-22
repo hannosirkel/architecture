@@ -250,7 +250,6 @@ repositories:
     remote: https://github.com/hannosirkel/ai-portal.git
     local_path: "~/app/ai-portal"
     default_branch: main
-    default_branch_state: unborn
     declared_visibility: public
     current_remote_visibility: public
     public_safe_required: true
@@ -267,7 +266,6 @@ repositories:
     remote: https://github.com/hannosirkel/portfolio-bot.git
     local_path: "~/app/portfolio-bot"
     default_branch: main
-    default_branch_state: unborn
     declared_visibility: private
     current_remote_visibility: private
     public_safe_required: false
