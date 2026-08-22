@@ -165,6 +165,17 @@ repositories:
     npm_project: true
     extra_standards: [gitops-and-deployment.md]
     supports_rulesets: true
+    exceptions:
+      missing-gate:
+        matches: "declares `typescript`"
+        reason: >-
+          typescript-eslint declares peerDependencies.typescript ">=4.8.4
+          <6.1.0" in both its latest and canary releases; servitium resolves
+          typescript@7.0.2, and npm install reproduces ERESOLVE. Forcing it
+          would mean downgrading TypeScript or --legacy-peer-deps, and neither
+          buys a working gate. Re-check when typescript-eslint accepts
+          TypeScript 7; this exception ends there.
+        decision: servitium AGENTS.md "Local exceptions"
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
       # baselined, exactly as a linter baseline records today's findings.
@@ -214,6 +225,17 @@ repositories:
     languages: [typescript, python, shell]
     npm_project: false
     supports_rulesets: true
+    exceptions:
+      missing-gate:
+        matches: "declares `typescript`"
+        reason: >-
+          mihkel has no npm project. Adding ESLint means a package.json, a
+          lockfile, 71 packages, an npm ci step, and a permanent Renovate
+          stream on a repository holding credentialed n8n and GitHub access —
+          to baseline four no-unused-vars findings on day one, two of them
+          artefacts of generate-workflow.js splicing logic.js. The standard
+          says not to add a package manager for uniformity.
+        decision: mihkel docs/decisions/0005-no-npm-project-for-the-javascript-gate.md
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
       # baselined, exactly as a linter baseline records today's findings.

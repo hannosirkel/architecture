@@ -140,6 +140,18 @@ def entry_for(universe: Universe, name: str) -> dict:
     return entry
 
 
+def exceptions_for(universe: Universe, name: str) -> dict:
+    """The checks this repository has an explicit, recorded exception to.
+
+    An exception is data, not a silence. It names the check, gives a reason, and
+    links the decision that made it. `validate` refuses one that omits either,
+    and reports one whose check no longer fires, so an exception cannot outlive
+    the reason it was granted.
+    """
+    entry = universe.repositories.get(name) or {}
+    return entry.get("exceptions") or {}
+
+
 def is_governed(universe: Universe, name: str) -> bool:
     """Whether this universe's rules apply to a repository at all.
 
@@ -246,6 +258,37 @@ def validate(universe: Universe) -> list[Problem]:
                     f"`{profile}`, whose conformance is `{profile_conformance}`",
                 )
             )
+
+        for check, spec in sorted((entry.get("exceptions") or {}).items()):
+            if not isinstance(spec, dict):
+                problems.append(
+                    Problem(
+                        name,
+                        "malformed-exception",
+                        f"exception `{check}` must be a mapping with a reason "
+                        f"and a decision",
+                    )
+                )
+                continue
+            if not str(spec.get("matches") or "").strip():
+                problems.append(
+                    Problem(
+                        name,
+                        "unscoped-exception",
+                        f"exception `{check}` has no `matches`, so it would "
+                        f"silence every `{check}` finding, not the one granted",
+                    )
+                )
+            for required in ("reason", "decision"):
+                if not str(spec.get(required) or "").strip():
+                    problems.append(
+                        Problem(
+                            name,
+                            "malformed-exception",
+                            f"exception `{check}` has no `{required}`; an "
+                            f"exception without one is a silence",
+                        )
+                    )
 
         expected = _expected_publication_status(entry)
         if status is not None and expected is not None and status != expected:

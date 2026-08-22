@@ -159,8 +159,36 @@ Determine profile-appropriate handling for:
   artifact;
 - manifest validation, for GitOps and infrastructure repositories.
 
-Record a justified profile exception rather than leaving a silent gap. An empty
+Record a justified exception rather than leaving a silent gap. An empty
 configuration is not an exception.
+
+### Recording an exception
+
+An exception is data in the catalogue, not a silence. It names the check, says
+why, and links the decision that granted it:
+
+```yaml
+    exceptions:
+      missing-gate:
+        matches: "declares `typescript`"
+        reason: >-
+          One sentence a reader can disagree with.
+        decision: <repo> docs/decisions/000N-title.md
+```
+
+`tooling/universe validate` refuses an exception missing `reason`, `decision`,
+or `matches`. `matches` is required because one check fires for several
+different reasons: a repository can be missing a shell gate and excepted from a
+TypeScript one, and an exception keyed on the check alone would silence both.
+
+The audit still prints an excepted finding, with its reason and its decision.
+It stops failing conformance, because a deliberate recorded choice is not a
+defect, and a check that keeps failing on one becomes noise everybody learns to
+skip.
+
+**An exception that matches nothing is reported as stale.** It has outlived the
+reason it was granted, and it should be removed. That is the mechanical half of
+"an exception is valid"; the rest is review.
 
 ## Skills governance
 
