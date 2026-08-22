@@ -26,7 +26,6 @@ orange-inventory
 application repositories
 ├── plepic
 ├── servitium
-├── nomadtty
 ├── mihkel
 ├── robobook
 ├── ai-portal
@@ -80,9 +79,18 @@ software, users, SSH, networking, credentials, and checkout provisioning.
 
 ### `nomadtty` and upstream
 
-`nomadtty` is a maintained fork. Contributing changes back upstream is not
-expected. Provenance and licence obligations still matter, for legal reasons and
-for pulling upstream fixes.
+`nomadtty` is a maintained fork of
+[shifulegend/nomadtty](https://github.com/shifulegend/nomadtty). It is
+**catalogued but not governed**: it keeps its own instruction files,
+conventions, and checks, and the conformance tooling skips it.
+
+The universe holds as few divergences from upstream as it can, because each one
+is a merge conflict waiting for whoever pulls the next upstream fix. See
+[decision 007](../decisions/007-nomadtty-is-governed-by-upstream.md).
+
+What still binds is the boundary in the catalogue: it is public, and it must not
+hold Orange credentials or private host details. That is an ownership fact, not
+a governance mechanic.
 
 ## Lifecycle exceptions
 

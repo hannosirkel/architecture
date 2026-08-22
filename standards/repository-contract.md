@@ -117,12 +117,19 @@ repository to hold an empty copy of a directory it has no content for.
 | `gitops-public` | deployment ownership, promotion and rollback, validation commands, public-secret constraints |
 | `skills-private` | skill catalogue, tests, installation, security boundaries |
 | `application-public` | local architecture and current state, decisions, optional working plans |
-| `fork-public` | everything `application-public` does, plus upstream provenance, licence obligations, and the local delta |
+| `fork-upstream-governed` | nothing centrally; a fork follows upstream's conventions |
 | `research-private` | nothing beyond the baseline |
 
-`fork-public` is not a reduced tier. It carries the same governance files and
-code-quality gates as any public application repository. It differs only in what
-it *additionally* documents.
+`fork-upstream-governed` is not a reduced tier of governance. It is the absence
+of it: the catalogue records what the repository is and what it must not hold,
+and the conformance tooling skips it entirely. `sync-baseline` refuses to write
+into such a repository, and `audit` names it as skipped rather than reporting it
+clean.
+
+The reason is that every file this universe would add to a fork is a divergence
+a later upstream merge has to reconcile, in a repository whose conventions are
+upstream's to set. See
+[decision 007](../decisions/007-nomadtty-is-governed-by-upstream.md).
 
 ## Checks and hooks
 

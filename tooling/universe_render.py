@@ -16,6 +16,7 @@ from universe_catalogue import (
     UniverseError,
     checkout_path,
     entry_for,
+    is_governed,
     load,
 )
 
@@ -397,6 +398,11 @@ def sync_baseline(
     the primary checkout.
     """
     entry = entry_for(universe, name)
+    if not is_governed(universe, name):
+        raise UniverseError(
+            f"{name} is catalogued but not governed; writing generated files "
+            f"into it would diverge it from upstream. See decisions/007."
+        )
     path = path or checkout_path(entry)
     if not path.is_dir():
         raise UniverseError(f"no checkout at {path}")
