@@ -46,17 +46,26 @@ class UniverseError(Exception):
 
 @dataclass
 class Problem:
-    """One audit or validation finding."""
+    """One audit or validation finding.
+
+    `advisory` marks a finding that is reported and does not fail. Use it where
+    the standard states a preference rather than a rule, and where a repository's
+    own usage can legitimately justify the difference. A repository may keep
+    documents the central layout does not define; the audit says so, so the
+    choice stays visible, and leaves the judgment to whoever owns the repository.
+    """
 
     repo: str
     check: str
     detail: str
     fix: str = ""
+    advisory: bool = False
 
     def __str__(self) -> str:
-        line = f"{self.repo}: {self.check}: {self.detail}"
+        mark = "note" if self.advisory else "fail"
+        line = f"{mark}  {self.repo}: {self.check}: {self.detail}"
         if self.fix:
-            line += f"\n    fix: {self.fix}"
+            line += f"\n      fix: {self.fix}"
         return line
 
 

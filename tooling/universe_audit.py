@@ -60,6 +60,7 @@ def audit_repository(
                 "no-checkout",
                 f"no checkout at {entry['local_path']}",
                 f"git clone {entry['remote']} {entry['local_path']}",
+                advisory=True,
             )
         ]
 
@@ -247,8 +248,9 @@ def _audit_agents_budget(name, path) -> list[Problem]:
             Problem(
                 name,
                 "agents-md-over-target",
-                f"{count} lines of local content, over the {AGENTS_SOFT_TARGET} target "
-                f"(reported, not a failure)",
+                f"{count} lines of local content, over the {AGENTS_SOFT_TARGET} target",
+                "move a command catalogue to docs/current/ and link central standards",
+                advisory=True,
             )
         ]
     return []
@@ -267,10 +269,34 @@ def _audit_documentation(universe, name, entry, path) -> list[Problem]:
                     name,
                     "missing-docs",
                     f"profile `{entry['profile']}` expects {expected}",
+                    advisory=True,
                 )
             )
 
-    for candidate in ("docs/current", "docs/decisions", "docs/issues", "docs/working"):
+    docs = path / "docs"
+    if docs.is_dir():
+        loose = sorted(f.name for f in docs.glob("*.md"))
+        if loose:
+            problems.append(
+                Problem(
+                    name,
+                    "uncategorised-docs",
+                    f"{len(loose)} Markdown file(s) directly under docs/ with no "
+                    f"stated category: {', '.join(loose)}",
+                    "move each into docs/current/, decisions/, evidence/, "
+                    "issues/, or working/, unless this repository's usage needs "
+                    "them where they are",
+                    advisory=True,
+                )
+            )
+
+    for candidate in (
+        "docs/current",
+        "docs/decisions",
+        "docs/evidence",
+        "docs/issues",
+        "docs/working",
+    ):
         target = path / candidate
         if target.is_dir() and not any(target.iterdir()):
             problems.append(

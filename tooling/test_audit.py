@@ -97,6 +97,38 @@ class DocumentationAuditTests(unittest.TestCase):
         (target / "service.md").write_text("# service\n", encoding="utf-8")
         self.assertNotIn("empty-docs-directory", self._checks())
 
+    def test_a_markdown_file_directly_under_docs_is_reported_not_failed(self):
+        """A repository may keep a document where its own usage needs it."""
+        docs = self.fixture.repo / "docs"
+        docs.mkdir()
+        (docs / "platform.md").write_text("# platform\n", encoding="utf-8")
+        problems = audit.audit_repository(
+            self.fixture.universe, "example", path=self.fixture.repo
+        )
+        found = [p for p in problems if p.check == "uncategorised-docs"]
+        self.assertEqual(1, len(found))
+        self.assertTrue(found[0].advisory, "a preference must not fail conformance")
+
+    def test_an_empty_directory_still_fails(self):
+        """Softening a preference must not soften a rule."""
+        (self.fixture.repo / "docs" / "current").mkdir(parents=True)
+        problems = audit.audit_repository(
+            self.fixture.universe, "example", path=self.fixture.repo
+        )
+        found = [p for p in problems if p.check == "empty-docs-directory"]
+        self.assertEqual(1, len(found))
+        self.assertFalse(found[0].advisory)
+
+    def test_the_same_file_inside_a_category_passes(self):
+        target = self.fixture.repo / "docs" / "current"
+        target.mkdir(parents=True)
+        (target / "platform.md").write_text("# platform\n", encoding="utf-8")
+        self.assertNotIn("uncategorised-docs", self._checks())
+
+    def test_an_empty_evidence_directory_fails_like_any_other(self):
+        (self.fixture.repo / "docs" / "evidence").mkdir(parents=True)
+        self.assertIn("empty-docs-directory", self._checks())
+
     def test_a_decision_without_the_template_header_fails(self):
         target = self.fixture.repo / "docs" / "decisions"
         target.mkdir(parents=True)
