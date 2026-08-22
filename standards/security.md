@@ -12,9 +12,9 @@ enforce them.
 Never commit a password, token, API key, private key, AppRole SecretID,
 kubeconfig, rendered Kubernetes Secret, recovery JSON, or live export.
 
-A private repository is not a secret store. `orange-inventory`, `architecture`,
-`myskills`, and `entpass` are private because their content is not for
-publication. That is not the same as holding secret values, and none of them
+A private repository is not a secret store. `architecture`, `orange`,
+`orange-inventory`, `myskills`, `entpass`, and `portfolio-bot` are private
+because their content is not for publication. That is not the same as holding secret values, and none of them
 does.
 
 Credentials live outside every repository, in the ignored `.keys/` directory of
@@ -56,9 +56,30 @@ Never publish or unpublish a GHCR package as a side effect of other work.
 
 Never copy private inventory material into a public or public-ready repository.
 
+### Public-safe is wider than secret-free
+
+A secret scanner finds credentials. It does not find everything that makes
+content unsafe to publish, and passing gitleaks is not the same as being
+public-safe.
+
+In a repository requiring public safety, treat these as needing a decision
+before they are committed:
+
+- an internal hostname, a private IP range, or a network topology detail;
+- a live resource identifier — an account number, a workflow ID, a channel name;
+- a real person's name, address, or contact details;
+- the shape of an internal process an attacker could use to social-engineer it.
+
+None of these is a credential. Each narrows an attacker's search.
+
+Where such content is deliberately published, record the decision. `mihkel` is
+the live case: it is public and carries RFC1918 addresses, an internal hostname,
+and a live n8n workflow ID. Nothing records that the exposure was considered,
+which is the gap — not the content.
+
 ## Secret scanning
 
-Two mechanisms, because they catch different things.
+Use two mechanisms, because they catch different things.
 
 | Mechanism | Where | Catches |
 | --- | --- | --- |
@@ -127,9 +148,9 @@ pull request to a token.
 deliberately. Each has a `gate` job that verifies trusted pull-request metadata
 before any later job checks out the head revision, by pinned SHA.
 
-`plepic` declares `permissions: {}` at the top level. **`servitium` does not**:
-it grants at job level only, so a job added later would inherit the repository
-default rather than nothing. Add the top-level block there.
+Both declare `permissions: {}` at the top level, so a job added later inherits
+nothing rather than the repository default. `servitium`'s was missing and was
+added; keep it that way.
 
 `zizmor` flags that trigger by default. **This is an accepted, reviewed design.**
 Suppress the finding for these two workflows. Do not restructure either pipeline
@@ -141,8 +162,8 @@ tool.
 
 ## Dependency automation
 
-Renovate, installed once as a GitHub App, extending the shared preset at
-[`templates/renovate.json`](../templates/renovate.json).
+Install Renovate once as a GitHub App. Every repository extends the shared
+preset at [`templates/renovate.json`](../templates/renovate.json).
 
 Each repository holds a small `renovate.json` that extends the preset and adds
 nothing else unless it must.
@@ -160,9 +181,9 @@ On a repository that supports rulesets, require:
 
 ### Named exceptions and accepted risks
 
-**Five private repositories cannot carry a ruleset.** `architecture`, `orange`,
-`orange-inventory`, `myskills`, and `entpass` return HTTP 403 from the rulesets
-API: *"Upgrade to GitHub Pro or make this repository public to enable this
+**Six private repositories cannot carry a ruleset.** `architecture`, `orange`,
+`orange-inventory`, `myskills`, `entpass`, and `portfolio-bot` return HTTP 403
+from the rulesets API: *"Upgrade to GitHub Pro or make this repository public to enable this
 feature."* This is an accepted, named risk, not a silent gap. The
 never-commit-to-a-default-branch rule in
 [`agent-operation.md`](./agent-operation.md) stands in for it, and the audit

@@ -303,10 +303,11 @@ class BaselineRenderTests(unittest.TestCase):
     def test_every_generated_section_is_within_its_budget(self):
         for name in self.universe.repositories:
             with self.subTest(repo=name):
-                count = len(
-                    render.render_baseline(self.universe, name).strip().splitlines()
+                section = render.render_baseline(self.universe, name).strip()
+                count = sum(1 for line in section.splitlines() if line.strip())
+                self.assertLessEqual(
+                    count, 40, "the managed budget is 40 non-blank lines"
                 )
-                self.assertLessEqual(count, 45, "the managed section budget is 45 lines")
 
     def test_every_standard_the_section_links_exists(self):
         section = render.render_baseline(self.universe, "mihkel")
