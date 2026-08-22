@@ -323,6 +323,11 @@ def extract_managed_section(text: str) -> str | None:
 # ----------------------------------------------------------------- drift ---
 
 
+def export_tree(repo: Path, ref: str, destination: Path) -> None:
+    """Extract `ref`'s tree into `destination`, without touching any checkout."""
+    _export(repo, ref, destination)
+
+
 def _export(repo: Path, ref: str, destination: Path) -> None:
     destination.mkdir(parents=True, exist_ok=True)
     archive = subprocess.run(

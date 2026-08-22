@@ -26,7 +26,10 @@ class StalenessTests(unittest.TestCase):
 
     def _checks(self):
         return {
-            p.check: p for p in audit.audit_repository(self.fixture.universe, "example")
+            p.check: p
+            for p in audit.audit_repository(
+                self.fixture.universe, "example", path=self.fixture.repo
+            )
         }
 
     def test_a_synchronized_repository_has_no_baseline_finding(self):
@@ -70,7 +73,12 @@ class DocumentationAuditTests(unittest.TestCase):
         render.sync_baseline(self.fixture.universe, "example")
 
     def _checks(self):
-        return {p.check for p in audit.audit_repository(self.fixture.universe, "example")}
+        return {
+            p.check
+            for p in audit.audit_repository(
+                self.fixture.universe, "example", path=self.fixture.repo
+            )
+        }
 
     def test_an_empty_documentation_directory_fails(self):
         (self.fixture.repo / "docs" / "current").mkdir(parents=True)
@@ -117,7 +125,9 @@ class DocumentationAuditTests(unittest.TestCase):
 
     def test_a_missing_required_file_names_the_fix(self):
         (self.fixture.repo / "README.md").unlink()
-        problems = audit.audit_repository(self.fixture.universe, "example")
+        problems = audit.audit_repository(
+            self.fixture.universe, "example", path=self.fixture.repo
+        )
         missing = [p for p in problems if p.check == "missing-file"]
         self.assertTrue(missing)
         self.assertIn("sync-baseline", missing[0].fix)
@@ -136,7 +146,12 @@ class BudgetAuditTests(unittest.TestCase):
             "# example\n\n" + "local rule\n" * local_lines, encoding="utf-8"
         )
         render.sync_baseline(self.fixture.universe, "example")
-        return {p.check for p in audit.audit_repository(self.fixture.universe, "example")}
+        return {
+            p.check
+            for p in audit.audit_repository(
+                self.fixture.universe, "example", path=self.fixture.repo
+            )
+        }
 
     def test_over_the_ceiling_fails(self):
         found = self._checks(audit.AGENTS_HARD_CEILING + 20)
@@ -169,7 +184,12 @@ class LanguageGateTests(unittest.TestCase):
         (self.workflows / "validate.yml").write_text(body, encoding="utf-8")
 
     def _checks(self):
-        return {p.check for p in audit.audit_repository(self.fixture.universe, "example")}
+        return {
+            p.check
+            for p in audit.audit_repository(
+                self.fixture.universe, "example", path=self.fixture.repo
+            )
+        }
 
     def test_a_declared_language_with_no_gate_fails(self):
         self._write_workflow(
@@ -204,6 +224,52 @@ class LanguageGateTests(unittest.TestCase):
 
     def test_no_ci_at_all_is_reported_distinctly(self):
         self.assertIn("no-ci", self._checks())
+
+
+class BranchNotWorkingTreeTests(unittest.TestCase):
+    """The audit describes the branch, not whatever is checked out.
+
+    A working tree lags its branch, badly right after a merge, and the audit
+    skill fetches without pulling by design. Reading the checkout answers a
+    question nobody asked.
+    """
+
+    def setUp(self):
+        self.fixture = Fixture()
+        self.addCleanup(self.fixture.close)
+        repo = self.fixture.repo
+        _git("init", "--initial-branch=main", cwd=repo)
+        _git("config", "user.email", "t@example.invalid", cwd=repo)
+        _git("config", "user.name", "t", cwd=repo)
+        (repo / "README.md").write_text("# example\n", encoding="utf-8")
+        (repo / "AGENTS.md").write_text(LOCAL_CONTENT, encoding="utf-8")
+        render.sync_baseline(self.fixture.universe, "example")
+        _git("add", "-A", cwd=repo)
+        _git("commit", "-m", "initial commit", cwd=repo)
+
+    def test_an_uncommitted_working_tree_change_is_not_reported(self):
+        """Committed state is clean, so a dirty checkout must not fail the audit."""
+        (self.fixture.repo / "AGENTS.md").write_text("# broken\n", encoding="utf-8")
+        checks = {
+            p.check for p in audit.audit_repository(self.fixture.universe, "example")
+        }
+        self.assertNotIn("bad-markers", checks)
+
+    def test_the_same_change_is_reported_when_the_worktree_is_audited_directly(self):
+        (self.fixture.repo / "AGENTS.md").write_text("# broken\n", encoding="utf-8")
+        checks = {
+            p.check
+            for p in audit.audit_repository(
+                self.fixture.universe, "example", path=self.fixture.repo
+            )
+        }
+        self.assertIn("bad-markers", checks)
+
+    def test_an_unreadable_branch_is_a_finding_not_a_pass(self):
+        broken = Fixture()
+        self.addCleanup(broken.close)
+        problems = audit.audit_repository(broken.universe, "example")
+        self.assertEqual(["cannot-read-branch"], [p.check for p in problems])
 
 
 class DirectPushTests(unittest.TestCase):
