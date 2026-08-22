@@ -34,10 +34,10 @@ missing commits were the governance work itself.
 
 > An agent that opens this directory and starts reading finds no agent
 > instructions at all. — deploys
-
+>
 > You get the pre-governance repository and you will answer half these
 > questions wrong. — mihkel
-
+>
 > I would have written a plan-location note into `docs/AGENTS.md`, a file
 > deleted upstream, and branched from a `main` four commits stale. — orange
 
