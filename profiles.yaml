@@ -92,6 +92,22 @@ profiles:
       - build, test, and release procedure
     public_safe_required: true
 
+  application-private:
+    description: A private application, service, or bot.
+    standards: []
+    expected_docs: [docs/current/]
+    optional_docs: [docs/decisions/, docs/working/]
+    additionally_documents:
+      - local architecture and current behaviour
+      - decisions
+      - build, test, and release procedure
+    public_safe_required: false
+    notes: >-
+      application-public without the publication constraint. Separate because a
+      private service is a real repository type here and research-private is
+      not it: research has no deployable artifact and is told not to adopt
+      application conventions, which a service must.
+
   fork-upstream-governed:
     description: A maintained public fork that follows its upstream's conventions.
     standards: []
