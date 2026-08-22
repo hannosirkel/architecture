@@ -58,7 +58,10 @@ There is no scheduler, cron, daemon, or watcher, by decision. See
    ```
 
    Never `pull`, `checkout`, `stash`, `reset`, or `clean`. Another agent may be
-   working in that tree.
+   working in that tree, and the audit does not need it to be current.
+
+   A repository the audit cannot export reports `cannot-read-branch`. That is a
+   finding, never a pass.
 
 4. **Run the audit.**
 
@@ -69,6 +72,13 @@ There is no scheduler, cron, daemon, or watcher, by decision. See
    Add repository names to narrow it. A name outside the catalogue is refused
    with exit code 2, not reported as a failure: a repository outside the
    catalogue is out of scope by construction.
+
+   Add `--path <dir>` to audit a worktree instead of the branch, before pushing
+   it. That is the only mode that reads uncommitted work.
+
+   A catalogued repository this universe does not govern — a fork following
+   upstream's conventions — prints `not governed; conformance skipped` and is
+   counted out of the total. It is never reported as clean.
 
 5. **Compare declared visibility against GitHub.** The CLI reads the catalogue,
    not the API.

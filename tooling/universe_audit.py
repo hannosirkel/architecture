@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 from universe_catalogue import (
@@ -20,6 +21,7 @@ from universe_catalogue import (
 )
 from universe_render import (
     HABIT_CONFIG_PATH,
+    export_tree,
     extract_managed_section,
     local_line_count,
     render_baseline,
@@ -38,15 +40,20 @@ def audit_repository(
 ) -> list[Problem]:
     """Audit one repository against the catalogue. Reports; never fixes.
 
-    `path` overrides the catalogue's `local_path`, for auditing a worktree.
+    Without `path`, the files audited come from `origin/<default_branch>`, not
+    from the working tree. A working tree lags the branch — after a merge it
+    lags badly — and the audit skill fetches without pulling, by design. An
+    audit that describes whatever a developer happens to have checked out
+    answers a question nobody asked.
+
+    `path` overrides that, for auditing a worktree before it is pushed.
     """
     entry = entry_for(universe, name)
     if not is_governed(universe, name):
         return []
-    path = path or checkout_path(entry)
-    problems: list[Problem] = []
+    repo = path or checkout_path(entry)
 
-    if not path.is_dir():
+    if not repo.is_dir():
         return [
             Problem(
                 name,
@@ -56,14 +63,40 @@ def audit_repository(
             )
         ]
 
+    if path is not None:
+        return _audit_tree(universe, name, entry, repo, repo)
+
+    ref = _resolve_ref(repo, entry.get("default_branch") or "main")
+    with tempfile.TemporaryDirectory() as workspace:
+        exported = Path(workspace) / "tree"
+        try:
+            export_tree(repo, ref, exported)
+        except (OSError, subprocess.CalledProcessError) as exc:
+            return [
+                Problem(
+                    name,
+                    "cannot-read-branch",
+                    f"could not export {ref}: {exc}",
+                    "fetch the repository, then run the audit again",
+                )
+            ]
+        return _audit_tree(universe, name, entry, exported, repo)
+
+
+def _audit_tree(
+    universe: Universe, name: str, entry: dict, path: Path, repo: Path
+) -> list[Problem]:
+    """`path` holds the files to inspect; `repo` is where git history lives."""
+    problems: list[Problem] = []
+
     problems += _audit_required_files(universe, name, entry, path)
     problems += _audit_managed_section(universe, name, path)
     problems += _audit_habit_config(universe, name, path)
     problems += _audit_agents_budget(name, path)
     problems += _audit_documentation(universe, name, entry, path)
-    problems += _audit_languages(universe, name, entry, path)
+    problems += _audit_languages(universe, name, entry, path, repo)
     problems += _audit_language_gates(universe, name, entry, path)
-    problems += _audit_default_branch_commits(name, entry, path)
+    problems += _audit_default_branch_commits(name, entry, repo)
     return problems
 
 
@@ -329,11 +362,11 @@ def _tracked_files(path: Path) -> list[Path]:
     return files
 
 
-def _audit_languages(universe, name, entry, path) -> list[Problem]:
+def _audit_languages(universe, name, entry, path, repo=None) -> list[Problem]:
     """Report a declared language the repository does not contain, and vice versa."""
     problems = []
     declared = set(entry.get("languages") or [])
-    files = _tracked_files(path)
+    files = _tracked_files(repo or path)
     if not files:
         return problems
 
