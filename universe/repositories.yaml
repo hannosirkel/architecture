@@ -214,6 +214,17 @@ repositories:
     languages: [typescript, python, shell]
     npm_project: false
     supports_rulesets: true
+    exceptions:
+      missing-gate:
+        matches: "declares `typescript`"
+        reason: >-
+          mihkel has no npm project. Adding ESLint means a package.json, a
+          lockfile, 71 packages, an npm ci step, and a permanent Renovate
+          stream on a repository holding credentialed n8n and GitHub access —
+          to baseline four no-unused-vars findings on day one, two of them
+          artefacts of generate-workflow.js splicing logic.js. The standard
+          says not to add a package manager for uniformity.
+        decision: mihkel docs/decisions/0005-no-npm-project-for-the-javascript-gate.md
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
       # baselined, exactly as a linter baseline records today's findings.

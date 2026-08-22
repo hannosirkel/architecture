@@ -18,6 +18,7 @@ from universe_catalogue import (
     Universe,
     checkout_path,
     entry_for,
+    exceptions_for,
     is_governed,
 )
 from universe_render import (
@@ -99,7 +100,58 @@ def _audit_tree(
     problems += _audit_languages(universe, name, entry, path, repo)
     problems += _audit_language_gates(universe, name, entry, path)
     problems += _audit_default_branch_commits(name, entry, repo)
-    return problems
+    return _apply_exceptions(universe, name, problems)
+
+
+def _apply_exceptions(universe: Universe, name: str, problems: list) -> list:
+    """Downgrade a finding the catalogue has an explicit exception for.
+
+    The finding is still printed, with its reason and decision. It stops failing
+    conformance, because a deliberate recorded choice is not a defect, and a
+    check that keeps failing on one becomes noise everybody learns to skip.
+
+    An exception that matches nothing is reported: it has outlived its reason.
+    """
+    granted = exceptions_for(universe, name)
+    if not granted:
+        return problems
+
+    matched = set()
+    updated = []
+    for problem in problems:
+        spec = granted.get(problem.check)
+        # `matches` narrows an exception to the finding it was granted for. A
+        # check can fire several times for different reasons — one repository
+        # can be missing a shell gate and excepted from a typescript one — and
+        # an exception keyed on the check alone would silence both.
+        if spec is None or (
+            isinstance(spec, dict)
+            and spec.get("matches")
+            and str(spec["matches"]) not in problem.detail
+        ):
+            updated.append(problem)
+            continue
+        matched.add(problem.check)
+        updated.append(
+            Problem(
+                problem.repo,
+                problem.check,
+                f"{problem.detail} — excepted: {spec.get('reason')}",
+                f"see {spec.get('decision')}",
+                advisory=True,
+            )
+        )
+
+    for check in sorted(set(granted) - matched):
+        updated.append(
+            Problem(
+                name,
+                "stale-exception",
+                f"`{check}` is excepted but no longer fires",
+                "remove the exception from universe/repositories.yaml",
+            )
+        )
+    return updated
 
 
 _NPM_RUN = re.compile(r"npm run ([A-Za-z0-9:_-]+)")

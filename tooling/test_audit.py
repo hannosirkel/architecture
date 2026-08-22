@@ -315,6 +315,71 @@ class LanguageGateTests(unittest.TestCase):
         self.assertIn("no-ci", self._checks())
 
 
+class ExceptionTests(unittest.TestCase):
+    """A deliberate recorded choice is not a defect."""
+
+    def setUp(self):
+        self.universe = cat.load(ROOT)
+
+    def _mihkel(self):
+        return audit.audit_repository(self.universe, "mihkel")
+
+    def test_the_excepted_finding_is_advisory_and_still_printed(self):
+        found = [
+            p
+            for p in self._mihkel()
+            if p.check == "missing-gate" and "typescript" in p.detail
+        ]
+        self.assertEqual(1, len(found))
+        self.assertTrue(found[0].advisory)
+        self.assertIn("excepted:", found[0].detail)
+        self.assertIn("decisions/", found[0].fix)
+
+    def test_an_exception_does_not_silence_a_neighbouring_finding(self):
+        """One check fires for several reasons; an exception covers one."""
+        others = [
+            p
+            for p in self._mihkel()
+            if p.check == "missing-gate" and "typescript" not in p.detail
+        ]
+        for problem in others:
+            self.assertFalse(problem.advisory, f"{problem.detail} must still fail")
+
+    def test_an_exception_that_matches_nothing_is_stale(self):
+        entry = self.universe.repositories["mihkel"]
+        entry["exceptions"] = {
+            "direct-push": {
+                "matches": "never appears",
+                "reason": "r",
+                "decision": "d",
+            }
+        }
+        checks = [p.check for p in self._mihkel()]
+        self.assertIn("stale-exception", checks)
+
+    def test_validate_refuses_an_exception_without_a_reason(self):
+        self.universe.repositories["mihkel"]["exceptions"] = {
+            "missing-gate": {"matches": "x", "decision": "d"}
+        }
+        checks = [p.check for p in cat.validate(self.universe)]
+        self.assertIn("malformed-exception", checks)
+
+    def test_validate_refuses_an_exception_without_a_decision(self):
+        self.universe.repositories["mihkel"]["exceptions"] = {
+            "missing-gate": {"matches": "x", "reason": "r"}
+        }
+        checks = [p.check for p in cat.validate(self.universe)]
+        self.assertIn("malformed-exception", checks)
+
+    def test_validate_refuses_an_unscoped_exception(self):
+        """Without `matches` it would silence every finding of that check."""
+        self.universe.repositories["mihkel"]["exceptions"] = {
+            "missing-gate": {"reason": "r", "decision": "d"}
+        }
+        checks = [p.check for p in cat.validate(self.universe)]
+        self.assertIn("unscoped-exception", checks)
+
+
 class BranchNotWorkingTreeTests(unittest.TestCase):
     """The audit describes the branch, not whatever is checked out.
 
