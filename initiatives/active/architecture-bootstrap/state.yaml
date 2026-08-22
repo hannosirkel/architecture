@@ -233,6 +233,26 @@ audit_after_branch_protection_floor:
       add: [deletion, non_fast_forward, pull_request, required_status_checks]
 
 wave_2:
+  W2-deploys:
+    pr: https://github.com/hannosirkel/deploys/pull/19
+    ci: pass
+    content: >-
+      shellcheck over a runtime-discovered file list, zizmor, markdownlint,
+      lychee, and kubeconform pinned to Kubernetes 1.36.2.
+    no_manifest_change: >-
+      Verified. The only non-CI file touched is servitium/tests/manifests.sh,
+      and only to add a comment and one shellcheck directive.
+  W2-myskills:
+    pr: https://github.com/hannosirkel/myskills/pull/4
+    ci: pass
+  W2-entpass:
+    pr: https://github.com/hannosirkel/entpass/pull/3
+    ci: pass
+  W2-ai-portal:
+    pr: https://github.com/hannosirkel/ai-portal/pull/1
+    ci: pass
+    no_scaffolding: verified; workflow and two check configs only
+
   W2-architecture:
     pr: https://github.com/hannosirkel/architecture/pull/8
     merged: true
@@ -317,6 +337,26 @@ branch_protection_floor:
       add: [deletion, non_fast_forward, pull_request, required_status_checks]
 
 wave_2:
+  W2-deploys:
+    pr: https://github.com/hannosirkel/deploys/pull/19
+    ci: pass
+    content: >-
+      shellcheck over a runtime-discovered file list, zizmor, markdownlint,
+      lychee, and kubeconform pinned to Kubernetes 1.36.2.
+    no_manifest_change: >-
+      Verified. The only non-CI file touched is servitium/tests/manifests.sh,
+      and only to add a comment and one shellcheck directive.
+  W2-myskills:
+    pr: https://github.com/hannosirkel/myskills/pull/4
+    ci: pass
+  W2-entpass:
+    pr: https://github.com/hannosirkel/entpass/pull/3
+    ci: pass
+  W2-ai-portal:
+    pr: https://github.com/hannosirkel/ai-portal/pull/1
+    ci: pass
+    no_scaffolding: verified; workflow and two check configs only
+
   W2-architecture:
     pr: https://github.com/hannosirkel/architecture/pull/8
     merged: true
@@ -563,6 +603,35 @@ gate_2:
   nomadtty_playwright: >-
     Recorded as follow-up in nomadtty, per the operator's decision. Not fixed
     here; this initiative does not change application code or tests.
+
+findings_from_the_new_gates:
+  - repository: deploys
+    severity: high
+    finding: >-
+      Two assertions in servitium/tests/manifests.sh cannot fail. Both are
+      written `! grep -q ...`, and shellcheck's SC2251 is exactly right about
+      it: the `!` exempts the command from errexit, so the script continues and
+      exits 0 whichever way the grep goes.
+    verified: >-
+      Empirically, not from the rule text. A three-line reproduction under
+      `set -euo pipefail` runs past the negated assertion and exits 0.
+    what_they_were_guarding:
+      - >-
+        Line 14: that a rendered overlay does not carry the placeholder digest
+        sha256:0000... An unpromoted placeholder would reach Argo CD unchallenged.
+      - >-
+        Line 29: that the test overlay does not mount the live secret
+        `servitium-secrets` instead of `servitium-test-secrets`. This is a
+        cross-environment secret isolation check, and it cannot fail.
+    handling: >-
+      Ordinary follow-up in deploys, and it should be prompt. Wave 2 correctly
+      baselined rather than fixed it: correcting the assertion changes the
+      script's behaviour, which is outside a governance change. The fix is
+      `if grep -q ...; then echo ...; exit 1; fi` or `grep -qv`, with a test
+      that proves the assertion now fails.
+    note: >-
+      The shellcheck gate found this on its first run, in a repository whose
+      whole job is to be the safe path to production.
 
 deferred:
   - item: >-
