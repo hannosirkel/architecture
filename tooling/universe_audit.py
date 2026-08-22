@@ -156,6 +156,22 @@ def _apply_exceptions(universe: Universe, name: str, problems: list) -> list:
 
 _NPM_RUN = re.compile(r"npm run ([A-Za-z0-9:_-]+)")
 
+# A suppression directive names the tool without running it. So does a step
+# name, a comment, and a documentation link. Matching the bare word reported a
+# gate that ran nowhere — a false pass, which is worse than a false failure,
+# because nobody goes looking for it.
+_COMMENT = re.compile(r"(?m)(^|\s)#.*$")
+
+
+def _invocations(text: str) -> str:
+    """`text` with comments removed, so only what runs is left to match."""
+    return _COMMENT.sub(" ", text)
+
+
+def _runs(tool: str, text: str) -> bool:
+    """Whether `text` invokes `tool` as a command rather than mentioning it."""
+    return re.search(rf"(?:^|[\s|;&(])(?:sudo\s+)?{re.escape(tool)}\b", text) is not None
+
 
 def gate_text(path: Path) -> str:
     """Everything a repository's CI could run, as one searchable string.
@@ -175,8 +191,10 @@ def gate_text(path: Path) -> str:
         target = path / candidate
         if target.is_file():
             chunks.append(target.read_text(encoding="utf-8", errors="ignore"))
-    chunks.extend(_npm_scripts(path, "\n".join(chunks)))
-    return "\n".join(chunks)
+    # Strip comments before resolving npm scripts, so a commented-out
+    # `npm run lint` does not pull a linter into the gate text either.
+    running = _invocations("\n".join(chunks))
+    return "\n".join([running, *_npm_scripts(path, running)])
 
 
 def _npm_scripts(path: Path, text: str, depth: int = 3) -> list[str]:
@@ -226,7 +244,7 @@ def _audit_language_gates(universe, name, entry, path) -> list[Problem]:
         linters = spec.get("linters") or []
         if not linters:
             continue
-        present = any(linter in text for linter in linters)
+        present = any(_runs(linter, text) for linter in linters)
         if language in declared and not present:
             problems.append(
                 Problem(
