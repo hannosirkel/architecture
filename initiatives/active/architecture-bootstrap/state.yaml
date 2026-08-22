@@ -1,14 +1,15 @@
 schema_version: 1
 initiative: managed-universe-bootstrap
-status: IMPLEMENTING
+status: COMPLETE
 contract_path: initiatives/active/architecture-bootstrap.md
 contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
-current_phase: phase-7-completion-and-handoff
-current_gate: gate-2-merge-and-external-side-effects
-last_completed_step: resync-sweep-merged-and-workspace-cleaned
+current_phase: complete
+current_gate: none
+last_completed_step: phase-7-handoff
 next_action: >-
-  Operator: approve plepic and servitium re-sync PRs; grant Administration
-  write or apply the five rulesets; confirm the Renovate dashboards appear.
+  Nothing here. One pull request waits on an approving review:
+  servitium#32, removing Dependabot. Everything else is ordinary work in the
+  owning repositories, listed in handoff.md.
 
 gate_1:
   approved: true
@@ -202,7 +203,23 @@ nomadtty:
     details. Ownership facts, not governance mechanics.
 
 audit_after_branch_protection_floor:
-  status: blocked-on-a-permission-the-token-does-not-have
+  status: applied
+  applied_at: "2026-08-22T22:05:00Z"
+  result: >-
+    One ruleset on each of the six public governed repositories. deploys,
+    plepic and robobook already had one, so required_status_checks was added to
+    what was there rather than creating a second overlapping ruleset; that
+    preserved the approval counts the operator had set. mihkel and ai-portal
+    had none and got the full floor. servitium was already at it.
+  deploys_exception: >-
+    No pull_request rule. Its main receives automated digest pushes from the
+    plepic and servitium release workflows.
+  what_actually_blocked_it: >-
+    Not the token. A GitHub App permission change stays a pending request until
+    the installation accepts it, and a freshly minted token does not carry it
+    until then. Re-minting was tried first and did not help. The tell was
+    X-Accepted-Github-Permissions: administration=write on a 403 against a
+    sixty-second-old token.
   operator_delegated: true
   blocked_by: >-
     GitHub returns 403 "Resource not accessible by integration" on POST
@@ -397,7 +414,23 @@ top_tier_review:
     the three load-bearing documents.
 
 branch_protection_floor:
-  status: blocked-on-a-permission-the-token-does-not-have
+  status: applied
+  applied_at: "2026-08-22T22:05:00Z"
+  result: >-
+    One ruleset on each of the six public governed repositories. deploys,
+    plepic and robobook already had one, so required_status_checks was added to
+    what was there rather than creating a second overlapping ruleset; that
+    preserved the approval counts the operator had set. mihkel and ai-portal
+    had none and got the full floor. servitium was already at it.
+  deploys_exception: >-
+    No pull_request rule. Its main receives automated digest pushes from the
+    plepic and servitium release workflows.
+  what_actually_blocked_it: >-
+    Not the token. A GitHub App permission change stays a pending request until
+    the installation accepts it, and a freshly minted token does not carry it
+    until then. Re-minting was tried first and did not help. The tell was
+    X-Accepted-Github-Permissions: administration=write on a 403 against a
+    sixty-second-old token.
   operator_delegated: true
   blocked_by: >-
     GitHub returns 403 "Resource not accessible by integration" on POST
@@ -1042,3 +1075,35 @@ phase_6:
 phase_7:
   handoff: initiatives/active/architecture-bootstrap/handoff.md
   work_routed_to_owning_repositories: 12
+
+renovate_outcome:
+  installed: true
+  preset_defect: >-
+    The shared preset resolved nowhere. Three defects, none caught by anything
+    built here: the reference carried a .json extension, which Renovate appends
+    itself, so it looked for templates/renovate.json.json; the preset file was
+    named renovate.json, deprecated for a preset and colliding with the name
+    every repository uses for its own config; and the preset was invalid,
+    carrying prPriority inside vulnerabilityAlerts.
+  found_by: >-
+    Renovate itself, which opened a "Fix Renovate Configuration" issue in all
+    six repositories it runs on. The audit checked that renovate.json contains a
+    string, never that the string resolves.
+  fixed: >-
+    templates/default.json, referenced without an extension, validated by
+    renovate-config-validator --strict in architecture's CI. All twelve
+    repositories updated and merged.
+  access: >-
+    A local> preset is fetched with the installation token, so architecture had
+    to be added to the Renovate installation. It was.
+  outstanding: >-
+    servitium#32 removes its Dependabot config and waits on review. nomadtty
+    still runs Dependabot and has an open Renovate onboarding pull request;
+    both are the operator's call, because nomadtty is not governed.
+
+final_audit:
+  result: "0 failing, 8 advisory across 12 governed repositories"
+  advisory: >-
+    Two recorded exceptions with decision links, three soft-target reports, and
+    three documentation-layout notes in the orange pair. All explained.
+  nomadtty: catalogued, not governed, reported as skipped rather than clean

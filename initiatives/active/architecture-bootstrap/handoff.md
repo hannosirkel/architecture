@@ -92,10 +92,40 @@ because an Orange plan routinely names live hosts and identities.
 
 ## What needs you
 
-| Item | Why it is not done |
-| --- | --- |
-| **Branch-protection floor** on `deploys`, `plepic`, `robobook`, `mihkel`, `ai-portal` | The token gets HTTP 403 on `POST .../rulesets`. The app can read rulesets and not write them; it needs `Administration: write`, or the five go in through the UI. The exact payload and per-repository delta are in `state.yaml` under `branch_protection_floor`. |
-| **Renovate dashboards** | Installed. Watch for the Dependency Dashboard issue in each repository — that is the confirmation the shared preset resolved. `architecture` is private and every repository extends a preset from it, so the app must have access to `architecture` or every other config fails silently. First dependency PRs wait for the Monday window by design; security fixes do not. |
+One open pull request: **`servitium#32`**, removing its Dependabot config now
+that Renovate covers the same three ecosystems. `servitium` requires an
+approving review, so it waits for you. Its open Dependabot pull request
+`servitium#24` is the same bump Renovate will propose; close whichever you
+prefer.
+
+Two decisions the governance layer has no opinion on:
+
+- **`nomadtty#3`**, Renovate's onboarding pull request on the fork this
+  universe deliberately does not govern. Adding a config there is divergence
+  from upstream, which is the thing `decisions/007` avoids — but it is your
+  fork.
+- **`nomadtty` still runs Dependabot.** Same duplication `servitium` had. Out
+  of scope for the same reason.
+
+## Two things worth knowing before you next change a permission
+
+**Forcing a token refresh.** The GitHub App token is minted and cached by
+`~/bin/baldrick-token`, reused while more than five minutes of life remain:
+
+```bash
+rm -f "${XDG_RUNTIME_DIR:-/tmp}/baldrick-token.$(id -u)" && ~/bin/baldrick-token
+```
+
+A token carries the permissions frozen at mint time, so a permission change
+needs a new one. But a fresh token does not help while the *installation* still
+shows the change as a pending request — accept it at
+`https://github.com/settings/installations` first. Both were true here, in that
+order, and only the second was the blocker.
+
+**A `local>` Renovate preset is fetched with the installation token.** A
+repository the app cannot read is a preset it cannot resolve, and every
+repository extending it stops updating with `Cannot find preset's package`.
+`architecture` is private, so it must be in the installation.
 
 ## Exceptions, recorded
 
@@ -117,6 +147,9 @@ later upstream merge has to reconcile. `sync-baseline` refuses to write into it;
 [`decisions/007`](../../../decisions/007-nomadtty-is-governed-by-upstream.md).
 
 ## Accepted risks
+
+The branch-protection floor is applied: one ruleset on each of the six public
+governed repositories, `deploys` deliberately without a pull-request rule.
 
 - **Six private repositories cannot carry a ruleset** — `architecture`,
   `orange`, `orange-inventory`, `myskills`, `entpass`, `portfolio-bot` — the
