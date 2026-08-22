@@ -3,10 +3,10 @@ initiative: managed-universe-bootstrap
 status: IMPLEMENTING
 contract_path: initiatives/active/architecture-bootstrap.md
 contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
-current_phase: phase-4-wave-1-governance-conformance
+current_phase: phase-5-wave-2-code-quality-and-security
 current_gate: gate-2-merge-and-external-side-effects
-last_completed_step: top-tier-review-and-its-fixes-merged
-next_action: complete-wave-1, then wave 2
+last_completed_step: wave-1-merged-across-eleven-governed-repositories
+next_action: run-wave-2
 
 gate_1:
   approved: true
@@ -170,6 +170,40 @@ completed_steps:
   - wave-0-dispatched-and-opened
   - phase-2-populate-architecture
   - top-tier-review-of-the-governance-layer
+  - wave-0-merged
+  - wave-1-merged
+  - nomadtty-removed-from-governance
+
+nomadtty:
+  governed: false
+  decided_by: operator
+  at: "2026-08-22T06:20:00Z"
+  decision_record: decisions/007-nomadtty-is-governed-by-upstream.md
+  merged_as: https://github.com/hannosirkel/architecture/pull/4
+  closed_unmerged:
+    - https://github.com/hannosirkel/nomadtty/pull/1
+    - https://github.com/hannosirkel/nomadtty/pull/2
+  reason: >-
+    A maintained fork of shifulegend/nomadtty. Every governance file this
+    universe would add is a divergence a later upstream merge has to reconcile,
+    in a repository whose conventions are upstream's to set. Catalogued so its
+    ownership and boundary are known; conformance tooling skips it.
+  still_applies: >-
+    It is public, and it must not hold Orange credentials or private host
+    details. Ownership facts, not governance mechanics.
+
+audit_after_wave_1:
+  findings: 13
+  repositories_audited: 11
+  skipped: [nomadtty]
+  breakdown: >-
+    12 missing-gate items, which are wave 2's job; orange-inventory's known
+    docs blocker; and two agents-md-over-target reports, which pass.
+  tooling_fix: >-
+    Merging wave 1 exposed that the audit read working trees rather than
+    origin/<default_branch>, so it reported 46 findings for files that were on
+    the branch. Fixed in PR 5. 46 became 14, then 13 once architecture's own
+    branch merged.
 
 top_tier_review:
   tier: top
