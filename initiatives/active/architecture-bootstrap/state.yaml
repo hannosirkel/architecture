@@ -3,10 +3,12 @@ initiative: managed-universe-bootstrap
 status: IMPLEMENTING
 contract_path: initiatives/active/architecture-bootstrap.md
 contract_digest: "sha256:4a5c04e14e0e2cda8169101a63a2c4a098fbe36dbbb110080679d3214dfeffc2"
-current_phase: phase-6-integrated-validation
+current_phase: phase-7-completion-and-handoff
 current_gate: gate-2-merge-and-external-side-effects
-last_completed_step: cold-test-and-its-fixes
-next_action: merge-the-resync-sweep, then phase 7 handoff
+last_completed_step: resync-sweep-merged-and-workspace-cleaned
+next_action: >-
+  Operator: approve plepic and servitium re-sync PRs; grant Administration
+  write or apply the five rulesets; confirm the Renovate dashboards appear.
 
 gate_1:
   approved: true
@@ -20,7 +22,14 @@ last_run:
   runtime: claude-code
   tier: mid
   model: "claude-opus-5[1m]"
-  at: "2026-08-21T21:43:16Z"
+  at: "2026-08-22T09:30:00Z"
+  tiers_used:
+    top: >-
+      Two reviews. The §11 review of authority boundaries and the three
+      load-bearing documents, and a re-review of those documents against their
+      final text after the cold test changed them.
+    mid: orchestration, integration, and every judgment call recorded here
+    low: not used; bounded execution ran at the session tier
 
 repositories:
   architecture:
@@ -993,3 +1002,43 @@ deferred:
       repository's generated content anyway. Changing it now would mark ten open
       pull requests stale for a clarity nudge.
 
+
+phase_6:
+  audit: "2 failing, 8 advisory across 12 repositories"
+  remaining_failures: >-
+    plepic and servitium stale-baseline, both in re-sync pull requests that
+    stopped at REVIEW_REQUIRED. No other failure anywhere.
+  advisory_notes: >-
+    Two recorded exceptions, three soft-target reports, three layout notes in
+    the orange pair. All expected and all explained.
+  mechanical_checks:
+    catalogue_validates: clean, 13 repositories
+    no_uncatalogued_repository_touched: confirmed
+    habit_hooks_never_a_required_check: confirmed across all twelve
+    visibility_unchanged: all 13 match the phase 0 snapshot exactly
+    deploys_manifests_untouched: >-
+      Zero manifest, overlay, kustomization, or digest files across the five
+      commits this initiative made in deploys.
+    registered_working_paths_exist: clean
+    agents_md_within_ceiling: all twelve under 150
+    default_branch_ci_green: every repository
+    primary_checkouts: >-
+      All on main and current. orange/inventory left dirty with another
+      session's two uncommitted deletions, as found.
+  resync_sweep:
+    repositories: 12
+    verification: >-
+      Byte-identity of content outside the managed markers, checked by hashing
+      the head and tail regions before and after — not by reading a diff, and
+      by a script that deliberately did not import the architecture tooling.
+      Twelve of twelve identical. orange's 141 lines of hand-written local
+      content survived to the byte.
+  workspace:
+    worktrees_removed: 33
+    worktrees_kept: >-
+      plepic and servitium re-sync, both unmerged; and another session's
+      orange/smtp-tls-servername pair, untouched throughout.
+
+phase_7:
+  handoff: initiatives/active/architecture-bootstrap/handoff.md
+  work_routed_to_owning_repositories: 12
