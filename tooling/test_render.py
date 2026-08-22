@@ -379,6 +379,23 @@ class DriftTests(unittest.TestCase):
         problems = render.drift(self.fixture.root, "HEAD", "HEAD~1", self.workspace)
         self.assertEqual(["new-repository"], [p.check for p in problems])
 
+    def test_a_generator_change_reports_rather_than_refusing(self):
+        """This job runs on every push to main. A change to the generator
+        itself must not make it exit 2 — that is the case it exists for."""
+        # A placeholder the generator does not fill stands in for a generator
+        # that has moved on from the template committed at the other ref.
+        template = self.fixture.root / "templates" / "agent-baseline.md"
+        template.write_text(
+            template.read_text(encoding="utf-8").replace(
+                "{{profile}}", "{{a_placeholder_the_generator_stops_filling}}"
+            ),
+            encoding="utf-8",
+        )
+        self._commit("standards: change the template")
+        problems = render.drift(self.fixture.root, "HEAD~1", "HEAD", self.workspace)
+        self.assertEqual(["generator-changed"], [p.check for p in problems])
+        self.assertIn("sync-baseline", problems[0].fix)
+
     def test_a_new_repository_is_reported_as_new(self):
         catalogue = self.fixture.root / "universe" / "repositories.yaml"
         entry = catalogue.read_text(encoding="utf-8").replace(

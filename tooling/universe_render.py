@@ -338,6 +338,9 @@ def _export(repo: Path, ref: str, destination: Path) -> None:
     subprocess.run(["tar", "-x", "-C", str(destination)], input=archive, check=True)
 
 
+_UNRENDERABLE = object()
+
+
 def baselines_at(repo: Path, ref: str, workspace: Path) -> dict[str, str]:
     """Render every repository's managed section as `architecture` was at `ref`.
 
@@ -352,7 +355,23 @@ def baselines_at(repo: Path, ref: str, workspace: Path) -> dict[str, str]:
         # The catalogue did not exist yet at this ref. Every repository is new
         # rather than changed; that is a report, not a reason to refuse.
         return {}
-    return {name: render_baseline(universe, name) for name in universe.repositories}
+    rendered = {}
+    for name in universe.repositories:
+        if not is_governed(universe, name):
+            continue
+        try:
+            rendered[name] = render_baseline(universe, name)
+        except UniverseError:
+            # Today's generator cannot render that ref's templates. That is what
+            # a change to the generator looks like from the other side of it,
+            # and it invalidates every section — which is the answer this job
+            # exists to give, not a reason to exit 2 on every such change.
+            return {
+                n: _UNRENDERABLE
+                for n in universe.repositories
+                if is_governed(universe, n)
+            }
+    return rendered
 
 
 def drift(repo: Path, before: str, after: str, workspace: Path) -> list[Problem]:
@@ -372,6 +391,15 @@ def drift(repo: Path, before: str, after: str, workspace: Path) -> list[Problem]
         elif name not in new:
             problems.append(
                 Problem(name, "removed-repository", "left the catalogue in this change")
+            )
+        elif old[name] is _UNRENDERABLE or new[name] is _UNRENDERABLE:
+            problems.append(
+                Problem(
+                    name,
+                    "generator-changed",
+                    "the generator itself changed, so every section is invalidated",
+                    f"tooling/universe sync-baseline {name}, then open a pull request",
+                )
             )
         elif old[name] != new[name]:
             problems.append(
