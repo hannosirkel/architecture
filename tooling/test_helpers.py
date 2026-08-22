@@ -47,6 +47,7 @@ class Fixture:
         direct_push=None,
         extra_standards=None,
         supports_rulesets=True,
+        exceptions=None,
     ):
         self.tmp = Path(tempfile.mkdtemp())
         self.root = self.tmp / "architecture"
@@ -86,7 +87,8 @@ class Fixture:
                 f"    extra_standards: [{', '.join(extra_standards)}]\n"
                 if extra_standards
                 else ""
-            ),
+            )
+            + (f"    exceptions:\n{exceptions}" if exceptions else ""),
             encoding="utf-8",
         )
         self.universe = cat.load(self.root)

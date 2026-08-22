@@ -316,18 +316,42 @@ class LanguageGateTests(unittest.TestCase):
 
 
 class ExceptionTests(unittest.TestCase):
-    """A deliberate recorded choice is not a defect."""
+    """A deliberate recorded choice is not a defect.
 
-    def setUp(self):
-        self.universe = cat.load(ROOT)
+    Built on a fixture rather than a real repository: a test that depends on
+    a checkout existing passes here and fails on a runner, which is how the
+    first draft of these tests behaved.
+    """
 
-    def _mihkel(self):
-        return audit.audit_repository(self.universe, "mihkel")
+    GRANTED = (
+        "      missing-gate:\n"
+        '        matches: "declares `typescript`"\n'
+        "        reason: no npm project; see the decision\n"
+        "        decision: docs/decisions/0005-no-npm-project.md\n"
+    )
+
+    def _fixture(self, exceptions=None, languages=("typescript", "shell")):
+        fixture = Fixture(languages=languages, exceptions=exceptions)
+        self.addCleanup(fixture.close)
+        (fixture.repo / "README.md").write_text("# example\n", encoding="utf-8")
+        (fixture.repo / "AGENTS.md").write_text(LOCAL_CONTENT, encoding="utf-8")
+        render.sync_baseline(fixture.universe, "example", path=fixture.repo)
+        workflows = fixture.repo / ".github" / "workflows"
+        workflows.mkdir(parents=True)
+        (workflows / "validate.yml").write_text(
+            "name: Validate\njobs:\n  x:\n    steps:\n      - run: true\n",
+            encoding="utf-8",
+        )
+        return fixture
+
+    def _audit(self, fixture):
+        return audit.audit_repository(fixture.universe, "example", path=fixture.repo)
 
     def test_the_excepted_finding_is_advisory_and_still_printed(self):
+        fixture = self._fixture(self.GRANTED)
         found = [
             p
-            for p in self._mihkel()
+            for p in self._audit(fixture)
             if p.check == "missing-gate" and "typescript" in p.detail
         ]
         self.assertEqual(1, len(found))
@@ -337,47 +361,59 @@ class ExceptionTests(unittest.TestCase):
 
     def test_an_exception_does_not_silence_a_neighbouring_finding(self):
         """One check fires for several reasons; an exception covers one."""
+        fixture = self._fixture(self.GRANTED)
         others = [
             p
-            for p in self._mihkel()
+            for p in self._audit(fixture)
             if p.check == "missing-gate" and "typescript" not in p.detail
         ]
+        self.assertTrue(others, "the shell gate should still be reported")
         for problem in others:
             self.assertFalse(problem.advisory, f"{problem.detail} must still fail")
 
+    def test_without_matches_the_exception_would_silence_both(self):
+        """The first draft did exactly this. Keep the evidence in the suite."""
+        unscoped = "      missing-gate:\n        reason: r\n        decision: d\n"
+        fixture = self._fixture(unscoped)
+        gates = [p for p in self._audit(fixture) if p.check == "missing-gate"]
+        self.assertEqual(2, len(gates))
+        self.assertTrue(all(p.advisory for p in gates))
+        checks = [p.check for p in cat.validate(fixture.universe)]
+        self.assertIn("unscoped-exception", checks, "validate must refuse it")
+
     def test_an_exception_that_matches_nothing_is_stale(self):
-        entry = self.universe.repositories["mihkel"]
-        entry["exceptions"] = {
-            "direct-push": {
-                "matches": "never appears",
-                "reason": "r",
-                "decision": "d",
-            }
-        }
-        checks = [p.check for p in self._mihkel()]
-        self.assertIn("stale-exception", checks)
+        never = (
+            "      direct-push:\n"
+            '        matches: "never appears"\n'
+            "        reason: r\n"
+            "        decision: d\n"
+        )
+        fixture = self._fixture(never)
+        self.assertIn("stale-exception", [p.check for p in self._audit(fixture)])
 
     def test_validate_refuses_an_exception_without_a_reason(self):
-        self.universe.repositories["mihkel"]["exceptions"] = {
-            "missing-gate": {"matches": "x", "decision": "d"}
-        }
-        checks = [p.check for p in cat.validate(self.universe)]
+        fixture = self._fixture(
+            '      missing-gate:\n        matches: "x"\n        decision: d\n'
+        )
+        checks = [p.check for p in cat.validate(fixture.universe)]
         self.assertIn("malformed-exception", checks)
 
     def test_validate_refuses_an_exception_without_a_decision(self):
-        self.universe.repositories["mihkel"]["exceptions"] = {
-            "missing-gate": {"matches": "x", "reason": "r"}
-        }
-        checks = [p.check for p in cat.validate(self.universe)]
+        fixture = self._fixture(
+            '      missing-gate:\n        matches: "x"\n        reason: r\n'
+        )
+        checks = [p.check for p in cat.validate(fixture.universe)]
         self.assertIn("malformed-exception", checks)
 
-    def test_validate_refuses_an_unscoped_exception(self):
-        """Without `matches` it would silence every finding of that check."""
-        self.universe.repositories["mihkel"]["exceptions"] = {
-            "missing-gate": {"reason": "r", "decision": "d"}
+    def test_the_real_catalogue_exceptions_are_well_formed(self):
+        universe = cat.load(ROOT)
+        self.assertEqual([], [str(p) for p in cat.validate(universe)])
+        granted = {
+            name: cat.exceptions_for(universe, name)
+            for name in universe.repositories
+            if cat.exceptions_for(universe, name)
         }
-        checks = [p.check for p in cat.validate(self.universe)]
-        self.assertIn("unscoped-exception", checks)
+        self.assertEqual({"mihkel", "servitium"}, set(granted))
 
 
 class BranchNotWorkingTreeTests(unittest.TestCase):
