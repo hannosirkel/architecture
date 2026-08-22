@@ -270,7 +270,28 @@ def _audit_documentation(universe, name, entry, path) -> list[Problem]:
                 )
             )
 
-    for candidate in ("docs/current", "docs/decisions", "docs/issues", "docs/working"):
+    docs = path / "docs"
+    if docs.is_dir():
+        loose = sorted(f.name for f in docs.glob("*.md"))
+        if loose:
+            problems.append(
+                Problem(
+                    name,
+                    "uncategorised-docs",
+                    f"{len(loose)} Markdown file(s) directly under docs/ with no "
+                    f"stated category: {', '.join(loose)}",
+                    "move each into docs/current/, decisions/, evidence/, "
+                    "issues/, or working/",
+                )
+            )
+
+    for candidate in (
+        "docs/current",
+        "docs/decisions",
+        "docs/evidence",
+        "docs/issues",
+        "docs/working",
+    ):
         target = path / candidate
         if target.is_dir() and not any(target.iterdir()):
             problems.append(

@@ -37,6 +37,7 @@ profiles:
     description: Reusable public-safe infrastructure implementation.
     standards: [gitops-and-deployment.md]
     expected_docs: [docs/current/, docs/decisions/]
+    optional_docs: [docs/evidence/]
     additionally_documents:
       - implemented platform behaviour
       - architectural decisions
@@ -48,7 +49,7 @@ profiles:
     description: Private live state parameterizing a public platform repository.
     standards: []
     expected_docs: [docs/current/]
-    optional_docs: [docs/working/]
+    optional_docs: [docs/evidence/, docs/working/]
     additionally_documents:
       - environment operations
       - recovery evidence

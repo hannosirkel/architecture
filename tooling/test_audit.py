@@ -97,6 +97,23 @@ class DocumentationAuditTests(unittest.TestCase):
         (target / "service.md").write_text("# service\n", encoding="utf-8")
         self.assertNotIn("empty-docs-directory", self._checks())
 
+    def test_a_markdown_file_directly_under_docs_is_uncategorised(self):
+        """A file with no stated category cannot be read as truth, plan, or record."""
+        docs = self.fixture.repo / "docs"
+        docs.mkdir()
+        (docs / "platform.md").write_text("# platform\n", encoding="utf-8")
+        self.assertIn("uncategorised-docs", self._checks())
+
+    def test_the_same_file_inside_a_category_passes(self):
+        target = self.fixture.repo / "docs" / "current"
+        target.mkdir(parents=True)
+        (target / "platform.md").write_text("# platform\n", encoding="utf-8")
+        self.assertNotIn("uncategorised-docs", self._checks())
+
+    def test_an_empty_evidence_directory_fails_like_any_other(self):
+        (self.fixture.repo / "docs" / "evidence").mkdir(parents=True)
+        self.assertIn("empty-docs-directory", self._checks())
+
     def test_a_decision_without_the_template_header_fails(self):
         target = self.fixture.repo / "docs" / "decisions"
         target.mkdir(parents=True)

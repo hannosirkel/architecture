@@ -13,6 +13,7 @@ Use these directories. Create one when it has content.
 docs/
   current/     implemented behaviour — how it works today
   decisions/   numbered records for durable choices
+  evidence/    append-only dated records of something that happened
   issues/      open correctness and operability problems
   working/     active plans, one file or directory per initiative
 ```
@@ -21,10 +22,16 @@ docs/
 | --- | --- | --- |
 | `current/` | present state, present tense | history, plans, rationale |
 | `decisions/` | why a non-obvious choice was made | present state |
+| `evidence/` | a dated record of a drill, a deployment, or a verification | present state, or a claim about it |
 | `issues/` | a real problem with no active plan | a plan |
 | `working/` | intent for work not yet shipped | source of truth |
 
 No repository needs every directory. An empty directory fails conformance.
+
+**Put every document in one of these directories.** A Markdown file directly
+under `docs/` has no stated category, so a reader cannot tell whether it is
+current truth, a plan, or a record of something that once happened. Conformance
+fails one.
 
 Root documents stay few: `README.md`, `AGENTS.md`, `CLAUDE.md`. Repository
 boundaries and ownership belong in `README.md`.
@@ -49,6 +56,20 @@ Accepted decisions are append-only. Supersede a decision with a new one. Do not
 rewrite its rationale.
 
 Do not restate a decision in `current/`. Link it.
+
+### `evidence/`
+
+Record what happened, with a date. A recovery drill, a deployment, a
+verification run.
+
+Evidence is append-only. Do not rewrite a past entry; add a new one.
+
+Evidence is not current state. `current/` says how the system works now;
+`evidence/` says that on a given date somebody proved it. A claim without a
+dated record behind it is not evidence.
+
+Never record a credential, a raw hostvar, a kubeconfig, a rendered Secret, or
+secret-bearing command output.
 
 ### `working/`
 
