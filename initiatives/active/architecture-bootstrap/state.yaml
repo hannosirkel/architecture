@@ -253,6 +253,49 @@ wave_2:
     ci: pass
     no_scaffolding: verified; workflow and two check configs only
 
+  W2-robobook:
+    pr: https://github.com/hannosirkel/robobook/pull/7
+    merged: true
+    ci: pass
+    baseline: >-
+      173 ruff findings, 157 directives, largest FURB157 x77 and I001 x36.
+      No logic changed, checked mechanically: 157 lines removed and 157 added,
+      and comparing each pair with the noqa comment stripped gives zero lines
+      differing. 237 tests pass before and after.
+    note: >-
+      ruff.toml needed extend-select E402, because the tests already carried 25
+      `# noqa: E402` directives and E402 is not in ruff's defaults — without it
+      those 25 were dead and ruff reported them as RUF100.
+  W2-mihkel:
+    pr: https://github.com/hannosirkel/mihkel/pull/3
+    merged: true
+    ci: pass
+    baseline: 4 ruff directives (I001 x2, RUF012 x2); 1 shellcheck SC2034
+    exception: eslint; see the exceptions block in universe/repositories.yaml
+    note: >-
+      Its actions/checkout pin was an uncommented 11bd719, which resolves to
+      v4.2.2 and a deprecated Node runtime. Bumped to v7.0.1 with a true comment.
+  W2-plepic:
+    pr: https://github.com/hannosirkel/plepic/pull/39
+    merged: false
+    blocked_on: REVIEW_REQUIRED
+    ci: pass
+    baseline: >-
+      4 shellcheck directives (SC1007 x2 deliberate CDPATH prefix, SC2016 x2
+      single-quoted JS for node -e); 506 markdownlint findings; 3 lychee.
+    note: eslint confirmed already gated through npm run lint; no second gate added
+  W2-servitium:
+    pr: https://github.com/hannosirkel/servitium/pull/26
+    merged: false
+    blocked_on: REVIEW_REQUIRED
+    ci: pass
+    baseline: 14 shellcheck findings, 8 directives; 11 markdownlint; 0 lychee
+    exception: eslint; typescript-eslint peer range excludes typescript 7
+    note: >-
+      Added the top-level permissions block deploy-test.yml was missing, which
+      the top-tier review found the security standard wrongly claimed was
+      already there. Corrected 8 stale pin comments, all API-resolved.
+
   W2-architecture:
     pr: https://github.com/hannosirkel/architecture/pull/8
     merged: true
@@ -356,6 +399,49 @@ wave_2:
     pr: https://github.com/hannosirkel/ai-portal/pull/1
     ci: pass
     no_scaffolding: verified; workflow and two check configs only
+
+  W2-robobook:
+    pr: https://github.com/hannosirkel/robobook/pull/7
+    merged: true
+    ci: pass
+    baseline: >-
+      173 ruff findings, 157 directives, largest FURB157 x77 and I001 x36.
+      No logic changed, checked mechanically: 157 lines removed and 157 added,
+      and comparing each pair with the noqa comment stripped gives zero lines
+      differing. 237 tests pass before and after.
+    note: >-
+      ruff.toml needed extend-select E402, because the tests already carried 25
+      `# noqa: E402` directives and E402 is not in ruff's defaults — without it
+      those 25 were dead and ruff reported them as RUF100.
+  W2-mihkel:
+    pr: https://github.com/hannosirkel/mihkel/pull/3
+    merged: true
+    ci: pass
+    baseline: 4 ruff directives (I001 x2, RUF012 x2); 1 shellcheck SC2034
+    exception: eslint; see the exceptions block in universe/repositories.yaml
+    note: >-
+      Its actions/checkout pin was an uncommented 11bd719, which resolves to
+      v4.2.2 and a deprecated Node runtime. Bumped to v7.0.1 with a true comment.
+  W2-plepic:
+    pr: https://github.com/hannosirkel/plepic/pull/39
+    merged: false
+    blocked_on: REVIEW_REQUIRED
+    ci: pass
+    baseline: >-
+      4 shellcheck directives (SC1007 x2 deliberate CDPATH prefix, SC2016 x2
+      single-quoted JS for node -e); 506 markdownlint findings; 3 lychee.
+    note: eslint confirmed already gated through npm run lint; no second gate added
+  W2-servitium:
+    pr: https://github.com/hannosirkel/servitium/pull/26
+    merged: false
+    blocked_on: REVIEW_REQUIRED
+    ci: pass
+    baseline: 14 shellcheck findings, 8 directives; 11 markdownlint; 0 lychee
+    exception: eslint; typescript-eslint peer range excludes typescript 7
+    note: >-
+      Added the top-level permissions block deploy-test.yml was missing, which
+      the top-tier review found the security standard wrongly claimed was
+      already there. Corrected 8 stale pin comments, all API-resolved.
 
   W2-architecture:
     pr: https://github.com/hannosirkel/architecture/pull/8
@@ -603,6 +689,18 @@ gate_2:
   nomadtty_playwright: >-
     Recorded as follow-up in nomadtty, per the operator's decision. Not fixed
     here; this initiative does not change application code or tests.
+
+wave_2_summary:
+  merged: [architecture, deploys, myskills, entpass, ai-portal, robobook, mihkel]
+  awaiting_operator_approval: [plepic, servitium]
+  audit_after: "3 failing, 7 advisory across 11 repositories"
+  remaining_failures: >-
+    orange's ruff gate, still in flight; and plepic's and servitium's shellcheck
+    gates, which are in the two unmerged pull requests. No failure is unaccounted
+    for.
+  branch_protection_verified: >-
+    plepic and servitium both refused an unapproved merge with REVIEW_REQUIRED.
+    The floor is enforced, not decorative.
 
 findings_from_the_new_gates:
   - repository: deploys
