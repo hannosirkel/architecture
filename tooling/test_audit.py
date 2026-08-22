@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import unittest
@@ -253,6 +254,62 @@ class LanguageGateTests(unittest.TestCase):
             "#!/usr/bin/env bash\nshellcheck ./*.sh\n", encoding="utf-8"
         )
         self.assertNotIn("missing-gate", self._checks())
+
+    def test_a_gate_reached_through_npm_run_counts(self):
+        """plepic runs eslint as `npm run lint`; the literal token is absent."""
+        fixture = Fixture(languages=("typescript",), npm_project=True)
+        self.addCleanup(fixture.close)
+        (fixture.repo / "README.md").write_text("# example\n", encoding="utf-8")
+        (fixture.repo / "AGENTS.md").write_text(LOCAL_CONTENT, encoding="utf-8")
+        render.sync_baseline(fixture.universe, "example", path=fixture.repo)
+        workflows = fixture.repo / ".github" / "workflows"
+        workflows.mkdir(parents=True)
+        (workflows / "validate.yml").write_text(
+            "name: Validate\njobs:\n  x:\n    steps:\n"
+            "      - run: bash scripts/validate\n",
+            encoding="utf-8",
+        )
+        scripts = fixture.repo / "scripts"
+        scripts.mkdir()
+        (scripts / "validate").write_text(
+            "#!/usr/bin/env bash\nnpm run lint\n", encoding="utf-8"
+        )
+        (fixture.repo / "package.json").write_text(
+            json.dumps({"name": "example", "scripts": {"lint": "eslint ."}}),
+            encoding="utf-8",
+        )
+        checks = {
+            p.check
+            for p in audit.audit_repository(
+                fixture.universe, "example", path=fixture.repo
+            )
+        }
+        self.assertNotIn("missing-gate", checks)
+
+    def test_a_declared_but_unrun_npm_script_is_not_a_gate(self):
+        """A linter nothing invokes gates nothing."""
+        fixture = Fixture(languages=("typescript",), npm_project=True)
+        self.addCleanup(fixture.close)
+        (fixture.repo / "README.md").write_text("# example\n", encoding="utf-8")
+        (fixture.repo / "AGENTS.md").write_text(LOCAL_CONTENT, encoding="utf-8")
+        render.sync_baseline(fixture.universe, "example", path=fixture.repo)
+        workflows = fixture.repo / ".github" / "workflows"
+        workflows.mkdir(parents=True)
+        (workflows / "validate.yml").write_text(
+            "name: Validate\njobs:\n  x:\n    steps:\n      - run: npm test\n",
+            encoding="utf-8",
+        )
+        (fixture.repo / "package.json").write_text(
+            json.dumps({"name": "example", "scripts": {"lint": "eslint ."}}),
+            encoding="utf-8",
+        )
+        checks = {
+            p.check
+            for p in audit.audit_repository(
+                fixture.universe, "example", path=fixture.repo
+            )
+        }
+        self.assertIn("missing-gate", checks)
 
     def test_no_ci_at_all_is_reported_distinctly(self):
         self.assertIn("no-ci", self._checks())
