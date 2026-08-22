@@ -9,12 +9,11 @@ Governed by [`architecture`](https://github.com/hannosirkel/architecture).
 | | |
 | --- | --- |
 | Profile | `governance-private` |
-| Visibility | declared private, currently private |
+| Visibility | declared public, currently public |
 | Languages | python |
 
 **Standards that apply here.** Read a standard before you change something it
-governs. They live in a private repository: if a link does not open for you, the
-rules stated below and this repository's CI are what bind.
+governs.
 
 - [Agent operation](https://github.com/hannosirkel/architecture/blob/main/standards/agent-operation.md) — worktrees, branches, multi-agent safety, delegation
 - [Security](https://github.com/hannosirkel/architecture/blob/main/standards/security.md) — secrets, public and private boundaries, workflow hardening
@@ -30,7 +29,7 @@ Branch from `origin/main`. Open a pull request.
 spanning several repositories with no clear owner starts in `architecture`
 instead.
 
-**This repository is private, which is not the same as secret.** Never commit a password, token, key, kubeconfig,
+**This repository must be safe to publish.** Never commit a password, token, key, kubeconfig,
 rendered Secret, or live export. No repository in this universe holds a secret
 value, and a private one is no exception.
 

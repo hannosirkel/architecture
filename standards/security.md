@@ -12,9 +12,9 @@ enforce them.
 Never commit a password, token, API key, private key, AppRole SecretID,
 kubeconfig, rendered Kubernetes Secret, recovery JSON, or live export.
 
-A private repository is not a secret store. `architecture`, `orange`,
-`orange-inventory`, `myskills`, `entpass`, and `portfolio-bot` are private
-because their content is not for publication. That is not the same as holding secret values, and none of them
+A private repository is not a secret store. `orange`, `orange-inventory`,
+`myskills`, `entpass`, and `portfolio-bot` are private because their content is
+not for publication. That is not the same as holding secret values, and none of them
 does.
 
 Credentials live outside every repository, in the ignored `.keys/` directory of
@@ -167,6 +167,11 @@ Install Renovate once as a GitHub App, **on every governed repository including
 so a repository the app cannot read is a preset it cannot resolve — and every
 repository extending it stops updating, with `Cannot find preset's package`.
 
+**The preset repository must be public if any repository extending it is
+public.** The hosted app scopes its token per repository, and Renovate's own
+documentation is explicit: a preset in a private repository cannot be extended
+by a public one. `architecture` is public for this reason among others.
+
 Every repository extends the shared preset at
 [`templates/default.json`](../templates/default.json):
 
@@ -200,7 +205,7 @@ On a repository that supports rulesets, require:
 
 ### Named exceptions and accepted risks
 
-**Six private repositories cannot carry a ruleset.** `architecture`, `orange`,
+**Five private repositories cannot carry a ruleset.** `orange`,
 `orange-inventory`, `myskills`, `entpass`, and `portfolio-bot` return HTTP 403
 from the rulesets API: *"Upgrade to GitHub Pro or make this repository public to enable this
 feature."* This is an accepted, named risk, not a silent gap. The

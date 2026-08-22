@@ -18,12 +18,16 @@ repositories:
     remote: https://github.com/hannosirkel/architecture.git
     local_path: "~/app/architecture"
     default_branch: main
-    declared_visibility: private
-    current_remote_visibility: private
-    public_safe_required: false
-    publication_status: not-applicable
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
     languages: [python]
     npm_project: false
+    visibility_reason: >-
+      Made public so a public repository can extend its Renovate preset and so
+      an outside reader can follow the standards its AGENTS.md links. It holds
+      no secret value by design; decision 001 says so.
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
       # baselined, exactly as a linter baseline records today's findings.
@@ -32,7 +36,7 @@ repositories:
       # record, not a code change. Gating it behind review would stall the
       # resume path it exists to protect.
       allowed_paths: ["initiatives/"]
-    supports_rulesets: false
+    supports_rulesets: true
 
   orange:
     description: Reusable public-safe infrastructure implementation for Orange.
