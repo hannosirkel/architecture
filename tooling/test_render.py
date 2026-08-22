@@ -279,13 +279,34 @@ class BaselineRenderTests(unittest.TestCase):
         self.assertIn("languages/typescript.md", section)
         self.assertIn("languages/shell.md", section)
 
+    def test_every_section_answers_where_a_working_plan_goes(self):
+        """Two cold tests could not answer this from inside a repository.
+
+        The standard covering it was owner-facing, so nothing linked it, and
+        the contract's bar is answering from the repository alone.
+        """
+        for name in self.universe.repositories:
+            if not cat.is_governed(self.universe, name):
+                continue
+            with self.subTest(repo=name):
+                section = render.render_baseline(self.universe, name)
+                self.assertIn("A working plan for this repository goes in", section)
+                self.assertIn("work-routing.md", section)
+
+    def test_a_repository_can_route_its_plans_elsewhere(self):
+        """orange's plans go to the private inventory, and that is a
+        public/private rule rather than a layout preference."""
+        section = render.render_baseline(self.universe, "orange")
+        self.assertIn("orange-inventory", section)
+        self.assertIn("never here", section)
+
     def test_every_generated_section_is_within_its_budget(self):
         for name in self.universe.repositories:
             with self.subTest(repo=name):
                 count = len(
                     render.render_baseline(self.universe, name).strip().splitlines()
                 )
-                self.assertLessEqual(count, 40, "the managed section budget is 40 lines")
+                self.assertLessEqual(count, 45, "the managed section budget is 45 lines")
 
     def test_every_standard_the_section_links_exists(self):
         section = render.render_baseline(self.universe, "mihkel")
