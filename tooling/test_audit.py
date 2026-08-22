@@ -363,7 +363,7 @@ class LanguageGateTests(unittest.TestCase):
 
     def test_extending_the_shared_preset_is_clean(self):
         (self.fixture.repo / "renovate.json").write_text(
-            '{"extends": ["local>hannosirkel/architecture//templates/renovate.json"]}\n',
+            '{"extends": ["local>hannosirkel/architecture//templates/default"]}\n',
             encoding="utf-8",
         )
         checks = self._checks()

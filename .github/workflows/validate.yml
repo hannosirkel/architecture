@@ -104,6 +104,25 @@ jobs:
           tooling/universe drift --before HEAD~1 --after HEAD \
             | tee -a "${GITHUB_STEP_SUMMARY}"
 
+  renovate:
+    name: Renovate preset
+    # The shared preset is extended by every governed repository. An invalid
+    # option there stops Renovate in all of them at once, with a "Fix Renovate
+    # Configuration" issue and no pull requests until somebody notices.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        # actions/checkout v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Validate the preset and this repository's own config
+        run: |
+          set -euo pipefail
+          npx --yes --package renovate@41.140.1 -c \
+            'renovate-config-validator --strict templates/default.json renovate.json'
+
   workflows:
     name: Workflow lint
     runs-on: ubuntu-24.04

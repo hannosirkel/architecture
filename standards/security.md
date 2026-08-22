@@ -162,8 +162,27 @@ tool.
 
 ## Dependency automation
 
-Install Renovate once as a GitHub App. Every repository extends the shared
-preset at [`templates/renovate.json`](../templates/renovate.json).
+Install Renovate once as a GitHub App, **on every governed repository including
+`architecture`**. A `local>` preset is fetched with the same installation token,
+so a repository the app cannot read is a preset it cannot resolve — and every
+repository extending it stops updating, with `Cannot find preset's package`.
+
+Every repository extends the shared preset at
+[`templates/default.json`](../templates/default.json):
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["local>hannosirkel/architecture//templates/default"]
+}
+```
+
+**The path carries no file extension.** Renovate appends `.json` itself, so
+`//templates/renovate.json` resolves to `templates/renovate.json.json` and
+fails. The file is named `default.json` because `renovate.json` as a *preset*
+filename is deprecated, and because a repository's own config is also called
+`renovate.json` — one name for two different things invites exactly this
+mistake.
 
 Each repository holds a small `renovate.json` that extends the preset and adds
 nothing else unless it must.
