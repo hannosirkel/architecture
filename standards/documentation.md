@@ -28,16 +28,16 @@ docs/
 
 No repository needs every directory. An empty directory fails conformance.
 
-**Prefer to put every document in one of these directories.** A Markdown file
-directly under `docs/` has no stated category, so a reader cannot tell whether
-it is current truth, a plan, or a record of something that once happened.
+**Prefer to put every document in one of these directories.** A Markdown file directly under `docs/` has no
+stated category. A reader cannot tell whether it is current truth, a plan, or a
+record of something that happened.
 
 **A repository may keep a document outside these categories when its own usage
 needs it there.** The audit reports such a file so the choice stays visible, and
 does not fail on it. This layout is the default that saves an agent from
-guessing, not a rule that outranks how a repository is actually worked on. If a
-path is load-bearing — named by a check, a script, or an active plan — that is a
-reason to keep it, not a violation to fix.
+guessing, not a rule that outranks how a repository is actually worked on. A load-bearing path is one a check, a
+script, or an active plan names. That is a reason to keep a file, not a
+violation to fix.
 
 Root documents stay few: `README.md`, `AGENTS.md`, `CLAUDE.md`. Repository
 boundaries and ownership belong in `README.md`.
@@ -65,8 +65,8 @@ Do not restate a decision in `current/`. Link it.
 
 ### `evidence/`
 
-Record what happened, with a date. A recovery drill, a deployment, a
-verification run.
+Record what happened, with a date. Use it for a recovery drill, a deployment, or
+a verification run.
 
 Evidence is append-only. Do not rewrite a past entry; add a new one.
 
@@ -135,25 +135,24 @@ recurring cost.
 | --- | --- | --- |
 | Local content | 60 lines | soft target; the audit reports it and passes |
 | Local content | 150 lines | hard ceiling; conformance fails |
-| Managed section | 45 lines | central budget; exceeding it is a standards defect |
+| Managed section | 40 lines | central budget; exceeding it is a standards defect |
 
-Local content is every non-blank line outside the managed markers. The managed
-section is central policy, so a repository cannot shorten it and is not charged
-for it.
+All three limits count **non-blank lines**. Local content is every non-blank
+line outside the managed markers; the managed section is every non-blank line
+between them. The managed section is central policy, so a repository cannot
+shorten it and is not charged for it.
 
 Blank lines do not count either. Removing the managed section leaves a blank
 line behind. A count that moved with the marker position would measure that
 artifact, not the content.
 
-The ceiling gates the outrage; the target coaches the ideal. A hard failure at
-the ideal length would be met by compressing into ambiguity, which costs more.
+The ceiling fails only what is indefensible. The target reports what could be
+better. A hard failure at the ideal length would be met by compressing into
+ambiguity, which costs more than the words saved.
 
-The managed budget was 40 and is 45. It was raised once, on evidence: two cold
-tests opened a repository with no other context and could not say where a
-working plan belongs, so the section gained the answer and the link to the
-standard that owns it. Raising a self-set number because a test proved content
-was missing is not the same as raising it to fit content that was not needed.
-Cut something before raising it again.
+Do not raise a limit to fit content. Cut something, or show that the content is
+a rule an agent breaks without it. If a limit must move, say in this file why,
+and state which unit moved.
 
 Keep an `AGENTS.md` short by moving material, not by deleting meaning:
 
@@ -168,12 +167,13 @@ reduce an `AGENTS.md` to "read the architecture repository".
 
 ## Automated checks
 
-Two tools check the mechanical part. Nothing else is automated.
+Three things check the mechanical part.
 
 | Tool | Checks |
 | --- | --- |
 | `markdownlint-cli2` | structure and layout |
 | `lychee` | links, internal and external |
+| `tooling/universe audit` | the layout above, the budgets, and decision headers |
 
 `tooling/universe audit` reports layout separately, and distinguishes the two
 kinds of finding it can make:
@@ -191,4 +191,4 @@ licensed specification and no certified open checker exists. A prose linter with
 a hand-maintained word list would be abandoned within months, which is worse
 than having none. Wording is a review concern.
 
-Do not write a documentation checker. Use these two.
+Do not write a fourth. Use these.

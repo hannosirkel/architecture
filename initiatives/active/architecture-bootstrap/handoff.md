@@ -118,7 +118,7 @@ later upstream merge has to reconcile. `sync-baseline` refuses to write into it;
 
 ## Accepted risks
 
-- **Five private repositories cannot carry a ruleset** — `architecture`,
+- **Six private repositories cannot carry a ruleset** — `architecture`,
   `orange`, `orange-inventory`, `myskills`, `entpass`, `portfolio-bot` — the
   plan returns 403. The written rule plus the direct-push audit stand in, with
   history baselined per repository so only new violations report.

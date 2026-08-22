@@ -11,11 +11,15 @@ exclude_path = [
 ]
 
 exclude = [
-  # Five repositories are private. An anonymous checker gets 404 for a private
-  # repository that exists, which is a false failure rather than a finding.
-  # Narrow to exactly those five: every public repository's links, including
-  # every standards link the generated baseline carries, is checked for real.
-  "^https://github\\.com/hannosirkel/(architecture|orange|orange-inventory|myskills|entpass)(/|$)",
+  # Six repositories are private. An anonymous checker gets 404 for one that
+  # exists, which is a false failure here rather than a finding.
+  #
+  # Be honest about what this hides: for a reader outside this account those
+  # links really are dead, and excluding them means the checker never says so.
+  # The generated AGENTS.md section says it in words instead, and states the
+  # load-bearing rules inline so an outside reader can act correctly without
+  # them.
+  "^https://github\\.com/hannosirkel/(architecture|orange|orange-inventory|myskills|entpass|portfolio-bot)(/|$)",
 ]
 
 # GitHub rate-limits anonymous requests hard enough to make a run flaky.
