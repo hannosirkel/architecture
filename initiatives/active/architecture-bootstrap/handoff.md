@@ -92,12 +92,6 @@ because an Orange plan routinely names live hosts and identities.
 
 ## What needs you
 
-One open pull request: **`servitium#32`**, removing its Dependabot config now
-that Renovate covers the same three ecosystems. `servitium` requires an
-approving review, so it waits for you. Its open Dependabot pull request
-`servitium#24` is the same bump Renovate will propose; close whichever you
-prefer.
-
 Two decisions the governance layer has no opinion on:
 
 - **`nomadtty#3`**, Renovate's onboarding pull request on the fork this
@@ -125,7 +119,10 @@ order, and only the second was the blocker.
 **A `local>` Renovate preset is fetched with the installation token.** A
 repository the app cannot read is a preset it cannot resolve, and every
 repository extending it stops updating with `Cannot find preset's package`.
-`architecture` is private, so it must be in the installation.
+This is what broke six repositories, and it is one reason `architecture` is now
+public — see [`decisions/008`](../../../decisions/008-architecture-is-public.md).
+Keep it in the installation regardless: a public repository extending a preset
+held in a private one fails the same way.
 
 ## Exceptions, recorded
 
@@ -148,15 +145,17 @@ later upstream merge has to reconcile. `sync-baseline` refuses to write into it;
 
 ## Accepted risks
 
-The branch-protection floor is applied: one ruleset on each of the six public
-governed repositories, `deploys` deliberately without a pull-request rule.
+The branch-protection floor is applied: one ruleset on each of the seven public
+governed repositories, two of them deliberately without a pull-request rule.
 
-- **Six private repositories cannot carry a ruleset** — `architecture`,
-  `orange`, `orange-inventory`, `myskills`, `entpass`, `portfolio-bot` — the
-  plan returns 403. The written rule plus the direct-push audit stand in, with
-  history baselined per repository so only new violations report.
+- **Five private repositories cannot carry a ruleset** — `orange`,
+  `orange-inventory`, `myskills`, `entpass`, `portfolio-bot` — the plan returns
+  403. The written rule plus the direct-push audit stand in, with history
+  baselined per repository so only new violations report.
 - **`deploys` takes no pull-request rule.** Its `main` receives automated digest
   pushes from two release workflows.
+- **`architecture` takes no pull-request rule.** Initiative state is committed
+  directly to `main` by the session doing the work.
 - **`plepic` and `servitium` keep `pull_request_target`**, pre-authorised
   against `zizmor` in `standards/security.md`.
 

@@ -1,7 +1,8 @@
 # 001. Govern the universe from a separate private repository
 
 - **Date:** 2026-08-21
-- **Status:** accepted
+- **Status:** accepted; the visibility choice is amended by
+  [`008`](./008-architecture-is-public.md)
 
 ## Context and problem statement
 

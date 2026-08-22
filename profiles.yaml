@@ -26,7 +26,7 @@ baseline:
 
 profiles:
 
-  governance-private:
+  governance:
     description: Engineering governance for the managed universe.
     standards: []
     expected_docs: [decisions/]
@@ -35,7 +35,7 @@ profiles:
       - cross-repository standards and profiles
       - cross-repository initiatives and their durable state
       - conformance tooling and the audit skill
-    public_safe_required: false
+    public_safe_required: true
 
   platform-public-ready:
     description: Reusable public-safe infrastructure implementation.
