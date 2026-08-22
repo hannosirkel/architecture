@@ -255,6 +255,45 @@ class LanguageGateTests(unittest.TestCase):
         )
         self.assertNotIn("missing-gate", self._checks())
 
+    def test_a_suppression_directive_is_not_a_gate(self):
+        """orange passed with shellcheck running nowhere: its validate script
+        contained `# shellcheck disable=SC1091`, and the detector matched the
+        bare word. A false pass is worse than a false failure — nobody goes
+        looking for it."""
+        self._write_workflow(
+            "name: Validate\njobs:\n  x:\n    steps:\n"
+            "      - run: bash scripts/validate\n"
+        )
+        scripts = self.fixture.repo / "scripts"
+        scripts.mkdir()
+        (scripts / "validate").write_text(
+            "#!/usr/bin/env bash\n# shellcheck disable=SC1091\nsource ./lib.sh\n",
+            encoding="utf-8",
+        )
+        self.assertIn("missing-gate", self._checks())
+
+    def test_a_step_named_after_a_tool_is_not_a_gate(self):
+        self._write_workflow(
+            "name: Validate\njobs:\n  x:\n    steps:\n"
+            "      - name: Shellcheck\n        run: true\n"
+        )
+        self.assertIn("missing-gate", self._checks())
+
+    def test_a_real_invocation_still_counts(self):
+        self._write_workflow(
+            "name: Validate\njobs:\n  x:\n    steps:\n"
+            "      - run: shellcheck scripts/*.sh\n"
+        )
+        self.assertNotIn("missing-gate", self._checks())
+
+    def test_an_invocation_behind_sudo_or_a_pipe_still_counts(self):
+        for command in ("sudo shellcheck x.sh", "git ls-files | xargs shellcheck"):
+            with self.subTest(command=command):
+                self._write_workflow(
+                    f"name: Validate\njobs:\n  x:\n    steps:\n      - run: {command}\n"
+                )
+                self.assertNotIn("missing-gate", self._checks())
+
     def test_a_gate_reached_through_npm_run_counts(self):
         """plepic runs eslint as `npm run lint`; the literal token is absent."""
         fixture = Fixture(languages=("typescript",), npm_project=True)
