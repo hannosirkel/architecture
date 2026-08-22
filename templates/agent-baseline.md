@@ -11,8 +11,7 @@ Governed by [`architecture`]({{architecture_url}}).
 | Languages | {{languages_display}} |
 
 **Standards that apply here.** Read a standard before you change something it
-governs. They live in a private repository: if a link does not open for you, the
-rules stated below and this repository's CI are what bind.
+governs.
 
 {{standards_lines}}{{language_standards_line}}
 **Never commit to a default branch.** Work in `~/app/.worktrees/{{repo}}/<task>`.
