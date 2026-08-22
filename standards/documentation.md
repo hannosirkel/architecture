@@ -28,10 +28,16 @@ docs/
 
 No repository needs every directory. An empty directory fails conformance.
 
-**Put every document in one of these directories.** A Markdown file directly
-under `docs/` has no stated category, so a reader cannot tell whether it is
-current truth, a plan, or a record of something that once happened. Conformance
-fails one.
+**Prefer to put every document in one of these directories.** A Markdown file
+directly under `docs/` has no stated category, so a reader cannot tell whether
+it is current truth, a plan, or a record of something that once happened.
+
+**A repository may keep a document outside these categories when its own usage
+needs it there.** The audit reports such a file so the choice stays visible, and
+does not fail on it. This layout is the default that saves an agent from
+guessing, not a rule that outranks how a repository is actually worked on. If a
+path is load-bearing — named by a check, a script, or an active plan — that is a
+reason to keep it, not a violation to fix.
 
 Root documents stay few: `README.md`, `AGENTS.md`, `CLAUDE.md`. Repository
 boundaries and ownership belong in `README.md`.
@@ -161,6 +167,17 @@ Two tools check the mechanical part. Nothing else is automated.
 | --- | --- |
 | `markdownlint-cli2` | structure and layout |
 | `lychee` | links, internal and external |
+
+`tooling/universe audit` reports layout separately, and distinguishes the two
+kinds of finding it can make:
+
+| Marked | Meaning |
+| --- | --- |
+| `fail` | a rule is broken; conformance fails |
+| `note` | a preference differs; reported, and it passes |
+
+A check that fails on a preference gets ignored, and then the checks that matter
+get ignored with it.
 
 Full ASD-STE100 conformance cannot be automated. The controlled vocabulary is a
 licensed specification and no certified open checker exists. A prose linter with

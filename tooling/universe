@@ -167,13 +167,22 @@ def _select(universe: cat.Universe, repos: list[str]) -> list[str]:
 
 
 def _report(problems: list[cat.Problem], summary: str) -> int:
+    """Advisory findings are printed and do not fail.
+
+    A check that fails on a preference gets ignored, and then the checks that
+    matter get ignored with it.
+    """
     if not problems:
         print(f"clean: {summary}")
         return 0
+    failing = [p for p in problems if not p.advisory]
     for problem in problems:
         print(problem)
-    print(f"\n{len(problems)} findings across {summary}")
-    return 1
+    print(
+        f"\n{len(failing)} failing and {len(problems) - len(failing)} advisory "
+        f"across {summary}"
+    )
+    return 1 if failing else 0
 
 
 if __name__ == "__main__":
