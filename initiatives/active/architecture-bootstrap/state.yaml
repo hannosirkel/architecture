@@ -296,6 +296,33 @@ wave_2:
       the top-tier review found the security standard wrongly claimed was
       already there. Corrected 8 stale pin comments, all API-resolved.
 
+  W2-orange:
+    pr: https://github.com/hannosirkel/orange/pull/23
+    merged: true
+    ci: pass
+    baseline: >-
+      ruff 127 findings, 125 directives across 41 files (SIM117 x33, I001 x31,
+      ISC004 x18 leading); shellcheck 8 findings, all narrow directives;
+      markdownlint MD013 x165 and MD060 x212, the only two rules that fire.
+    verified_no_logic_change: >-
+      Independently, by the orchestrator. Across 46 changed code files, only
+      scripts/validate differs once comments, blank lines and suppression
+      directives are normalised away — and that file is the gate itself.
+    note: >-
+      ruff.toml carries extend-include for 11 extensionless Python commands,
+      and scripts/validate compares `ruff check --show-files` against every
+      tracked python-shebang file, so a twelfth cannot be silently unlinted.
+      That guard caught a real fixture the plain gate missed.
+  W2-orange-inventory:
+    pr: https://github.com/hannosirkel/orange-inventory/pull/10
+    merged: true
+    ci: pass
+    follow_up_pr: https://github.com/hannosirkel/orange-inventory/pull/11
+    note: >-
+      The shell gate was missed by wave 2's scope and only became visible once
+      the false pass below was fixed. Added in PR 11: zero pre-existing
+      findings, so the gate starts clean rather than with a backlog.
+
   W2-architecture:
     pr: https://github.com/hannosirkel/architecture/pull/8
     merged: true
@@ -442,6 +469,33 @@ wave_2:
       Added the top-level permissions block deploy-test.yml was missing, which
       the top-tier review found the security standard wrongly claimed was
       already there. Corrected 8 stale pin comments, all API-resolved.
+
+  W2-orange:
+    pr: https://github.com/hannosirkel/orange/pull/23
+    merged: true
+    ci: pass
+    baseline: >-
+      ruff 127 findings, 125 directives across 41 files (SIM117 x33, I001 x31,
+      ISC004 x18 leading); shellcheck 8 findings, all narrow directives;
+      markdownlint MD013 x165 and MD060 x212, the only two rules that fire.
+    verified_no_logic_change: >-
+      Independently, by the orchestrator. Across 46 changed code files, only
+      scripts/validate differs once comments, blank lines and suppression
+      directives are normalised away — and that file is the gate itself.
+    note: >-
+      ruff.toml carries extend-include for 11 extensionless Python commands,
+      and scripts/validate compares `ruff check --show-files` against every
+      tracked python-shebang file, so a twelfth cannot be silently unlinted.
+      That guard caught a real fixture the plain gate missed.
+  W2-orange-inventory:
+    pr: https://github.com/hannosirkel/orange-inventory/pull/10
+    merged: true
+    ci: pass
+    follow_up_pr: https://github.com/hannosirkel/orange-inventory/pull/11
+    note: >-
+      The shell gate was missed by wave 2's scope and only became visible once
+      the false pass below was fixed. Added in PR 11: zero pre-existing
+      findings, so the gate starts clean rather than with a backlog.
 
   W2-architecture:
     pr: https://github.com/hannosirkel/architecture/pull/8
@@ -701,6 +755,26 @@ wave_2_summary:
   branch_protection_verified: >-
     plepic and servitium both refused an unapproved merge with REVIEW_REQUIRED.
     The floor is enforced, not decorative.
+
+  - repository: architecture
+    severity: high
+    finding: >-
+      The audit's gate detection matched a bare word, so a suppression
+      directive counted as a gate. orange and orange-inventory both contain
+      `# shellcheck disable=SC1091` in scripts/validate, and both were reported
+      as gated while shellcheck ran nowhere.
+    why_it_matters: >-
+      This is a false pass, not a false failure. A false failure gets
+      investigated because it is in the way. A false pass is a green tick
+      nobody looks behind — the same shape as the generic-only Habit Hooks
+      config that scans nothing and reports success, which decisions/006 exists
+      to prevent.
+    found_by: the wave 2 agent working on orange, by checking rather than trusting
+    fixed: https://github.com/hannosirkel/architecture/pull/10
+    handling: >-
+      Comments are stripped before matching, and a linter counts only where it
+      appears as a command. Five tests now cover it, including a suppression
+      directive and a step named after the tool.
 
 findings_from_the_new_gates:
   - repository: deploys
