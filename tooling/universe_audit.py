@@ -99,6 +99,7 @@ def _audit_tree(
     problems += _audit_documentation(universe, name, entry, path)
     problems += _audit_languages(universe, name, entry, path, repo)
     problems += _audit_language_gates(universe, name, entry, path)
+    problems += _audit_secret_scanning(name, path)
     problems += _audit_default_branch_commits(name, entry, repo)
     return _apply_exceptions(universe, name, problems)
 
@@ -169,8 +170,14 @@ def _invocations(text: str) -> str:
 
 
 def _runs(tool: str, text: str) -> bool:
-    """Whether `text` invokes `tool` as a command rather than mentioning it."""
-    return re.search(rf"(?:^|[\s|;&(])(?:sudo\s+)?{re.escape(tool)}\b", text) is not None
+    """Whether `text` invokes `tool` as a command rather than mentioning it.
+
+    The optional path prefix matters: this universe downloads gitleaks into the
+    workspace and runs it as `./gitleaks`, and requiring a whitespace boundary
+    missed every one of them.
+    """
+    pattern = rf"(?:^|[\s|;&(])(?:sudo\s+)?(?:\S*/)?{re.escape(tool)}\b"
+    return re.search(pattern, text) is not None
 
 
 def gate_text(path: Path) -> str:
@@ -221,6 +228,39 @@ def _npm_scripts(path: Path, text: str, depth: int = 3) -> list[str]:
             found.append(body)
             pending.update(_NPM_RUN.findall(body))
     return found
+
+
+def _audit_secret_scanning(name, path) -> list[Problem]:
+    """Secret scanning runs in every repository, whatever it contains.
+
+    standards/security.md makes this unconditional, and it is the control that
+    matters most: a repository with no code still has a history, a README, and
+    somebody willing to paste a token into either.
+
+    The language-gate checks cannot cover it. They fire only for a declared
+    language, so a repository declaring none — an empty one, a documentation
+    one — would have no secret scanning and no finding saying so.
+    """
+    text = gate_text(path)
+    if not text:
+        return [
+            Problem(
+                name,
+                "no-secret-scan",
+                "no CI at all, so nothing scans this repository for secrets",
+                "add a Validate workflow with gitleaks; see standards/security.md",
+            )
+        ]
+    if not _runs("gitleaks", text):
+        return [
+            Problem(
+                name,
+                "no-secret-scan",
+                "CI runs no secret scan",
+                "add the pinned gitleaks step from standards/security.md",
+            )
+        ]
+    return []
 
 
 def _audit_language_gates(universe, name, entry, path) -> list[Problem]:

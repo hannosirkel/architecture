@@ -350,6 +350,44 @@ class LanguageGateTests(unittest.TestCase):
         }
         self.assertIn("missing-gate", checks)
 
+    def test_a_repository_with_no_ci_has_no_secret_scan(self):
+        self.assertIn("no-secret-scan", self._checks())
+
+    def test_ci_without_gitleaks_is_reported(self):
+        self._write_workflow(
+            "name: Validate\njobs:\n  x:\n    steps:\n      - run: shellcheck scripts/*\n"
+        )
+        self.assertIn("no-secret-scan", self._checks())
+
+    def test_ci_with_gitleaks_is_clean(self):
+        self._write_workflow(
+            "name: Validate\njobs:\n  x:\n    steps:\n"
+            "      - run: shellcheck scripts/*\n"
+            "      - run: ./gitleaks git --redact --verbose\n"
+        )
+        self.assertNotIn("no-secret-scan", self._checks())
+
+    def test_a_languageless_repository_is_still_checked(self):
+        """The gap this check exists to close.
+
+        Language gates fire only for a declared language, so a repository
+        declaring none had no secret scanning and no finding saying so.
+        portfolio-bot was exactly that, and nothing noticed.
+        """
+        fixture = Fixture(languages=(), profile="research-private")
+        self.addCleanup(fixture.close)
+        (fixture.repo / "README.md").write_text("# example\n", encoding="utf-8")
+        (fixture.repo / "AGENTS.md").write_text(LOCAL_CONTENT, encoding="utf-8")
+        render.sync_baseline(fixture.universe, "example", path=fixture.repo)
+        checks = {
+            p.check
+            for p in audit.audit_repository(
+                fixture.universe, "example", path=fixture.repo
+            )
+        }
+        self.assertIn("no-secret-scan", checks)
+        self.assertNotIn("no-ci", checks, "no-ci needs a declared language")
+
     def test_no_ci_at_all_is_reported_distinctly(self):
         self.assertIn("no-ci", self._checks())
 
