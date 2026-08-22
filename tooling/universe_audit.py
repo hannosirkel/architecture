@@ -16,6 +16,7 @@ from universe_catalogue import (
     Universe,
     checkout_path,
     entry_for,
+    is_governed,
 )
 from universe_render import (
     HABIT_CONFIG_PATH,
@@ -40,6 +41,8 @@ def audit_repository(
     `path` overrides the catalogue's `local_path`, for auditing a worktree.
     """
     entry = entry_for(universe, name)
+    if not is_governed(universe, name):
+        return []
     path = path or checkout_path(entry)
     problems: list[Problem] = []
 

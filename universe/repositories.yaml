@@ -171,8 +171,8 @@ repositories:
       baseline_commit: "3d7f3b2"
 
   nomadtty:
-    description: Maintained fork of NomadTTY.
-    profile: fork-public
+    description: Maintained fork of NomadTTY, governed by upstream's conventions.
+    profile: fork-upstream-governed
     remote: https://github.com/hannosirkel/nomadtty.git
     local_path: "~/app/nomadtty"
     default_branch: main
@@ -189,9 +189,17 @@ repositories:
       # Direct pushes at or before this commit predate the rule and are
       # baselined, exactly as a linter baseline records today's findings.
       baseline_commit: "3eba321"
-    fork_posture: >-
-      Upstream contribution is not expected. Apply the full governance baseline
-      and record the added files in the delta documentation.
+    governed: false
+    governance_note: >-
+      Catalogued, not governed. This universe holds as few divergences from
+      upstream as it can, so nomadtty keeps its own instruction files,
+      conventions, and checks. No generated AGENTS.md section, no CLAUDE.md
+      pointer, no .habit-hooks/config.toml, no renovate.json. Conformance
+      tooling skips it. See decisions/007.
+    what_still_applies: >-
+      The boundary above. nomadtty must not hold Orange credentials or private
+      host details, and it is public, so public-content policy applies to what
+      is put there. Those are ownership facts, not governance mechanics.
 
   mihkel:
     description: OpenClaw-based Mihkel agent operating through Discord.

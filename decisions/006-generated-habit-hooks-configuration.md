@@ -38,9 +38,11 @@ habit-sensors: no [files] are configured — nothing scanned
 A green tick for scanning nothing is a placebo, and four repositories would have
 had one.
 
-**Three repositories declare `typescript` for JavaScript.** The plugin's default
+**Repositories declaring `typescript` for JavaScript.** The plugin's default
 `files` is `**/*.ts` and `**/*.tsx`. Without a widened list the coach finds
-nothing in `nomadtty`, `mihkel`, or `servitium`.
+nothing in `mihkel` or `servitium`. (`nomadtty` was the third such repository
+when this was written; it is no longer governed. See
+[007](./007-nomadtty-is-governed-by-upstream.md).)
 
 **`jscpd` resolves from the project's `node_modules`.** Six repositories have no
 `package.json`. Adding one — plus a lockfile, plus a Renovate surface — to a

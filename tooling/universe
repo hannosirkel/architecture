@@ -103,11 +103,17 @@ def _audit(universe: cat.Universe, repos: list[str], path: str | None = None) ->
     if path and len(names) != 1:
         raise cat.UniverseError("--path requires exactly one repository")
     problems = cat.check_working_paths(universe) if not repos else []
+    skipped = [n for n in names if not cat.is_governed(universe, n)]
     for name in names:
         problems += audit.audit_repository(
             universe, name, path=Path(path) if path else None
         )
-    return _report(problems, f"{len(names)} repositories audited")
+    for name in skipped:
+        # Reporting "clean" for a repository nobody audited is the placebo this
+        # tooling exists to avoid. Name it instead.
+        print(f"{name}: not governed; conformance skipped by decisions/007")
+    audited = len(names) - len(skipped)
+    return _report(problems, f"{audited} repositories audited")
 
 
 def _sync(

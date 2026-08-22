@@ -91,21 +91,21 @@ profiles:
       - build, test, and release procedure
     public_safe_required: true
 
-  fork-public:
-    description: A maintained public fork.
+  fork-upstream-governed:
+    description: A maintained public fork that follows its upstream's conventions.
     standards: []
-    expected_docs: [docs/current/]
-    optional_docs: [docs/decisions/, docs/working/]
+    # The universe catalogues this repository so its ownership and boundaries
+    # are recorded. It does not govern it. See decisions/007.
+    conformance: none
+    expected_docs: []
     additionally_documents:
-      - local architecture and current behaviour
-      - decisions
-      - build, test, and release procedure
-      - upstream provenance and licence obligations
-      - the local delta from upstream, and how it is maintained
+      - nothing centrally; upstream's conventions apply
     public_safe_required: true
     notes: >-
-      Not a reduced tier. It carries the same governance files and code-quality
-      gates as application-public, and additionally documents the fork.
+      Every governance file this universe would add is a divergence a future
+      upstream merge has to reconcile, in a repository whose rules are
+      upstream's to set. The catalogue entry records what the repository is and
+      what it must not hold; conformance tooling skips it.
 
   research-private:
     description: Early private research with no deployable artifact.

@@ -131,6 +131,23 @@ def entry_for(universe: Universe, name: str) -> dict:
     return entry
 
 
+def is_governed(universe: Universe, name: str) -> bool:
+    """Whether this universe's rules apply to a repository at all.
+
+    A catalogued repository is normally governed. One whose profile declares
+    `conformance: none` is recorded but left alone: a fork that follows its
+    upstream's conventions, where every file this universe would add is a
+    divergence a later upstream merge has to reconcile. See decisions/007.
+    """
+    entry = universe.repositories.get(name)
+    if entry is None:
+        return False
+    if entry.get("governed") is False:
+        return False
+    profile = universe.profiles.get(entry.get("profile")) or {}
+    return profile.get("conformance") != "none"
+
+
 def checkout_path(entry: dict) -> Path:
     return Path(os.path.expanduser(entry["local_path"]))
 
@@ -207,6 +224,17 @@ def validate(universe: Universe) -> list[Problem]:
                     name,
                     "profile-conflict",
                     f"profile `{profile}` requires public safety",
+                )
+            )
+
+        profile_conformance = (universe.profiles.get(profile) or {}).get("conformance")
+        if (entry.get("governed") is False) != (profile_conformance == "none"):
+            problems.append(
+                Problem(
+                    name,
+                    "governance-mismatch",
+                    f"`governed: {entry.get('governed')}` disagrees with profile "
+                    f"`{profile}`, whose conformance is `{profile_conformance}`",
                 )
             )
 

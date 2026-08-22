@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import universe_audit as audit
 import universe_catalogue as cat
+import universe_render as render
 from test_helpers import ROOT
 
 
@@ -36,6 +37,25 @@ class CatalogueTests(unittest.TestCase):
                 with self.subTest(repo=name, language=language):
                     spec = self.universe.languages[language]
                     self.assertTrue((ROOT / spec["standard"]).is_file())
+
+    def test_an_ungoverned_repository_is_recognised(self):
+        """A fork follows upstream's conventions; see decisions/007."""
+        self.assertFalse(cat.is_governed(self.universe, "nomadtty"))
+        self.assertTrue(cat.is_governed(self.universe, "plepic"))
+
+    def test_an_ungoverned_repository_is_audited_as_nothing(self):
+        self.assertEqual([], audit.audit_repository(self.universe, "nomadtty"))
+
+    def test_sync_refuses_to_write_into_an_ungoverned_repository(self):
+        """Generated files there are divergences a later upstream merge inherits."""
+        with self.assertRaises(cat.UniverseError) as caught:
+            render.sync_baseline(self.universe, "nomadtty")
+        self.assertIn("not governed", str(caught.exception))
+
+    def test_the_two_governance_declarations_must_agree(self):
+        self.universe.repositories["nomadtty"]["governed"] = True
+        checks = [p.check for p in cat.validate(self.universe)]
+        self.assertIn("governance-mismatch", checks)
 
     def test_unknown_profile_is_a_finding(self):
         self.universe.repositories["orange"]["profile"] = "made-up"
@@ -99,6 +119,12 @@ class ToolFailureTests(unittest.TestCase):
         result = self._run("--root", str(broken), "validate")
         self.assertEqual(2, result.returncode)
         self.assertIn("cannot run", result.stderr)
+
+    def test_the_cli_names_a_skip_rather_than_reporting_it_clean(self):
+        """A pass for a repository nobody audited is the placebo to avoid."""
+        result = self._run("audit", "nomadtty")
+        self.assertIn("not governed", result.stdout)
+        self.assertNotIn("clean: 1 repositories", result.stdout)
 
     def test_every_subcommand_runs_from_the_cli(self):
         """The module tests never invoked main(), so a shadowed name got through.
