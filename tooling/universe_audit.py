@@ -231,7 +231,7 @@ def _npm_scripts(path: Path, text: str, depth: int = 3) -> list[str]:
     return found
 
 
-RENOVATE_PRESET = "local>hannosirkel/architecture//templates/renovate.json"
+RENOVATE_PRESET = "local>hannosirkel/architecture//templates/default"
 
 
 def _audit_dependency_automation(name, path) -> list[Problem]:

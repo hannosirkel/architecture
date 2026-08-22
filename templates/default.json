@@ -8,29 +8,39 @@
     "helpers:pinGitHubActionDigests"
   ],
   "timezone": "Europe/Tallinn",
-  "schedule": ["before 6am on monday"],
+  "schedule": [
+    "before 6am on monday"
+  ],
   "prConcurrentLimit": 3,
   "prHourlyLimit": 2,
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "rangeStrategy": "bump",
-  "postUpdateOptions": ["npmDedupe"],
+  "postUpdateOptions": [
+    "npmDedupe"
+  ],
   "vulnerabilityAlerts": {
-    "description": "A security fix does not wait for the weekly window.",
+    "description": "A security fix does not wait for the weekly window. Renovate already prioritises these; the schedule override is what lets them out.",
     "enabled": true,
-    "schedule": ["at any time"],
-    "labels": ["dependencies", "security"],
-    "prPriority": 10
-  },
-  "docker": {
-    "description": "Pin by digest. deploys needs immutable references, and so does every image this universe builds on.",
-    "pinDigests": true
+    "schedule": [
+      "at any time"
+    ],
+    "labels": [
+      "dependencies",
+      "security"
+    ]
   },
   "customManagers": [
     {
       "description": "standards/security.md embeds a pinned gitleaks version and checksum in every repository's workflow. Without this, twelve copies go stale together and nothing notices.",
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/.+\\.ya?ml$/"],
-      "matchStrings": ["GITLEAKS_VERSION:\\s*(?<currentValue>\\S+)"],
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "GITLEAKS_VERSION:\\s*(?<currentValue>\\S+)"
+      ],
       "depNameTemplate": "gitleaks/gitleaks",
       "datasourceTemplate": "github-releases",
       "extractVersionTemplate": "^v(?<version>.*)$"
@@ -38,26 +48,49 @@
   ],
   "packageRules": [
     {
+      "description": "Pin by digest. deploys needs immutable references, and so does every image this universe builds on.",
+      "matchCategories": [
+        "docker"
+      ],
+      "pinDigests": true
+    },
+    {
       "description": "Group non-major updates so a quiet week is one pull request, not nine.",
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "groupName": "non-major dependencies"
     },
     {
       "description": "A major update is reviewed on its own.",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "groupName": null,
-      "labels": ["dependencies", "major"]
+      "labels": [
+        "dependencies",
+        "major"
+      ]
     },
     {
       "description": "GitHub Actions are pinned to a commit SHA by standards/security.md. Keep the version comment true when the SHA moves.",
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "github actions",
       "pinDigests": true
     },
     {
       "description": "TypeScript has a peer-dependency range in typescript-eslint. See standards/languages/typescript.md.",
-      "matchPackageNames": ["typescript"],
-      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "dependencyDashboardApproval": true
     }
   ]
