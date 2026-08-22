@@ -257,6 +257,27 @@ repositories:
     lifecycle: registered-not-implemented
     supports_rulesets: true
 
+  portfolio-bot:
+    description: >-
+      Interactive Brokers portfolio management, trading to predefined rules.
+    profile: application-private
+    remote: https://github.com/hannosirkel/portfolio-bot.git
+    local_path: "~/app/portfolio-bot"
+    default_branch: main
+    default_branch_state: unborn
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: []
+    languages_note: >-
+      Empty today. It becomes `python` when there is Python to gate; §7.1 says
+      populate from evidence, and a declared language with no files is a check
+      that never runs.
+    npm_project: false
+    supports_rulesets: false
+    lifecycle: registered-not-implemented
+
   entpass:
     description: EntityPass/LEI concept research and development.
     profile: research-private
