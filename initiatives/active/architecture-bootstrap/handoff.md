@@ -152,8 +152,11 @@ governed repositories, two of them deliberately without a pull-request rule.
   `orange-inventory`, `myskills`, `entpass`, `portfolio-bot` — the plan returns
   403. The written rule plus the direct-push audit stand in, with history
   baselined per repository so only new violations report.
-- **`deploys` takes no pull-request rule.** Its `main` receives automated digest
-  pushes from two release workflows.
+- **`deploys` takes no pull-request rule**, and both deployer apps bypass its
+  ruleset entirely. Its `main` receives automated digest pushes from two release
+  workflows, and a required status check rejects a push whose commit has no
+  checks yet. A bypass actor is exempt from the whole ruleset, so both apps can
+  also delete and force-push `main`. See `standards/security.md`.
 - **`architecture` takes no pull-request rule.** Initiative state is committed
   directly to `main` by the session doing the work.
 - **`plepic` and `servitium` keep `pull_request_target`**, pre-authorised
@@ -163,45 +166,51 @@ governed repositories, two of them deliberately without a pull-request rule.
 
 Routed rather than done here, most serious first.
 
-1. **`deploys`: two assertions cannot fail.** In
+1. **`plepic`: a failed release tells nobody.** `servitium` has `notify.yml`,
+   which fires on `workflow_run` for `Release` and posts an `@mention` on any
+   conclusion other than success. `plepic` has no equivalent, so when its
+   promotion broke on 2026-08-22 it failed four times in silence while
+   `servitium`'s six identical failures were announced each time. Copying
+   `servitium/.github/workflows/notify.yml` is most of the work.
+2. **`deploys`: two assertions cannot fail.** In
    `servitium/tests/manifests.sh`, both written `! grep -q …`, which exempts the
    command from `errexit`. One guards against a placeholder digest reaching
    Argo CD. The other guards against the test overlay mounting the **live**
    secret. Verified empirically. Baselined, not fixed, because repairing an
    assertion changes behaviour.
-2. **`deploys`: 3,376 lines of undeclared Ruby.** Inside `<<'RUBY'` heredocs in
+3. **`deploys`: 3,376 lines of undeclared Ruby.** Inside `<<'RUBY'` heredocs in
    the manifest tests. `shellcheck` gates the file and lints 19 lines of 3,246.
    Both defects above live in the part no gate can see. Declaring `ruby` means a
    language standard and a gate; it is a deliberate change, not an oversight to
    quietly fix.
-3. **`robobook`: the skill adapters may not resolve their references.**
+4. **`robobook`: the skill adapters may not resolve their references.**
    `.claude/skills/` and `.opencode/skills/` are symlinks to
    `skills/<name>/SKILL.md` — deliberate, one source of truth. But only
    `SKILL.md` is linked, and every one ends by telling the agent to read
    `references/<name>.md`, relative to the skill directory. Invoke one skill
    through each runtime and watch whether that file is read. Money-sensitive
    logic.
-4. **`nomadtty`: releases are blocked.** `docs/issues/mtls-tests-need-openssl-3.5.md`.
+5. **`nomadtty`: releases are blocked.** `docs/issues/mtls-tests-need-openssl-3.5.md`.
    Its `Publish` workflow gates on `CI`, and two mTLS tests use OpenSSL 3.5
    flags the runner lacks. Surfaced by its first-ever CI run.
-5. **`mihkel`: `WORKFLOWS.md` contradicts its own baseline** on whether to push
+6. **`mihkel`: `WORKFLOWS.md` contradicts its own baseline** on whether to push
    to `main`. The governance merge did not update it.
-6. **`orange`: the documentation never mentions Plepic**, despite it being the
+7. **`orange`: the documentation never mentions Plepic**, despite it being the
    dominant recent work.
-7. **`orange`, `orange-inventory`: `docs/` layout.** Seven current-state
+8. **`orange`, `orange-inventory`: `docs/` layout.** Seven current-state
    documents sit at `docs/` root. Reported as advisory, not failed — a
    repository may keep a document where its usage needs it. `orange-inventory`'s
    three are additionally pinned by `scripts/validate`'s `required_paths` and by
    three active working plans that script those paths.
-8. **`servitium`: documents three frontend applications and serves four.**
+9. **`servitium`: documents three frontend applications and serves four.**
    `/ludus` is missing. Also does not ignore the `public/assets/` build output.
-9. **`plepic`: the `Toolchain` note is stale in tense** — the storefront has
+10. **`plepic`: the `Toolchain` note is stale in tense** — the storefront has
    landed.
-10. **`architecture`: four Habit Hooks coaching findings** on `tooling/`,
+11. **`architecture`: four Habit Hooks coaching findings** on `tooling/`,
     deliberately not snoozed.
-11. **`deploys`: `kubeconform` schema version** is pinned to Kubernetes 1.36.2;
+12. **`deploys`: `kubeconform` schema version** is pinned to Kubernetes 1.36.2;
     change it when the cluster changes.
-12. **`mihkel` is public** and carries RFC1918 addresses, an internal hostname,
+13. **`mihkel` is public** and carries RFC1918 addresses, an internal hostname,
     and a live n8n workflow ID. None is a secret value. Nothing records that the
     exposure was considered and accepted; it deserves a decision either way.
 
