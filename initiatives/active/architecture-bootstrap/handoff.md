@@ -92,14 +92,13 @@ because an Orange plan routinely names live hosts and identities.
 
 ## What needs you
 
-Two decisions the governance layer has no opinion on:
+One decision the governance layer has no opinion on:
 
-- **`nomadtty#3`**, Renovate's onboarding pull request on the fork this
-  universe deliberately does not govern. Adding a config there is divergence
-  from upstream, which is the thing `decisions/007` avoids — but it is your
-  fork.
-- **`nomadtty` still runs Dependabot.** Same duplication `servitium` had. Out
-  of scope for the same reason.
+- **`nomadtty` still runs Dependabot**, and has no Renovate config. Renovate's
+  onboarding pull request `nomadtty#3` was closed, so the duplication
+  `servitium` had is settled there in the opposite direction. Out of scope
+  either way: adding a config to a fork is divergence from upstream, which is
+  the thing `decisions/007` avoids — but it is your fork.
 
 ## Two things worth knowing before you next change a permission
 
@@ -190,9 +189,14 @@ Routed rather than done here, most serious first.
    `references/<name>.md`, relative to the skill directory. Invoke one skill
    through each runtime and watch whether that file is read. Money-sensitive
    logic.
-5. **`nomadtty`: releases are blocked.** `docs/issues/mtls-tests-need-openssl-3.5.md`.
-   Its `Publish` workflow gates on `CI`, and two mTLS tests use OpenSSL 3.5
-   flags the runner lacks. Surfaced by its first-ever CI run.
+5. **`nomadtty`: releases are still blocked, for a new reason.** The mTLS test
+   failure recorded in `docs/issues/mtls-tests-need-openssl-3.5.md` is fixed —
+   `nomadtty#4` landed the OpenSSL argument-syntax corrections and `CI` passes.
+   `Publish` now fails one step later: it pushes to
+   `ghcr.io/shifulegend/nomadtty`, the **upstream** owner's namespace, and gets
+   `denied: permission_denied`. That is a fork artefact rather than a defect,
+   and repointing it at `hannosirkel` is exactly the upstream divergence
+   `decisions/007` declines to introduce. Your call, not the universe's.
 6. **`mihkel`: `WORKFLOWS.md` contradicts its own baseline** on whether to push
    to `main`. The governance merge did not update it.
 7. **`orange`: the documentation never mentions Plepic**, despite it being the

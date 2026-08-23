@@ -1189,3 +1189,33 @@ defect_promotion_blocked:
     servitium-deployer a775743 and plepic-deployer 7386c6c, and each live
     overlay digest matches its repository's current main.
   recorded_in: standards/security.md, with the general rule and how to verify it
+
+closed: 2026-08-23
+final_state:
+  catalogued: 13
+  governed: 12
+  ungoverned_by_decision: nomadtty
+  audit: "0 failing, 8 advisory"
+  default_branch_ci: >-
+    Every workflow's latest run on every governed default branch is green,
+    checked per workflow rather than per repository — the per-repository view
+    is what hid the promotion outage for two hours.
+  branch_protection: >-
+    Seven public governed repositories carry a ruleset. Five private ones
+    cannot on this plan; the written rule and the direct-push audit stand in.
+  renovate: >-
+    All twelve governed repositories onboarded and resolving the shared
+    preset. The six that reported a configuration error now carry a Dependency
+    Dashboard instead.
+  workspace: >-
+    All worktrees this initiative created are removed. Untouched: another
+    session's orange/smtp-tls-servername pair, and orange/inventory, which
+    holds two uncommitted deletions that are not this session's to resolve.
+  open_pull_requests_not_ours:
+    - orange#21 and orange-inventory#8, another session's SMTP TLS fix
+    - servitium#23, mihkel-agent's mahjong work
+  nomadtty_moved_meanwhile: >-
+    Its CI blocker was fixed by nomadtty#4, by someone else, while this
+    initiative ran. Publish now fails one step later, pushing to the upstream
+    owner's GHCR namespace. Recorded in the handoff; not acted on, because the
+    repository is not governed.
