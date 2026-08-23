@@ -216,7 +216,36 @@ checks commit metadata against it.
 **`deploys` takes no `pull_request` rule.** Its `main` receives automated image
 digest pushes from the `plepic` and `servitium` release workflows. A
 pull-request requirement breaks promotion. Its floor is `deletion`,
-`non_fast_forward`, and `required_status_checks` on `Validate`.
+`non_fast_forward`, and `required_status_checks` on `Manifests`, `Shell`,
+`Workflows`, and `Documentation`.
+
+**A required status check blocks an automated push unless the pushing app
+bypasses the ruleset.** A commit that has just been created has no check runs
+against it, so the push is rejected with `GH013: 4 of 4 required status checks
+are expected`. Dropping the `pull_request` rule does not help; the two rules
+block a direct push independently.
+
+Learned by breaking it: adding `required_status_checks` to `deploys` silently
+stopped every promotion for two hours and ten builds. The pull requests were
+green, because the failure is in the release workflow that runs *after* the
+merge.
+
+`deploys` therefore lists both deployer apps as bypass actors:
+
+| App | ID | Mode |
+| --- | --- | --- |
+| `servitium-deployer` | 4345014 | `always` |
+| `plepic-deployer` | 4614643 | `always` |
+
+`always` rather than `pull_request`, because the push is direct. Note that a
+bypass actor is exempt from the **whole** ruleset, not from one rule: both apps
+can also delete `main` and force-push it. Accepted because each pushes a single
+fast-forward commit from a workflow whose content is reviewed like any other
+file, and the alternative — no status checks on `deploys` at all — is weaker.
+
+Any repository that later takes an automated push to a protected branch needs
+the same treatment. Verify it by watching the *post-merge* run, not the pull
+request's checks.
 
 **`architecture` takes no `pull_request` rule.** Initiative state is committed
 to `main` directly by the session doing the work, which
