@@ -1219,3 +1219,22 @@ final_state:
     initiative ran. Publish now fails one step later, pushing to the upstream
     owner's GHCR namespace. Recorded in the handoff; not acted on, because the
     repository is not governed.
+  nomadtty_publish_disabled:
+    date: 2026-08-23
+    reason: >-
+      The workflow pushes to ghcr.io/shifulegend/nomadtty, upstream's
+      namespace, which a fork's token cannot write. It had never succeeded,
+      only never run, because it gates on a green CI the fork did not have
+      until nomadtty#4 landed.
+    nothing_consumes_it: >-
+      Orange's nomadtty role builds from a source checkout and runs
+      nomadtty.service under systemd. No image, docker, podman or ghcr
+      reference exists in roles/nomadtty/ or roles/nomadtty_proxy/, and
+      deploys carries no nomadtty manifest.
+    method: >-
+      Disabled through the API, not by editing the file. The fork is 17
+      commits and 39 files ahead of upstream, but .github/workflows/ is
+      byte-identical to it, and nomadtty#1 was closed rather than merged on
+      the same grounds. A disable is repository state: it survives an upstream
+      merge and reverses with gh workflow enable.
+    reversal: gh workflow enable Publish --repo hannosirkel/nomadtty

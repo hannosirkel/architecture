@@ -194,14 +194,24 @@ Routed rather than done here, most serious first.
    `references/<name>.md`, relative to the skill directory. Invoke one skill
    through each runtime and watch whether that file is read. Money-sensitive
    logic.
-5. **`nomadtty`: releases are still blocked, for a new reason.** The mTLS test
-   failure recorded in `docs/issues/mtls-tests-need-openssl-3.5.md` is fixed —
-   `nomadtty#4` landed the OpenSSL argument-syntax corrections and `CI` passes.
-   `Publish` now fails one step later: it pushes to
-   `ghcr.io/shifulegend/nomadtty`, the **upstream** owner's namespace, and gets
-   `denied: permission_denied`. That is a fork artefact rather than a defect,
-   and repointing it at `hannosirkel` is exactly the upstream divergence
-   `decisions/007` declines to introduce. Your call, not the universe's.
+5. **`nomadtty`: `Publish` is disabled, deliberately.** Its mTLS test failure
+   is fixed — `nomadtty#4` landed the OpenSSL argument-syntax corrections and
+   `CI` passes. `Publish` then failed one step later, pushing to
+   `ghcr.io/shifulegend/nomadtty`, the **upstream** owner's namespace, which a
+   fork's token cannot write. It had never succeeded; it had simply never had a
+   green `CI` to run after.
+
+   Nothing consumes that image. Orange's `nomadtty` role builds from a source
+   checkout of `hannosirkel/nomadtty`, compiles a pinned `ttyd`, and runs
+   `nomadtty.service` under systemd; there is no `image:`, `docker`, `podman`
+   or `ghcr` reference in `roles/nomadtty/` or `roles/nomadtty_proxy/`.
+
+   Disabled through the API rather than by editing the file. The fork is 17
+   commits and 39 files ahead of upstream, but `.github/workflows/` is
+   byte-identical to it, and `nomadtty#1` was closed rather than merged for
+   the same reason. A workflow disable is repository state, so it survives an
+   upstream merge and reverses with
+   `gh workflow enable Publish --repo hannosirkel/nomadtty`.
 6. **`mihkel`: `WORKFLOWS.md` contradicts its own baseline** on whether to push
    to `main`. The governance merge did not update it.
 7. **`orange`: the documentation never mentions Plepic**, despite it being the
