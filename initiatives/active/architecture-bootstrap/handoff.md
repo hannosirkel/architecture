@@ -145,7 +145,7 @@ later upstream merge has to reconcile. `sync-baseline` refuses to write into it;
 ## Accepted risks
 
 The branch-protection floor is applied: one ruleset on each of the seven public
-governed repositories, two of them deliberately without a pull-request rule.
+governed repositories. `deploys` is the only one without a pull-request rule.
 
 - **Five private repositories cannot carry a ruleset** — `orange`,
   `orange-inventory`, `myskills`, `entpass`, `portfolio-bot` — the plan returns
@@ -156,13 +156,13 @@ governed repositories, two of them deliberately without a pull-request rule.
   workflows, and a required status check rejects a push whose commit has no
   checks yet. A bypass actor is exempt from the whole ruleset, so both apps can
   also delete and force-push `main`. See `standards/security.md`.
-- **`architecture` takes no pull-request rule, and cannot use that freedom.**
-  The intent was that initiative state is committed directly to `main` by the
-  session doing the work, which `agent-operation.md` permits. Its own
-  `required_status_checks` rule rejects such a push: a commit that has just
-  been created has no checks against it. Until it gains a bypass actor,
-  `architecture` is pull-request-only in practice, and this bullet and
-  `agent-operation.md` describe an intent rather than a behaviour.
+- **`architecture` is pull-request-only, including for initiative state.** The
+  exception that let it commit directly to `main` never worked, because
+  `required_status_checks` rejects a push whose commit has no checks yet. It
+  was withdrawn rather than restored with a bypass actor, since bypass is
+  per-ruleset and would grant force-push and delete on the governance
+  repository. Zero approving reviews are required, so an agent still merges its
+  own state updates unattended. See `decisions/009`.
 - **`plepic` and `servitium` keep `pull_request_target`**, pre-authorised
   against `zizmor` in `standards/security.md`.
 
