@@ -7,9 +7,11 @@ current_phase: complete
 current_gate: none
 last_completed_step: phase-7-handoff
 next_action: >-
-  Nothing here. One pull request waits on an approving review:
-  servitium#32, removing Dependabot. Everything else is ordinary work in the
-  owning repositories, listed in handoff.md.
+  Nothing here. One question is open and is the operator's: architecture's
+  ruleset rejects the direct push to main that agent-operation.md describes,
+  so it needs either a bypass actor or an amended standard. See
+  defect_architecture_direct_push below. Everything else is ordinary work in
+  the owning repositories, listed in handoff.md.
 
 gate_1:
   approved: true
@@ -1238,3 +1240,37 @@ final_state:
       the same grounds. A disable is repository state: it survives an upstream
       merge and reverses with gh workflow enable.
     reversal: gh workflow enable Publish --repo hannosirkel/nomadtty
+
+defect_architecture_direct_push:
+  found: 2026-08-23, by the closing commit being rejected
+  detail: >-
+    The same GH013 that broke promotion on deploys, one hour after the rule
+    explaining it was written into security.md. architecture's ruleset carries
+    required_status_checks, which rejects a push whose commit has no checks
+    yet. Dropping the pull_request rule never helped; the two rules block a
+    direct push independently. architecture has therefore been
+    pull-request-only since its ruleset was applied, while agent-operation.md,
+    security.md and the handoff all said initiative state is committed
+    directly to main.
+  documents_corrected: handoff.md accepted-risks bullet, in architecture#25
+  open_question: >-
+    Bypass actor, mirroring deploys, which restores the documented behaviour
+    and grants the agent app force-push and delete on the governance
+    repository, because bypass is per-ruleset and not per-rule. Or accept
+    pull-request-only and amend agent-operation.md, costing one pull request
+    per state update. Deliberately not decided by the session that caused it.
+
+completion:
+  contract_phase_7:
+    audit_rerun: "0 failing, 8 advisory against final default branches"
+    durable_state_updated: true
+    marked_complete: true
+    archived: >-
+      Left under initiatives/active/ as the contract permits. Moving it would
+      break live references: AGENTS.md links handoff.md, standards/ cite
+      evidence/, and the audit reads exceptions recorded in state.yaml.
+      Recorded instead in initiatives/README.md as a completed index entry.
+    handoff: initiatives/active/architecture-bootstrap/handoff.md
+  branches: >-
+    All 24 governance branches merged and deleted. architecture carries one
+    branch, main.
