@@ -92,14 +92,13 @@ because an Orange plan routinely names live hosts and identities.
 
 ## What needs you
 
-Two decisions the governance layer has no opinion on:
+One decision the governance layer has no opinion on:
 
-- **`nomadtty#3`**, Renovate's onboarding pull request on the fork this
-  universe deliberately does not govern. Adding a config there is divergence
-  from upstream, which is the thing `decisions/007` avoids — but it is your
-  fork.
-- **`nomadtty` still runs Dependabot.** Same duplication `servitium` had. Out
-  of scope for the same reason.
+- **`nomadtty` still runs Dependabot**, and has no Renovate config. Renovate's
+  onboarding pull request `nomadtty#3` was closed, so the duplication
+  `servitium` had is settled there in the opposite direction. Out of scope
+  either way: adding a config to a fork is divergence from upstream, which is
+  the thing `decisions/007` avoids — but it is your fork.
 
 ## Two things worth knowing before you next change a permission
 
@@ -157,8 +156,13 @@ governed repositories, two of them deliberately without a pull-request rule.
   workflows, and a required status check rejects a push whose commit has no
   checks yet. A bypass actor is exempt from the whole ruleset, so both apps can
   also delete and force-push `main`. See `standards/security.md`.
-- **`architecture` takes no pull-request rule.** Initiative state is committed
-  directly to `main` by the session doing the work.
+- **`architecture` takes no pull-request rule, and cannot use that freedom.**
+  The intent was that initiative state is committed directly to `main` by the
+  session doing the work, which `agent-operation.md` permits. Its own
+  `required_status_checks` rule rejects such a push: a commit that has just
+  been created has no checks against it. Until it gains a bypass actor,
+  `architecture` is pull-request-only in practice, and this bullet and
+  `agent-operation.md` describe an intent rather than a behaviour.
 - **`plepic` and `servitium` keep `pull_request_target`**, pre-authorised
   against `zizmor` in `standards/security.md`.
 
@@ -190,9 +194,24 @@ Routed rather than done here, most serious first.
    `references/<name>.md`, relative to the skill directory. Invoke one skill
    through each runtime and watch whether that file is read. Money-sensitive
    logic.
-5. **`nomadtty`: releases are blocked.** `docs/issues/mtls-tests-need-openssl-3.5.md`.
-   Its `Publish` workflow gates on `CI`, and two mTLS tests use OpenSSL 3.5
-   flags the runner lacks. Surfaced by its first-ever CI run.
+5. **`nomadtty`: `Publish` is disabled, deliberately.** Its mTLS test failure
+   is fixed — `nomadtty#4` landed the OpenSSL argument-syntax corrections and
+   `CI` passes. `Publish` then failed one step later, pushing to
+   `ghcr.io/shifulegend/nomadtty`, the **upstream** owner's namespace, which a
+   fork's token cannot write. It had never succeeded; it had simply never had a
+   green `CI` to run after.
+
+   Nothing consumes that image. Orange's `nomadtty` role builds from a source
+   checkout of `hannosirkel/nomadtty`, compiles a pinned `ttyd`, and runs
+   `nomadtty.service` under systemd; there is no `image:`, `docker`, `podman`
+   or `ghcr` reference in `roles/nomadtty/` or `roles/nomadtty_proxy/`.
+
+   Disabled through the API rather than by editing the file. The fork is 17
+   commits and 39 files ahead of upstream, but `.github/workflows/` is
+   byte-identical to it, and `nomadtty#1` was closed rather than merged for
+   the same reason. A workflow disable is repository state, so it survives an
+   upstream merge and reverses with
+   `gh workflow enable Publish --repo hannosirkel/nomadtty`.
 6. **`mihkel`: `WORKFLOWS.md` contradicts its own baseline** on whether to push
    to `main`. The governance merge did not update it.
 7. **`orange`: the documentation never mentions Plepic**, despite it being the
