@@ -39,15 +39,26 @@ abandoned. Never delete or reset a worktree you did not create.
 Agents never commit to a default branch. Branch, open a pull request, and
 self-merge only where policy allows.
 
-Two exceptions exist, and only two:
+One exception exists, and only one: an empty repository needs an initial commit
+before a branch can exist. Push it directly, then work by branch from the next
+commit onward.
 
-1. Durable initiative state under `initiatives/*/` in `architecture` commits to
-   `main` directly. A coordination record is not a code change, and gating it
-   behind review would stall the resume path it protects.
-2. An empty repository needs an initial commit before a branch can exist. Push
-   it directly, then work by branch from the next commit onward.
+The audit whitelists that case and nothing else.
 
-The audit whitelists these two cases and nothing else.
+**Durable initiative state under `initiatives/*/` in `architecture` used to be a
+second exception**, on the reasoning that a coordination record is not a code
+change and gating it behind review would stall the resume path it protects. It
+was withdrawn on 2026-08-23, because it never worked: `architecture`'s
+`required_status_checks` rule rejects a push whose commit has no checks yet, so
+every direct push had been failing since the ruleset was applied while three
+documents said otherwise. Initiative state now goes through a pull request like
+everything else. See
+[`decisions/009`](../decisions/009-architecture-is-pull-request-only.md).
+
+The resume path is preserved a different way: `architecture` requires **zero**
+approving reviews, so an agent opens a pull request and merges it once the
+checks pass, without waiting for a human. What it cannot do is push to `main`
+with nothing having verified the change.
 
 Five private repositories cannot enforce this through a ruleset. The GitHub plan
 does not offer rulesets on a private repository. There the rule is the

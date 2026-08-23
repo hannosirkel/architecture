@@ -1253,12 +1253,15 @@ defect_architecture_direct_push:
     security.md and the handoff all said initiative state is committed
     directly to main.
   documents_corrected: handoff.md accepted-risks bullet, in architecture#25
-  open_question: >-
-    Bypass actor, mirroring deploys, which restores the documented behaviour
-    and grants the agent app force-push and delete on the governance
-    repository, because bypass is per-ruleset and not per-rule. Or accept
-    pull-request-only and amend agent-operation.md, costing one pull request
-    per state update. Deliberately not decided by the session that caused it.
+  resolved: >-
+    2026-08-23, by the operator: pull-request-only. The exception is withdrawn
+    from agent-operation.md rather than restored with a bypass actor, because
+    bypass is per-ruleset and would grant the agent force-push and delete on
+    the repository that governs every other one. architecture gained a
+    pull_request rule with required_approving_review_count 0, so an agent still
+    merges its own state updates unattended once checks pass. See
+    decisions/009. deploys is now the only public repository carrying a
+    branch-protection exception.
 
 completion:
   contract_phase_7:
