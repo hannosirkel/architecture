@@ -1107,3 +1107,54 @@ final_audit:
     Two recorded exceptions with decision links, three soft-target reports, and
     three documentation-layout notes in the orange pair. All explained.
   nomadtty: catalogued, not governed, reported as skipped rather than clean
+
+phase_8_visibility_change:
+  date: 2026-08-22
+  trigger: >-
+    The operator made architecture public. It closed three structural costs at
+    once, each of which had been recorded here as an accepted or open item.
+  decision: decisions/008-architecture-is-public.md
+  costs_retired:
+    unreadable_standards: >-
+      All three cold-test agents named it independently. The generated baseline
+      linked six standards none of them could open.
+    invisible_link_rot: >-
+      Every governed lychee.toml excluded hannosirkel/architecture, so the
+      fourteen standards links the baseline carries were the only links in the
+      universe never checked. Correct while private; inverted once public.
+    unusable_renovate_preset: >-
+      A public repository cannot extend a local> preset held in a private one.
+      This is what broke six repositories, and no amount of fixing the preset
+      itself would have resolved it.
+  verified_before_publishing: >-
+    gitleaks across all 44 commits of history, plus a manual read for what
+    gitleaks does not model: RFC1918 addresses, home directory paths,
+    hostnames, personal identifiers. None present.
+  branch_protection: >-
+    architecture now carries a ruleset, which the plan does not offer on a
+    private repository: deletion, non_fast_forward, required_status_checks.
+    No pull_request rule, because initiative state is committed to main
+    directly. Recorded in standards/security.md beside the deploys exception.
+    Seven public governed repositories now carry one; five private cannot.
+  follow_up_sweep:
+    lychee_exclusion: >-
+      Ten repositories. architecture leaves the exclusion list and
+      portfolio-bot, private and created later, joins it, so the list still
+      names five. All fourteen standards links confirmed to return 200
+      anonymously before the exclusion was removed — the check was turned on,
+      not a build turned red.
+    profile_rename: >-
+      governance-private became governance. A profile named private, held by a
+      public repository, is the false-claim class this layer exists to catch.
+      Its public_safe_required default went to true; no behaviour change, since
+      the catalogue entry already overrode it and validate already fails a
+      repository declared public with the flag false.
+
+renovate_final:
+  onboarded: >-
+    All six repositories that reported "Fix Renovate Configuration" now carry a
+    Dependency Dashboard issue instead, which is the onboarded steady state.
+  dependabot: >-
+    Removed from servitium; Renovate covers the same three ecosystems. nomadtty
+    still runs it, and still has an open Renovate onboarding pull request. Both
+    remain the operator's call, because nomadtty is not governed.

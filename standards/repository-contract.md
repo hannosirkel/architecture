@@ -111,7 +111,7 @@ repository to hold an empty copy of a directory it has no content for.
 
 | Profile | Additionally documents |
 | --- | --- |
-| `governance-private` | catalogue, standards, profiles, cross-repository initiatives, conformance tooling |
+| `governance` | catalogue, standards, profiles, cross-repository initiatives, conformance tooling |
 | `platform-public-ready` | current state, decisions, recovery and provisioning |
 | `inventory-private` | environment operations, recovery evidence, local working plans |
 | `gitops-public` | deployment ownership, promotion and rollback, validation commands, public-secret constraints |

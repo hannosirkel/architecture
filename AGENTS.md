@@ -8,7 +8,7 @@ Governed by [`architecture`](https://github.com/hannosirkel/architecture).
 
 | | |
 | --- | --- |
-| Profile | `governance-private` |
+| Profile | `governance` |
 | Visibility | declared public, currently public |
 | Languages | python |
 

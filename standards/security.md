@@ -218,6 +218,12 @@ digest pushes from the `plepic` and `servitium` release workflows. A
 pull-request requirement breaks promotion. Its floor is `deletion`,
 `non_fast_forward`, and `required_status_checks` on `Validate`.
 
+**`architecture` takes no `pull_request` rule.** Initiative state is committed
+to `main` directly by the session doing the work, which
+[`agent-operation.md`](./agent-operation.md) permits by name. Gating it behind
+review would stall the resume path it exists to protect. Its floor is
+`deletion`, `non_fast_forward`, and `required_status_checks`.
+
 ## Manifest validation
 
 For `deploys` and any repository shipping Kubernetes manifests, run a dry-run

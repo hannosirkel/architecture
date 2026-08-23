@@ -14,7 +14,7 @@ schema_version: 1
 repositories:
   architecture:
     description: Engineering governance for the managed universe.
-    profile: governance-private
+    profile: governance
     remote: https://github.com/hannosirkel/architecture.git
     local_path: "~/app/architecture"
     default_branch: main
