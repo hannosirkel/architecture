@@ -156,8 +156,13 @@ governed repositories, two of them deliberately without a pull-request rule.
   workflows, and a required status check rejects a push whose commit has no
   checks yet. A bypass actor is exempt from the whole ruleset, so both apps can
   also delete and force-push `main`. See `standards/security.md`.
-- **`architecture` takes no pull-request rule.** Initiative state is committed
-  directly to `main` by the session doing the work.
+- **`architecture` takes no pull-request rule, and cannot use that freedom.**
+  The intent was that initiative state is committed directly to `main` by the
+  session doing the work, which `agent-operation.md` permits. Its own
+  `required_status_checks` rule rejects such a push: a commit that has just
+  been created has no checks against it. Until it gains a bypass actor,
+  `architecture` is pull-request-only in practice, and this bullet and
+  `agent-operation.md` describe an intent rather than a behaviour.
 - **`plepic` and `servitium` keep `pull_request_target`**, pre-authorised
   against `zizmor` in `standards/security.md`.
 
