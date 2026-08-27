@@ -28,6 +28,7 @@ STANDARD_TITLES = {
     "gitops-and-deployment.md": "GitOps and deployment",
     "documentation.md": "Documentation",
     "work-routing.md": "Work routing",
+    "planning.md": "Planning",
 }
 
 ARCHITECTURE_URL = "https://github.com/hannosirkel/architecture"
