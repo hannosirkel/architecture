@@ -28,8 +28,10 @@ path, and the file name must stay aligned.
 
 ## Rules
 
-- Durable initiative state commits to `main` directly. It is a coordination
-  record, not a code change.
+- Durable initiative state goes through a pull request, like every other
+  change. `architecture` requires zero approving reviews, so an agent merges
+  its own state update once the checks pass. See
+  [`decisions/009`](../../decisions/009-architecture-is-pull-request-only.md).
 - Do not create one enormous append-only journal. Use dated files.
 - Do not commit a raw transient log. Commit a concise evidence summary.
 - Add `migration-map.yaml`, `repositories.yaml`, or `skills.lock.yaml` only when

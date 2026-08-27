@@ -31,11 +31,9 @@ repositories:
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
       # baselined, exactly as a linter baseline records today's findings.
-      baseline_commit: "bfc5130"
-      # standards/agent-operation.md: durable initiative state is a coordination
-      # record, not a code change. Gating it behind review would stall the
-      # resume path it exists to protect.
-      allowed_paths: ["initiatives/"]
+      # Moved from bfc5130 to ad01989, the last initiative-state push made
+      # under the exception decision 009 withdrew. See decisions/011.
+      baseline_commit: "ad01989"
     supports_rulesets: true
 
   orange:
@@ -302,14 +300,12 @@ repositories:
       # baselined, exactly as a linter baseline records today's findings.
       baseline_commit: "149bc56"
 
+# A register of active work only. Retired work leaves this list.
+#
+# The legacy-vm-shop big-build plan was retired from orange-inventory on
+# 2026-08-23 (bcadda4) and its state relocated to myskills at
+# skills/big-build/state/2026-08-08-legacy-vm-shop/, where it survives.
 notable_local_work:
-  - repository: orange-inventory
-    path: docs/working/2026-08-08-legacy-vm-shop
-    status: in_progress
-    canonical_state: local
-    note: >-
-      Large active big-build record. resume-state.md, journal.md, decisions.md,
-      and ledger.md are another orchestrator's resume path. Read-only (§5.7).
   - repository: orange-inventory
     path: docs/working/2026-08-08-legacy-vm-mail.md
     status: in_progress

@@ -67,3 +67,25 @@ Register it by link. Do not mirror a journal, ledger, or decision log centrally.
 The owning repository keeps the canonical state.
 
 The audit checks that every registered path still exists.
+
+## Retiring a working plan
+
+Retiring or relocating a working plan updates `notable_local_work` in the same
+change. A registration that outlives the path it names is a conformance
+failure, and the audit catches it.
+
+Relocate the durable half before you delete the state. Do not discard it.
+[`documentation.md`](./documentation.md) says what each directory holds.
+
+| Content | Goes to |
+| --- | --- |
+| Decisions, and gate acceptances | `docs/decisions/` |
+| Unresolved residuals | `docs/issues/` |
+| Ledger, journal, and open questions | removed |
+
+Do not retire a plan while a ledger row is open, including a deferred one.
+Close the rows, or record each open row as an issue in `docs/issues/` in the
+retiring change.
+
+The retiring commit states what happened: what moved, where it went, and what
+was removed. A reader cannot recover that from a diff of deletions.
