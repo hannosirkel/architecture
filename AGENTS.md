@@ -20,6 +20,7 @@ governs.
 - [Code quality](https://github.com/hannosirkel/architecture/blob/main/standards/code-quality.md) — gates, coaching, testing, review cutoff
 - [Repository contract](https://github.com/hannosirkel/architecture/blob/main/standards/repository-contract.md) — required files, profiles, skills
 - [Work routing](https://github.com/hannosirkel/architecture/blob/main/standards/work-routing.md) — where a change starts, and where a working plan belongs
+- [Planning](https://github.com/hannosirkel/architecture/blob/main/standards/planning.md) — how a plan row is sized, the pull-request size gate
 - Language standards: [python](https://github.com/hannosirkel/architecture/blob/main/standards/languages/python.md)
 
 **Never commit to a default branch.** Work in `~/app/.worktrees/architecture/<task>`.
@@ -91,14 +92,12 @@ at its catalogued `local_path`.
 
 ## Owner-facing standards
 
-Read these here. They are marked `owner_facing` in `standards/index.yaml` and
-are linked from no generated section, because pushing an owner-facing link into
+Read this here. It is marked `owner_facing` in `standards/index.yaml` and is
+linked from no generated section, because pushing an owner-facing link into
 eleven baselines would inflate the file the budget keeps short.
 
 - [`standards/documentation.md`](./standards/documentation.md) — layout,
   structure, wording, and the `AGENTS.md` budget.
-- [`standards/planning.md`](./standards/planning.md) — how a plan row is sized,
-  and the pull-request size gate.
 
 `standards/gitops-and-deployment.md` is **not** owner-facing. `deploys` and the
 two repositories that promote digests into it link it from their generated
