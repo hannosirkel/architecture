@@ -79,10 +79,11 @@ at its catalogued `local_path`.
   is marked `owner_facing` in `standards/index.yaml` and linked below. A
   document nothing links is a document nothing reads. `tooling/universe
   validate` enforces this.
-- **Durable initiative state under `initiatives/*/` commits to `main`
-  directly.** It is a coordination record, not a code change, and gating it
-  behind review would stall the resume path it protects. Everything else here
-  goes through a pull request.
+- **Durable initiative state under `initiatives/*/` goes through a pull
+  request**, like every other change here. This repository requires zero
+  approving reviews, so an agent merges its own state update once the checks
+  pass.
+  See [`decisions/009`](./decisions/009-architecture-is-pull-request-only.md).
 - **This repository is governed by the rules it defines.** It is in its own
   catalogue and the audit checks it.
 - **Never store a secret here.** Private is not secret.
