@@ -20,6 +20,10 @@ baseline:
     # answer it from inside a repository. It was owner-facing, so no generated
     # section linked it.
     - work-routing.md
+    # A plan is authored in the repository that owns the outcome, so the rules
+    # for sizing its rows must be readable from inside that one. See
+    # decisions/010.
+    - planning.md
   required_files: [README.md, AGENTS.md, CLAUDE.md]
   required_generated: [".habit-hooks/config.toml"]
   required_checks: [secret-scanning]
