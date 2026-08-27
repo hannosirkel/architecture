@@ -97,8 +97,8 @@ eleven baselines would inflate the file the budget keeps short.
 
 - [`standards/documentation.md`](./standards/documentation.md) — layout,
   structure, wording, and the `AGENTS.md` budget.
-- [`standards/work-routing.md`](./standards/work-routing.md) — where a change
-  starts.
+- [`standards/planning.md`](./standards/planning.md) — how a plan row is sized,
+  and the pull-request size gate.
 
 `standards/gitops-and-deployment.md` is **not** owner-facing. `deploys` and the
 two repositories that promote digests into it link it from their generated
