@@ -31,3 +31,7 @@ standards:
 
   work-routing.md:
     summary: where a change starts, and where a working plan belongs
+
+  planning.md:
+    summary: how a plan row is sized, the pull-request size gate
+    owner_facing: true
