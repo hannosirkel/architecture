@@ -138,6 +138,26 @@ repositories:
       # baselined, exactly as a linter baseline records today's findings.
       baseline_commit: "97d5ba2"
 
+  lousydeal:
+    description: lousydeal.com novelty store, certificates, and Baldrick.
+    profile: application-public
+    remote: https://github.com/hannosirkel/lousydeal.git
+    local_path: "~/app/lousydeal"
+    default_branch: main
+    declared_visibility: public
+    current_remote_visibility: public
+    public_safe_required: true
+    publication_status: published
+    languages: []
+    languages_note: >-
+      Empty until there is code to gate. It becomes `typescript` and `shell`
+      when the store lands; §7.1 says populate from evidence, and a declared
+      language with no files is a check that never runs.
+    npm_project: false
+    extra_standards: [gitops-and-deployment.md]
+    lifecycle: registered-not-implemented
+    supports_rulesets: true
+
   robobook:
     description: Bookkeeping workflow for Plepic Games OÜ.
     profile: application-public
@@ -307,6 +327,13 @@ repositories:
 # skills/big-build/state/2026-08-08-legacy-vm-shop/, where it survives. It was
 # retired with 24 rows pending and 10 deferred; the relocated ledger keeps them.
 notable_local_work:
+  - repository: lousydeal
+    path: docs/working/fresh-build.md
+    status: in_progress
+    canonical_state: local
+    note: >-
+      Build contract for lousydeal.com. Not a plan: it carries no checkbox rows.
+      Each LD slice gets its own plan beside it, written to standards/planning.md.
   - repository: orange-inventory
     path: docs/working/2026-08-08-legacy-vm-mail.md
     status: in_progress
