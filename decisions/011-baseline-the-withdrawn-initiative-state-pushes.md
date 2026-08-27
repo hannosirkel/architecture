@@ -45,6 +45,7 @@ commits, nothing reached `main` except merged pull requests and these fifteen.
 
 - A direct push to `architecture`'s `main` after `ad01989` fails the audit,
   including one under `initiatives/`.
-- `architecture` carries no path exception. `deploys` keeps the only one left.
+- `architecture` carries no direct-push exception. `deploys` keeps the only one
+  left, and it is an `allowed_subject_pattern`, not a path.
 - A later rule withdrawal repeats this shape: remove the exception, and baseline
   what it lawfully excused.

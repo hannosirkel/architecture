@@ -72,13 +72,14 @@ The audit checks that every registered path still exists.
 
 Retiring or relocating a working plan updates `notable_local_work` in the same
 change. A registration that outlives the path it names is a conformance
-failure, and the audit catches it.
+failure, and `tooling/universe validate` catches it.
 
 Relocate the durable half before you delete the state. Do not discard it.
 [`documentation.md`](./documentation.md) says what each directory holds.
 
 | Content | Goes to |
 | --- | --- |
+| Durable facts about how the system now works | `docs/current/` |
 | Decisions, and gate acceptances | `docs/decisions/` |
 | Unresolved residuals | `docs/issues/` |
 | Ledger, journal, and open questions | removed |
@@ -89,3 +90,6 @@ retiring change.
 
 The retiring commit states what happened: what moved, where it went, and what
 was removed. A reader cannot recover that from a diff of deletions.
+
+Only the first rule is checked. No check reads a ledger or a commit message, so
+the open-row rule and the commit-message rule are a review concern.
