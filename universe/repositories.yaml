@@ -336,6 +336,22 @@ notable_local_work:
     note: >-
       Build contract for lousydeal.com. Not a plan: it carries no checkbox rows.
       Each LD slice gets its own plan beside it, written to standards/planning.md.
+  - repository: lousydeal
+    path: docs/working/ld-01-foundation.md
+    status: in_progress
+    canonical_state: local
+    note: >-
+      First slice of the lousydeal build: the store, Stripe, three products, one
+      checkout, and a deployment to the gated test environment. 17 tasks over
+      lousydeal, architecture, deploys and orange. Executes under big-build; its
+      binding is myskills/skills/big-build/plans/ld-01-foundation.md.
+  - repository: lousydeal
+    path: docs/working/status.md
+    status: in_progress
+    canonical_state: local
+    note: >-
+      The initiative's resume point, and the file a stopping agent updates. It
+      outlives each slice plan and is retired with the initiative.
   - repository: orange-inventory
     path: docs/working/2026-08-08-legacy-vm-mail.md
     status: in_progress
