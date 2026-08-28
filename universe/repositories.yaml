@@ -148,11 +148,13 @@ repositories:
     current_remote_visibility: public
     public_safe_required: true
     publication_status: published
-    languages: []
+    languages: [shell]
     languages_note: >-
-      Empty until there is code to gate. It becomes `typescript` and `shell`
-      when the store lands; §7.1 says populate from evidence, and a declared
-      language with no files is a check that never runs.
+      `scripts/validate` and the pre-commit hook are bash, and the shell
+      standard says a repository whose only shell is `scripts/validate` still
+      declares it. `typescript` joins the list in the same commit as the first
+      TypeScript file, not before: a language declared ahead of its code is a
+      check that never runs.
     npm_project: false
     extra_standards: [gitops-and-deployment.md]
     lifecycle: registered-not-implemented
