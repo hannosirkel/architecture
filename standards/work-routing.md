@@ -63,10 +63,30 @@ Register substantial active work in
 [`universe/repositories.yaml`](../universe/repositories.yaml) under
 `notable_local_work`, by path and status.
 
+**One entry per initiative, not one per artifact.** The entry is a pointer that
+lets a catalogue reader find work under way somewhere in the universe. A pointer
+has one destination.
+
+**This catalogue does not track what happens inside a governed repository.**
+That repository owns its own progress. Do not register:
+
+| Not registered | Where it belongs |
+| --- | --- |
+| A status, resume, or progress file | the owning repository, and nowhere else |
+| A per-slice or per-phase plan beneath a registered initiative | beside the initiative it serves |
+| A ledger, journal, or execution state | the owning repository |
+| A decision record or a known issue | `docs/decisions/`, `docs/issues/` |
+
+The test: **an entry that would change because work progressed inside one
+repository does not belong here.** That entry is a mirror, and the next line
+forbids mirrors.
+
 Register it by link. Do not mirror a journal, ledger, or decision log centrally.
 The owning repository keeps the canonical state.
 
-The audit checks that every registered path still exists.
+The audit checks that every registered path still exists. It does not check that
+an entry ought to exist, so over-registration is invisible to tooling and is a
+review concern.
 
 ## Retiring a working plan
 
