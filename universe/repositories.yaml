@@ -148,16 +148,18 @@ repositories:
     current_remote_visibility: public
     public_safe_required: true
     publication_status: published
-    languages: [shell]
+    languages: [shell, typescript]
     languages_note: >-
       `scripts/validate` and the pre-commit hook are bash, and the shell
-      standard says a repository whose only shell is `scripts/validate` still
-      declares it. `typescript` joins the list in the same commit as the first
-      TypeScript file, not before: a language declared ahead of its code is a
-      check that never runs.
-    npm_project: false
+      standard says even a repository whose only shell is `scripts/validate`
+      declares `shell`. `typescript` is declared here after the code landed,
+      not in the same commit: the code and this catalogue are separate
+      repositories, so the pair cannot be atomic. A language declared ahead of
+      its code is a check that never runs, and one left undeclared after the
+      code lands is a check that is skipped until the catalogue catches up —
+      so the gap between the two changes is what there is to keep short.
+    npm_project: true
     extra_standards: [gitops-and-deployment.md]
-    lifecycle: registered-not-implemented
     supports_rulesets: true
 
   robobook:
