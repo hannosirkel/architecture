@@ -65,7 +65,7 @@ approving reviews, so an agent opens a pull request and merges it once the
 checks pass, without waiting for a human. What it cannot do is push to `main`
 with nothing having verified the change.
 
-Five private repositories cannot enforce this through a ruleset. The GitHub plan
+Six private repositories cannot enforce this through a ruleset. The GitHub plan
 does not offer rulesets on a private repository. There the rule is the
 enforcement, and the audit checks it against commit metadata.
 

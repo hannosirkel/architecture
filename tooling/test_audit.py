@@ -653,6 +653,33 @@ class DirectPushTests(unittest.TestCase):
         )
         self.assertEqual(["direct-push"], [problem.check for problem in problems])
 
+    def test_renaming_an_unallowed_path_to_an_allowed_file_is_reported(self):
+        """Rename detection must not hide the unallowed source path."""
+        fixture = Fixture(direct_push='      allowed_paths: ["MEMORY.md"]\n')
+        self.addCleanup(fixture.close)
+        self._init_git(fixture.repo)
+        workflow = fixture.repo / ".github" / "workflows" / "validate.yml"
+        workflow.parent.mkdir(parents=True)
+        workflow.write_text("name: Validate\n", encoding="utf-8")
+        _git("add", "-A", cwd=fixture.repo)
+        _git("commit", "-m", "feat: add workflow", cwd=fixture.repo)
+        baseline = subprocess.run(
+            ["git", "-C", str(fixture.repo), "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        entry = dict(fixture.universe.repositories["example"])
+        entry["direct_push"] = {
+            "allowed_paths": ["MEMORY.md"],
+            "baseline_commit": baseline,
+        }
+
+        _git("mv", ".github/workflows/validate.yml", "MEMORY.md", cwd=fixture.repo)
+        _git("commit", "-m", "state: disguise workflow as memory", cwd=fixture.repo)
+        problems = audit._audit_default_branch_commits("example", entry, fixture.repo)
+        self.assertEqual(["direct-push"], [problem.check for problem in problems])
+
     def test_meeme_state_paths_do_not_exempt_a_mixed_direct_commit(self):
         """Meeme may persist state, but cannot bundle a workflow change."""
         universe = cat.load(ROOT)

@@ -655,7 +655,7 @@ _SQUASH_MERGE = re.compile(r"\(#\d+\)\s*$")
 def _audit_default_branch_commits(name, entry, path, limit: int = 50) -> list[Problem]:
     """Report commits that reached the default branch without a pull request.
 
-    Five private repositories cannot enforce this through a ruleset, so the rule
+    Six private repositories cannot enforce this through a ruleset, so the rule
     is the enforcement and this is the check. See standards/security.md.
 
     Two exception shapes are read from the catalogue, and nothing is hard-coded:
@@ -747,7 +747,16 @@ def _only_touches(path: Path, sha: str, allowed_paths: tuple[str, ...]) -> bool:
     """
     try:
         changed = subprocess.run(
-            ["git", "-C", str(path), "show", "--name-only", "--format=", sha],
+            [
+                "git",
+                "-C",
+                str(path),
+                "show",
+                "--no-renames",
+                "--name-only",
+                "--format=",
+                sha,
+            ],
             capture_output=True,
             text=True,
             check=True,
