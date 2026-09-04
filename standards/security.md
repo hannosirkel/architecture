@@ -13,9 +13,8 @@ Never commit a password, token, API key, private key, AppRole SecretID,
 kubeconfig, rendered Kubernetes Secret, recovery JSON, or live export.
 
 A private repository is not a secret store. `orange`, `orange-inventory`,
-`myskills`, `entpass`, and `portfolio-bot` are private because their content is
-not for publication. That is not the same as holding secret values, and none of them
-does.
+`myskills`, `entpass`, `portfolio-bot`, and `meeme` are private because their
+content is not for publication. None of them holds secret values.
 
 Credentials live outside every repository, in the ignored `.keys/` directory of
 the Orange checkout or in OpenBao.
@@ -205,11 +204,11 @@ On a repository that supports rulesets, require:
 
 ### Named exceptions and accepted risks
 
-**Five private repositories cannot carry a ruleset.** `orange`,
-`orange-inventory`, `myskills`, `entpass`, and `portfolio-bot` return HTTP 403
-from the rulesets API: *"Upgrade to GitHub Pro or make this repository public to enable this
-feature."* This is an accepted, named risk, not a silent gap. The
-never-commit-to-a-default-branch rule in
+**Six private repositories cannot carry a ruleset.** `orange`,
+`orange-inventory`, `myskills`, `entpass`, `portfolio-bot`, and `meeme` return
+HTTP 403 from the rulesets API: *"Upgrade to GitHub Pro or make this repository
+public to enable this feature."* This is an accepted, named risk, not a silent
+gap. The never-commit-to-a-default-branch rule in
 [`agent-operation.md`](./agent-operation.md) stands in for it, and the audit
 checks commit metadata against it.
 

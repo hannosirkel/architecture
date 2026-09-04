@@ -305,6 +305,32 @@ repositories:
     supports_rulesets: false
     lifecycle: registered-not-implemented
 
+  meeme:
+    description: Private OpenClaw memory home and artifact store for Meeme.
+    profile: application-private
+    remote: https://github.com/hannosirkel/meeme.git
+    local_path: "~/app/meeme"
+    default_branch: main
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: [shell]
+    npm_project: false
+    supports_rulesets: false
+    direct_push:
+      # Decision 013 permits only Meeme's writable workspace state. A file
+      # entry is exact; the trailing slash makes memory/ a directory prefix.
+      allowed_paths:
+        - SOUL.md
+        - IDENTITY.md
+        - USER.md
+        - TOOLS.md
+        - HEARTBEAT.md
+        - MEMORY.md
+        - memory/
+        - experiments/
+
   entpass:
     description: EntityPass/LEI concept research and development.
     profile: research-private
@@ -354,3 +380,10 @@ notable_local_work:
     path: docs/working
     status: in_progress
     canonical_state: local
+  - repository: orange-inventory
+    path: docs/working/2026-09-04-meeme.md
+    status: in_progress
+    canonical_state: local
+    note: >-
+      Parent plan for the Meeme workspace and VM. Follow-up plans stay beside
+      it and do not receive separate catalogue entries.

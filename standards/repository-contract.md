@@ -117,6 +117,7 @@ repository to hold an empty copy of a directory it has no content for.
 | `gitops-public` | deployment ownership, promotion and rollback, validation commands, public-secret constraints |
 | `skills-private` | skill catalogue, tests, installation, security boundaries |
 | `application-public` | local architecture and current state, decisions, optional working plans |
+| `application-private` | private application or bot architecture, decisions, optional working plans |
 | `fork-upstream-governed` | nothing centrally; a fork follows upstream's conventions |
 | `research-private` | nothing beyond the baseline |
 

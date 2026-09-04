@@ -39,11 +39,16 @@ abandoned. Never delete or reset a worktree you did not create.
 Agents never commit to a default branch. Branch, open a pull request, and
 self-merge only where policy allows.
 
-One exception exists, and only one: an empty repository needs an initial commit
-before a branch can exist. Push it directly, then work by branch from the next
-commit onward.
+Two exceptions exist:
 
-The audit whitelists that case and nothing else.
+- An empty repository needs an initial commit before a branch can exist. Push
+  it directly, then work by branch from the next commit onward.
+- Meeme may push its declared workspace-state paths directly. Every other path
+  uses a branch and pull request. See [decision 013](../decisions/013-meeme-workspace-direct-state.md).
+
+The audit reads the Meeme allowlist from the catalogue. File entries match
+exactly. A trailing slash grants a directory prefix. A mixed commit fails the
+audit when any changed path is not allowed.
 
 **Durable initiative state under `initiatives/*/` in `architecture` used to be a
 second exception**, on the reasoning that a coordination record is not a code
@@ -60,7 +65,7 @@ approving reviews, so an agent opens a pull request and merges it once the
 checks pass, without waiting for a human. What it cannot do is push to `main`
 with nothing having verified the change.
 
-Five private repositories cannot enforce this through a ruleset. The GitHub plan
+Six private repositories cannot enforce this through a ruleset. The GitHub plan
 does not offer rulesets on a private repository. There the rule is the
 enforcement, and the audit checks it against commit metadata.
 
