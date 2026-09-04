@@ -27,6 +27,7 @@ the path.
 | Initiative | Status |
 | --- | --- |
 | [`ai-portal`](./planned/ai-portal/README.md) | Not started. Read it before deciding whether it belongs here at all — a build owned by one repository starts in that repository. |
+| [`build-feedback-loop`](./planned/build-feedback-loop/README.md) | Not started. Simplify Big Build state and promote real-use failures into future checks without adding an eval platform. |
 
 ## Starting one
 
