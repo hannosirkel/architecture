@@ -739,8 +739,12 @@ def _audit_default_branch_commits(name, entry, path, limit: int = 50) -> list[Pr
     ]
 
 
-def _only_touches(path: Path, sha: str, prefixes: tuple[str, ...]) -> bool:
-    """True when every path a commit changed sits under one of `prefixes`."""
+def _only_touches(path: Path, sha: str, allowed_paths: tuple[str, ...]) -> bool:
+    """True when every changed path matches the configured allowlist.
+
+    A trailing slash grants a directory prefix. Every other entry grants one
+    exact path, so an allowed `SOUL.md` cannot also allow `SOUL.md.backup`.
+    """
     try:
         changed = subprocess.run(
             ["git", "-C", str(path), "show", "--name-only", "--format=", sha],
@@ -753,7 +757,16 @@ def _only_touches(path: Path, sha: str, prefixes: tuple[str, ...]) -> bool:
     paths = [line for line in changed if line.strip()]
     if not paths:
         return False
-    return all(p.startswith(prefixes) for p in paths)
+
+    def allowed(candidate: str) -> bool:
+        return any(
+            candidate.startswith(configured)
+            if configured.endswith("/")
+            else candidate == configured
+            for configured in allowed_paths
+        )
+
+    return all(allowed(changed_path) for changed_path in paths)
 
 
 def _baseline_shas(path: Path, baseline_commit: str | None) -> set[str]:

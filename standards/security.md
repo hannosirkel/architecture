@@ -205,8 +205,8 @@ On a repository that supports rulesets, require:
 
 ### Named exceptions and accepted risks
 
-**Five private repositories cannot carry a ruleset.** `orange`,
-`orange-inventory`, `myskills`, `entpass`, and `portfolio-bot` return HTTP 403
+**Six private repositories cannot carry a ruleset.** `orange`,
+`orange-inventory`, `myskills`, `entpass`, `portfolio-bot`, and `meeme` return HTTP 403
 from the rulesets API: *"Upgrade to GitHub Pro or make this repository public to enable this
 feature."* This is an accepted, named risk, not a silent gap. The
 never-commit-to-a-default-branch rule in
