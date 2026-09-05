@@ -380,10 +380,3 @@ notable_local_work:
     path: docs/working
     status: in_progress
     canonical_state: local
-  - repository: orange-inventory
-    path: docs/working/2026-09-04-meeme.md
-    status: in_progress
-    canonical_state: local
-    note: >-
-      Parent plan for the Meeme workspace and VM. Follow-up plans stay beside
-      it and do not receive separate catalogue entries.
