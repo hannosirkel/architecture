@@ -339,6 +339,7 @@ def validate(universe: Universe) -> list[Problem]:
                             f"exception without one is a silence",
                         )
                     )
+            problems += _validate_substitute(name, check, spec)
 
         expected = _expected_publication_status(entry)
         if status is not None and expected is not None and status != expected:
@@ -375,6 +376,42 @@ def validate(universe: Universe) -> list[Problem]:
             )
 
     return problems
+
+
+# A `missing-gate` exception waives a linter the standard makes unconditional.
+# Saying why is not enough: prose cannot be run. `substitute` names the commands
+# that stand in the waived gate's place, and the audit proves each one is still
+# invoked, so removing the substitute breaks the audit rather than nothing.
+SUBSTITUTED_CHECKS = ("missing-gate",)
+
+
+def _validate_substitute(name: str, check: str, spec: dict) -> list[Problem]:
+    """A waived gate names what runs instead, as commands rather than prose."""
+    declared = spec.get("substitute")
+    if declared is not None and (
+        not isinstance(declared, list)
+        or not all(isinstance(command, str) for command in declared)
+    ):
+        return [
+            Problem(
+                name,
+                "malformed-exception",
+                f"exception `{check}` has a `substitute` that is not a list of "
+                f"commands",
+            )
+        ]
+
+    commands = [command.strip() for command in declared or [] if command.strip()]
+    if check in SUBSTITUTED_CHECKS and not commands:
+        return [
+            Problem(
+                name,
+                "unsubstituted-exception",
+                f"exception `{check}` names no `substitute`, so nothing checks "
+                f"that anything stands in for the gate it waives",
+            )
+        ]
+    return []
 
 
 def check_working_paths(universe: Universe) -> list[Problem]:

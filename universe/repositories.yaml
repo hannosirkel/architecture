@@ -204,6 +204,13 @@ repositories:
           would mean downgrading TypeScript or --legacy-peer-deps, and neither
           buys a working gate. Re-check when typescript-eslint accepts
           TypeScript 7; this exception ends there.
+        # No linter can be installed, so the substitute is the compiler and the
+        # tests: `typecheck` is `tsc --noEmit`, and a build that does not
+        # compile fails the gate.
+        substitute:
+          - npm run typecheck
+          - npm run test:unit
+          - npm run build
         decision: servitium AGENTS.md "Local exceptions"
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
@@ -264,6 +271,13 @@ repositories:
           to baseline four no-unused-vars findings on day one, two of them
           artefacts of generate-workflow.js splicing logic.js. The standard
           says not to add a package manager for uniformity.
+        # mihkel's `scripts/validate` runs its workflow logic tests and checks
+        # each generated workflow against its generator. It runs no `node
+        # --check`: every JavaScript file it holds is parsed by one or the
+        # other, so a syntax error cannot survive the run.
+        substitute:
+          - node --test
+          - cmp
         decision: mihkel docs/decisions/0005-no-npm-project-for-the-javascript-gate.md
     direct_push:
       # Direct pushes at or before this commit predate the rule and are
@@ -328,6 +342,13 @@ repositories:
           every tracked `.js`, `.mjs`, and `.cjs` file, executes every Node
           test, and checks generated workflow JSON byte-for-byte against its
           source generator.
+        # What stands in the waived gate's place. The audit fails if CI stops
+        # running any of them: `node --check` is the parse, `node --test` the
+        # tests, `cmp` the generated-workflow parity check.
+        substitute:
+          - node --check
+          - node --test
+          - cmp
         decision: meeme docs/decisions/0001-no-npm-project-for-javascript-gate.md
     direct_push:
       # Decision 013 permits only Meeme's writable workspace state. A file

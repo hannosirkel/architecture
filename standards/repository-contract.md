@@ -174,6 +174,9 @@ why, and links the decision that granted it:
         matches: "declares `typescript`"
         reason: >-
           One sentence a reader can disagree with.
+        substitute:
+          - node --check
+          - node --test
         decision: <repo> docs/decisions/000N-title.md
 ```
 
@@ -181,6 +184,17 @@ why, and links the decision that granted it:
 or `matches`. `matches` is required because one check fires for several
 different reasons: a repository can be missing a shell gate and excepted from a
 TypeScript one, and an exception keyed on the check alone would silence both.
+
+**A waived gate names its substitute, and the audit runs the proof.**
+`substitute` lists the commands that stand in the missing gate's place, and
+`missing-gate` is refused without one. The audit reports `absent-substitute`
+and fails when CI invokes a listed command nowhere — the same proof it already
+demands of `shellcheck` and `gitleaks`, which it verifies by finding the
+invocation rather than by reading a description of it. A command may carry the
+arguments that make it a gate: a bare `node` is only Node being installed,
+where `node --check` parses a file. Without this the exception is exactly the
+silence it claims not to be, because deleting the substitute from the
+repository would change nothing anything reports.
 
 The audit still prints an excepted finding, with its reason and its decision.
 It stops failing conformance, because a deliberate recorded choice is not a

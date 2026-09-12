@@ -424,6 +424,8 @@ class ExceptionTests(unittest.TestCase):
         "      missing-gate:\n"
         '        matches: "declares `typescript`"\n'
         "        reason: no npm project; see the decision\n"
+        "        substitute:\n"
+        "          - node --check\n"
         "        decision: docs/decisions/0005-no-npm-project.md\n"
     )
 
@@ -436,7 +438,8 @@ class ExceptionTests(unittest.TestCase):
         workflows = fixture.repo / ".github" / "workflows"
         workflows.mkdir(parents=True)
         (workflows / "validate.yml").write_text(
-            "name: Validate\njobs:\n  x:\n    steps:\n      - run: true\n",
+            "name: Validate\njobs:\n  x:\n    steps:\n"
+            "      - run: node --check src/index.js\n",
             encoding="utf-8",
         )
         return fixture
@@ -511,6 +514,52 @@ class ExceptionTests(unittest.TestCase):
             if cat.exceptions_for(universe, name)
         }
         self.assertEqual({"meeme", "mihkel", "servitium"}, set(granted))
+
+    def test_validate_refuses_a_waived_gate_with_no_substitute(self):
+        """Prose cannot be run. A waived gate names what runs instead."""
+        fixture = self._fixture(
+            '      missing-gate:\n        matches: "x"\n'
+            "        reason: r\n        decision: d\n"
+        )
+        checks = [p.check for p in cat.validate(fixture.universe)]
+        self.assertIn("unsubstituted-exception", checks)
+
+    def test_validate_refuses_a_substitute_that_is_not_a_list(self):
+        fixture = self._fixture(
+            '      missing-gate:\n        matches: "x"\n        reason: r\n'
+            "        substitute: node --check\n        decision: d\n"
+        )
+        checks = [p.check for p in cat.validate(fixture.universe)]
+        self.assertIn("malformed-exception", checks)
+
+    def test_a_substitute_the_repository_stopped_running_fails_the_audit(self):
+        """The hole this closed: deleting the substitute changed nothing.
+
+        The exception downgrades `missing-gate` the moment its key matches, and
+        `stale-exception` fires only when the waived linter appears. Removing
+        the gate the reason rests on produced a byte-identical audit.
+        """
+        fixture = self._fixture(
+            '      missing-gate:\n        matches: "declares `typescript`"\n'
+            "        reason: r\n        substitute:\n          - node --test\n"
+            "        decision: d\n"
+        )
+        problems = [p for p in self._audit(fixture) if p.check == "absent-substitute"]
+        self.assertEqual(1, len(problems))
+        self.assertFalse(problems[0].advisory, "an absent substitute must fail")
+        self.assertIn("node --test", problems[0].detail)
+
+    def test_a_substitute_the_repository_runs_is_no_finding(self):
+        fixture = self._fixture(self.GRANTED)
+        self.assertEqual(
+            [], [p for p in self._audit(fixture) if p.check == "absent-substitute"]
+        )
+
+    def test_a_named_tool_is_not_a_substitute_for_running_it(self):
+        """`require node` installs Node; `node --check` parses a file."""
+        self.assertTrue(audit._runs("node", "require node\n"))
+        self.assertFalse(audit._runs("node --check", "require node\n"))
+        self.assertTrue(audit._runs("node --check", 'node --check -- "${source}"\n'))
 
 
 class BranchNotWorkingTreeTests(unittest.TestCase):
