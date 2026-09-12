@@ -506,14 +506,28 @@ class ExceptionTests(unittest.TestCase):
         self.assertIn("malformed-exception", checks)
 
     def test_the_real_catalogue_exceptions_are_well_formed(self):
+        """Which repositories hold an exception, and which checks it waives.
+
+        Asserting only the repositories left the scope open: a second
+        exception on an entry that already had one — waiving, say, the
+        unconditional Renovate control — passed the whole suite and
+        `validate` untouched.
+        """
         universe = cat.load(ROOT)
         self.assertEqual([], [str(p) for p in cat.validate(universe)])
         granted = {
-            name: cat.exceptions_for(universe, name)
+            name: set(cat.exceptions_for(universe, name))
             for name in universe.repositories
             if cat.exceptions_for(universe, name)
         }
-        self.assertEqual({"meeme", "mihkel", "servitium"}, set(granted))
+        self.assertEqual(
+            {
+                "meeme": {"missing-gate"},
+                "mihkel": {"missing-gate"},
+                "servitium": {"missing-gate"},
+            },
+            granted,
+        )
 
     def test_validate_refuses_a_waived_gate_with_no_substitute(self):
         """Prose cannot be run. A waived gate names what runs instead."""
