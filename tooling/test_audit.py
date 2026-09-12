@@ -510,7 +510,7 @@ class ExceptionTests(unittest.TestCase):
             for name in universe.repositories
             if cat.exceptions_for(universe, name)
         }
-        self.assertEqual({"mihkel", "servitium"}, set(granted))
+        self.assertEqual({"meeme", "mihkel", "servitium"}, set(granted))
 
 
 class BranchNotWorkingTreeTests(unittest.TestCase):

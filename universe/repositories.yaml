@@ -315,9 +315,19 @@ repositories:
     current_remote_visibility: private
     public_safe_required: false
     publication_status: not-applicable
-    languages: [shell]
+    languages: [typescript, shell]
     npm_project: false
     supports_rulesets: false
+    exceptions:
+      missing-gate:
+        matches: "declares `typescript`"
+        reason: >-
+          Meeme's JavaScript is dependency-free Node code and generated n8n
+          workflow code. Adding ESLint would introduce an npm project and a
+          dependency stream solely for uniformity; its substitute gate parses
+          every tracked JavaScript file, executes every Node test, and checks
+          generated workflow JSON byte-for-byte against its source generator.
+        decision: meeme docs/decisions/0001-no-npm-project-for-javascript-gate.md
     direct_push:
       # Decision 013 permits only Meeme's writable workspace state. A file
       # entry is exact; the trailing slash makes memory/ a directory prefix.
