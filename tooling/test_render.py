@@ -236,6 +236,7 @@ class HabitConfigTests(unittest.TestCase):
         config = render.render_habit_config(fixture.universe, "example")
         self.assertIn('"**/*.js"', config)
         self.assertIn('"**/*.mjs"', config)
+        self.assertIn('"**/*.cjs"', config)
 
     def test_changing_languages_changes_the_config_and_the_instruction(self):
         before = Fixture(languages=("shell",))

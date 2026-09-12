@@ -38,6 +38,26 @@ class CatalogueTests(unittest.TestCase):
                     spec = self.universe.languages[language]
                     self.assertTrue((ROOT / spec["standard"]).is_file())
 
+    def test_meeme_declares_node_javascript_without_becoming_an_npm_project(self):
+        entry = self.universe.repositories["meeme"]
+
+        self.assertEqual(["typescript", "shell"], entry["languages"])
+        self.assertFalse(entry["npm_project"])
+        # The set, not one key. Reading `exceptions["missing-gate"]` passed
+        # unchanged with a second exception beside it waiving the
+        # unconditional Renovate control, which is the scope this claims to
+        # pin down.
+        self.assertEqual({"missing-gate"}, set(entry["exceptions"]))
+        exception = entry["exceptions"]["missing-gate"]
+        self.assertEqual("declares `typescript`", exception["matches"])
+        self.assertEqual(
+            "meeme docs/decisions/0001-no-npm-project-for-javascript-gate.md",
+            exception["decision"],
+        )
+        self.assertEqual(
+            ["node --check", "node --test", "cmp"], exception["substitute"]
+        )
+
     def test_an_ungoverned_repository_is_recognised(self):
         """A fork follows upstream's conventions; see decisions/007."""
         self.assertFalse(cat.is_governed(self.universe, "nomadtty"))
