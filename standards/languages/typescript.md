@@ -2,7 +2,7 @@
 
 Covers TypeScript and Node.js JavaScript. Three repositories declare
 `typescript` and hold no `.ts` file; the rules below apply to their `.js` and
-`.mjs` all the same.
+`.mjs` and `.cjs` files all the same.
 
 ## Tools
 
@@ -39,8 +39,8 @@ Its guides cover `explicit-any`, `loose-equality`, `non-const-binding`,
 `unused-class-member`, and `var-declaration`.
 
 The plugin scans `**/*.ts` and `**/*.tsx` by default. The generated
-`.habit-hooks/config.toml` widens `files` to `**/*.js` and `**/*.mjs` for a
-repository whose TypeScript is JavaScript.
+`.habit-hooks/config.toml` widens `files` to `**/*.js`, `**/*.mjs`, and
+`**/*.cjs` for a repository whose TypeScript is JavaScript.
 
 ## Version constraints
 

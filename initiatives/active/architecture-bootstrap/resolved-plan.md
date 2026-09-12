@@ -135,15 +135,15 @@ stays as it is: there is no backlog to baseline.
 | plepic | `eslint` already runs; add `shellcheck` | typescript, generic | `**/*.ts`, `**/*.tsx`, `**/*.sh` |
 | robobook | `ruff`, gitleaks, first CI workflow | python, generic | `**/*.py` |
 | servitium | `eslint` (none today), `shellcheck` | typescript, generic | `**/*.ts`, `**/*.tsx`, `**/*.js`, `**/*.sh` |
-| nomadtty | `eslint` (none today); `shellcheck` widened past two files; gitleaks | typescript, generic | `**/*.js`, `**/*.mjs`, `**/*.sh` |
+| nomadtty | `eslint` (none today); `shellcheck` widened past two files; gitleaks | typescript, generic | `**/*.js`, `**/*.mjs`, `**/*.cjs`, `**/*.sh` |
 | mihkel | `eslint`, `ruff`, `shellcheck` | typescript, python, generic | `**/*.js`, `**/*.py`, `**/*.sh` |
 | ai-portal | gitleaks only | generic | `**/*.md` |
 | entpass | gitleaks only | generic | `**/*.md` |
 
 `nomadtty`, `servitium`, and `mihkel` declare `typescript` for JavaScript. The
 Habit Hooks typescript plugin scans `**/*.ts` and `**/*.tsx` by default, so the
-generated `files` widens it to `.js`/`.mjs`. Without that the coach finds
-nothing in three repositories.
+generated `files` widens it to `.js`, `.mjs`, and `.cjs`. Without that the coach
+finds nothing in three repositories.
 
 `jscpd` is disabled in `architecture`, `orange-inventory`, `deploys`,
 `myskills`, `entpass`, and `ai-portal` — no npm project to resolve it from.
