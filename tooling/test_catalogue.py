@@ -54,9 +54,7 @@ class CatalogueTests(unittest.TestCase):
             "meeme docs/decisions/0001-no-npm-project-for-javascript-gate.md",
             exception["decision"],
         )
-        self.assertEqual(
-            ["node --check", "node --test", "cmp"], exception["substitute"]
-        )
+        self.assertEqual(["node --check", "node --test", "cmp"], exception["substitute"])
 
     def test_an_ungoverned_repository_is_recognised(self):
         """A fork follows upstream's conventions; see decisions/007."""

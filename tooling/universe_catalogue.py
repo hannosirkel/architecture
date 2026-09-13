@@ -396,8 +396,7 @@ def _validate_substitute(name: str, check: str, spec: dict) -> list[Problem]:
             Problem(
                 name,
                 "malformed-exception",
-                f"exception `{check}` has a `substitute` that is not a list of "
-                f"commands",
+                f"exception `{check}` has a `substitute` that is not a list of commands",
             )
         ]
 
