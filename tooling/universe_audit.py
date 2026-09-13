@@ -99,6 +99,7 @@ def _audit_tree(
     problems += _audit_documentation(universe, name, entry, path)
     problems += _audit_languages(universe, name, entry, path, repo)
     problems += _audit_language_gates(universe, name, entry, path)
+    problems += _audit_exception_substitutes(universe, name, path)
     problems += _audit_secret_scanning(name, path)
     problems += _audit_dependency_automation(name, path)
     problems += _audit_default_branch_commits(name, entry, repo)
@@ -176,8 +177,15 @@ def _runs(tool: str, text: str) -> bool:
     The optional path prefix matters: this universe downloads gitleaks into the
     workspace and runs it as `./gitleaks`, and requiring a whitespace boundary
     missed every one of them.
+
+    `tool` may carry the arguments that make it the gate it claims to be. A
+    bare `node` is only Node being installed — `require node` says it and runs
+    nothing — where `node --check` is a syntax check. The arguments must follow
+    the command directly, so a listed substitute names what is actually run.
     """
-    pattern = rf"(?:^|[\s|;&(])(?:sudo\s+)?(?:\S*/)?{re.escape(tool)}\b"
+    command, *arguments = tool.split()
+    pattern = rf"(?:^|[\s|;&(])(?:sudo\s+)?(?:\S*/)?{re.escape(command)}\b"
+    pattern += "".join(rf"\s+{re.escape(argument)}\b" for argument in arguments)
     return re.search(pattern, text) is not None
 
 
@@ -299,6 +307,49 @@ def _audit_secret_scanning(name, path) -> list[Problem]:
             )
         ]
     return []
+
+
+def _audit_exception_substitutes(universe, name, path) -> list[Problem]:
+    """An exception that waives a gate names a substitute; the substitute runs.
+
+    Without this the waiver is the silence the catalogue says an exception is
+    not. `_apply_exceptions` downgrades the finding the moment the key matches,
+    and `stale-exception` fires only when the waived gate appears — so deleting
+    the substitute from the repository changed nothing anything reported, and
+    the reason went on asserting a gate that was no longer there.
+
+    This is the same proof `_audit_language_gates` and `_audit_secret_scanning`
+    already demand of shellcheck and gitleaks: not that a tool is described,
+    but that CI runs it.
+    """
+    granted = exceptions_for(universe, name)
+    if not granted:
+        return []
+
+    problems = []
+    text = gate_text(path)
+    for check, spec in sorted(granted.items()):
+        if not isinstance(spec, dict):
+            continue
+        commands = [
+            command.strip()
+            for command in spec.get("substitute") or []
+            if isinstance(command, str) and command.strip()
+        ]
+        absent = [command for command in commands if not _runs(command, text)]
+        if absent:
+            listed = ", ".join(f"`{command}`" for command in absent)
+            problems.append(
+                Problem(
+                    name,
+                    "absent-substitute",
+                    f"the `{check}` exception rests on a substitute gate, and "
+                    f"CI runs {listed} nowhere",
+                    "restore the substitute, or withdraw the exception from "
+                    "universe/repositories.yaml",
+                )
+            )
+    return problems
 
 
 def _audit_language_gates(universe, name, entry, path) -> list[Problem]:

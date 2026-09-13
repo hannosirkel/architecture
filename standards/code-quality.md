@@ -109,8 +109,8 @@ from. `line-count` still runs there, which is the part of `generic` that catches
 oversized files in YAML and Markdown.
 
 Three repositories declare `typescript` for JavaScript and hold no `.ts` file.
-The generated `files` widens the plugin's default to `**/*.js` and `**/*.mjs`.
-Without that the coach finds nothing in any of them.
+The generated `files` widens the plugin's default to `**/*.js`, `**/*.mjs`, and
+`**/*.cjs`. Without that the coach finds nothing in any of them.
 
 ### Snooze baselines
 
