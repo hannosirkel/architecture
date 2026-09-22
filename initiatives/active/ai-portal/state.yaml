@@ -20,7 +20,7 @@ repositories:
   orange-inventory: main-read-only
   myskills: dirty-read-only
 worktrees:
-  architecture: /home/hanno/app/.worktrees/architecture/ai-portal
+  architecture: ~/app/.worktrees/architecture/ai-portal
 completed_steps:
   - current-local-repository-inventory
   - g1-plan-and-acceptance-drafted
