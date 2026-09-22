@@ -4,10 +4,8 @@ Cross-repository work that no single repository owns. Work with one clear owner
 starts in that repository instead — see
 [`standards/work-routing.md`](../standards/work-routing.md).
 
-Each initiative is a contract file plus a directory of durable state beside it.
-The contract states the goal and the gates; `state.yaml` records what actually
-happened, so a later session can resume without the conversation that produced
-it.
+Each active initiative is a contract file plus a directory of durable state
+beside it. The contract states the goal and gates; `state.yaml` records progress.
 
 ## Completed
 
@@ -19,14 +17,20 @@ Completed initiatives stay under `active/` when moving them would break a
 resume path that something still references. `architecture-bootstrap` is the
 case: its `handoff.md` is linked from this repository's `AGENTS.md`, its
 `state.yaml` records the exceptions the audit still reads back, and its
-`evidence/` is cited from `standards/`. The status lives in `state.yaml`, not in
-the path.
+`evidence/` is cited from `standards/`. The status lives in `state.yaml`.
+
+## Active
+
+| Initiative | Status |
+| --- | --- |
+| [`ai-portal`](./active/ai-portal.md) | Portal/chat plan at G1; new Access-gated identity-provider boundary needs operator approval. |
 
 ## Planned
 
 | Initiative | Status |
 | --- | --- |
-| [`ai-portal`](./planned/ai-portal/README.md) | Not started. Read it before deciding whether it belongs here at all — a build owned by one repository starts in that repository. |
+| [`scratch-hub`](./planned/scratch-hub/README.md) | Follows portal/chat; independent manual Scratch release. |
+| [`scratch-ai`](./planned/scratch-ai/README.md) | Follows Scratch hub; independent controlled AI-edit release. |
 | [`build-feedback-loop`](./planned/build-feedback-loop/README.md) | Not started. Simplify Big Build state and promote real-use failures into future checks without adding an eval platform. |
 
 ## Starting one
