@@ -1,0 +1,30 @@
+schema_version: 1
+initiative: ai-portal
+status: DISCOVERING
+contract_path: initiatives/active/ai-portal.md
+contract_digest: sha256:474e3846abf97b87767645b691c37aa36b0691b2d039e55530fa9f946a0e7483
+current_phase: discovery-and-plan-reconciliation
+current_gate: G1
+last_completed_step: repository-reconnaissance
+next_action: Present G1 with the private enumerated account list and proposed Orange decision 024; do not create the IdP route or publish DNS before approval.
+last_run:
+  runtime: codex
+  tier: top
+  model: gpt-6-astra
+  at: 2026-09-22T20:36:37+00:00
+repositories:
+  architecture: ai-portal-initiative
+  ai-portal: main-read-only
+  deploys: main-read-only
+  orange: main-read-only
+  orange-inventory: main-read-only
+  myskills: dirty-read-only
+worktrees:
+  architecture: /home/hanno/app/.worktrees/architecture/ai-portal
+completed_steps:
+  - current-local-repository-inventory
+open_prs: []
+blockers:
+  - id: G1
+    reason: Superseding Orange decision 012 creates a new Access-gated identity-provider exposure boundary.
+operator_action_required: Review and approve or reject G1 after the resolved plan and decision draft are ready.
