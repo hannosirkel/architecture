@@ -101,6 +101,25 @@ class CatalogueTests(unittest.TestCase):
         checks = [p.check for p in cat.validate(self.universe)]
         self.assertIn("unsafe-declaration", checks)
 
+    def test_architecture_working_path_uses_current_worktree(self):
+        """A catalogue edit in an isolated worktree must validate its own file."""
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "worktree"
+            primary = Path(temp) / "primary"
+            target = root / "initiatives/active/ai-portal.md"
+            target.parent.mkdir(parents=True)
+            target.write_text("# AI Portal\n")
+            primary.mkdir()
+            self.universe.root = root
+            self.universe.repositories["architecture"]["local_path"] = str(primary)
+            self.universe.notable_local_work = [
+                {"repository": "architecture", "path": "initiatives/active/ai-portal.md"}
+            ]
+            self.assertEqual([], cat.check_working_paths(self.universe))
+            target.unlink()
+            checks = [p.check for p in cat.check_working_paths(self.universe)]
+            self.assertEqual(["missing-working-path"], checks)
+
     def test_registered_working_paths_still_exist(self):
         """§15.10 — a disappeared active plan is a finding, not a silent pass."""
         for problem in cat.check_working_paths(self.universe):

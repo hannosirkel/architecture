@@ -421,7 +421,9 @@ def check_working_paths(universe: Universe) -> list[Problem]:
         entry = universe.repositories.get(name)
         if entry is None:
             continue
-        base = checkout_path(entry)
+        # The architecture catalogue may be edited in a worktree while its
+        # primary checkout still points at the previous main commit.
+        base = universe.root if name == "architecture" else checkout_path(entry)
         if not base.exists():
             continue  # no checkout here; the audit reports that separately
         target = base / item["path"]
