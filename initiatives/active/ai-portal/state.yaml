@@ -5,19 +5,19 @@ contract_path: initiatives/active/ai-portal.md
 contract_digest: sha256:474e3846abf97b87767645b691c37aa36b0691b2d039e55530fa9f946a0e7483
 current_phase: discovery-and-plan-reconciliation
 current_gate: G1
-last_completed_step: architecture-pr-41-merged-and-orange-pr-110-opened
-next_action: Present G1 with proposed Orange decision 024 and require the operator to define and review the exact private Access account list before any IdP route or DNS action.
+last_completed_step: architecture-pr-42-merged-and-inventory-pr-61-opened
+next_action: Await operator G1 decision on Orange PR 110 and the exact account list in private inventory PR 61; do not create IdP route or DNS before both are approved.
 last_run:
   runtime: codex
   tier: top
   model: gpt-6-astra
-  at: 2026-09-22T20:44:41+00:00
+  at: 2026-09-22T20:55:54+00:00
 repositories:
-  architecture: ai-portal-g1-state
+  architecture: ai-portal-g1-gate
   ai-portal: main-read-only
   deploys: main-read-only
   orange: ai-portal-authentik-decision
-  orange-inventory: main-read-only
+  orange-inventory: ai-portal-g1-access-list
   myskills: dirty-read-only
 worktrees:
   architecture: ~/app/.worktrees/architecture/ai-portal
@@ -26,9 +26,12 @@ completed_steps:
   - g1-plan-and-acceptance-drafted
   - architecture-pr-41-merged
   - orange-draft-pr-110-opened
+  - architecture-pr-42-merged
+  - inventory-draft-pr-61-opened
 open_prs:
   - https://github.com/hannosirkel/orange/pull/110
+  - https://github.com/hannosirkel/orange-inventory/pull/61
 blockers:
   - id: G1
     reason: Superseding Orange decision 012 creates a new Access-gated identity-provider exposure boundary.
-operator_action_required: Approve or reject decision 024 and define/review the private Access account list for both hostnames.
+operator_action_required: Approve or reject proposed decision 024; fill and review the exact Access account list in private inventory PR 61 for both hostnames.
