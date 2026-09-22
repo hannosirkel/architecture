@@ -285,7 +285,7 @@ repositories:
       baseline_commit: "fa0dd76"
 
   ai-portal:
-    description: ai.future.ee and its subprojects. Unimplemented.
+    description: AI Portal launcher, chat proxy, and later Scratch applications.
     profile: application-public
     remote: https://github.com/hannosirkel/ai-portal.git
     local_path: "~/app/ai-portal"
@@ -294,9 +294,9 @@ repositories:
     current_remote_visibility: public
     public_safe_required: true
     publication_status: published
-    languages: []
+    languages: [python]
     npm_project: false
-    lifecycle: registered-not-implemented
+    lifecycle: implementation-in-progress
     supports_rulesets: true
 
   portfolio-bot:
