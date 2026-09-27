@@ -393,13 +393,6 @@ notable_local_work:
     path: initiatives/active/ai-portal.md
     status: in_progress
     canonical_state: local
-  - repository: lousydeal
-    path: docs/working/fresh-build.md
-    status: in_progress
-    canonical_state: local
-    note: >-
-      Build contract for lousydeal.com. Not a plan: it carries no checkbox rows.
-      Each LD slice gets its own plan beside it, written to standards/planning.md.
   - repository: orange-inventory
     path: docs/working/2026-08-08-legacy-vm-mail.md
     status: in_progress
