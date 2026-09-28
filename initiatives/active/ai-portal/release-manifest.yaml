@@ -14,11 +14,12 @@ images:
 gitops:
   deploys_revision: 843c81c71d89b5afca2812ceb5169366fbd3b430
   deploys_pull_request: https://github.com/hannosirkel/deploys/pull/63
-  orange_revision: 04af548dff714749b2060a4e9f6ba96510153c27
-  orange_pull_request: https://github.com/hannosirkel/orange/pull/159
+  orange_revision: 1db30e7df78b20c2be39f0e495bf812536d9acbd
+  orange_pull_request: https://github.com/hannosirkel/orange/pull/160
 evidence:
   backup_restore: https://github.com/hannosirkel/orange-inventory/pull/67
   publication_and_browser: https://github.com/hannosirkel/orange-inventory/pull/79
+  single_signin: https://github.com/hannosirkel/orange-inventory/pull/81
   g4_summary: evidence/g4-summary.md
   g5_summary: evidence/g5-summary.md
 verification:
