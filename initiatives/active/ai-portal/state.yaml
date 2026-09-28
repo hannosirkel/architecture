@@ -3,36 +3,33 @@ initiative: ai-portal
 status: IN_PROGRESS
 contract_path: initiatives/active/ai-portal.md
 contract_digest: sha256:474e3846abf97b87767645b691c37aa36b0691b2d039e55530fa9f946a0e7483
-current_phase: portal-chat-implementation
-current_gate: G3
-last_completed_step: g1-approved-inventory-pr-61-merged-orange-pr-110-merged-source-pr-10-merged
-next_action: Implement the portal/chat runtime, platform enrollment, and unpublished production verification; G5 approval is required before portal DNS publication.
+current_phase: published-verification
+current_gate: G4
+last_completed_step: browser-confirmed-openrouter-model-selector-after-deploys-pr-63-and-orange-pr-159
+next_action: >-
+  Finish the cold-browser response and prompt-count record, Access denial and
+  profile enforcement checks, availability alert fire-and-clear drills, and
+  independent public HTTPS monitoring. Record G5 external evidence without
+  treating early DNS publication as G4 acceptance.
 last_run:
   runtime: codex
-  tier: top
-  model: gpt-6-astra
-  at: 2026-09-22T21:58:20+00:00
+  at: 2026-09-28T22:21:32+00:00
 repositories:
-  architecture: ai-portal-g1-gate
-  ai-portal: portal-auth
-  deploys: main-read-only
-  orange: ai-portal-g1-accepted
-  orange-inventory: ai-portal-g1-access-list
-  myskills: dirty-read-only
-worktrees:
-  architecture: ~/app/.worktrees/architecture/ai-portal-python
-  ai-portal: ~/app/.worktrees/ai-portal/portal-auth
+  architecture: ai-portal-release-state
+  ai-portal: 44407b8c9d4bb9237c482dfaf00c7699d24b378c
+  deploys: 843c81c71d89b5afca2812ceb5169366fbd3b430
+  orange: 04af548dff714749b2060a4e9f6ba96510153c27
+  orange-inventory: f983674911b9ea4635fe35e999ca06ff3546bbb8
 completed_steps:
-  - current-local-repository-inventory
-  - g1-plan-and-acceptance-drafted
-  - architecture-pr-41-merged
-  - orange-draft-pr-110-opened
-  - architecture-pr-42-merged
-  - inventory-pr-61-merged
-  - orange-pr-110-merged
-  - source-pr-10-merged
-  - operator-g1-approved
-open_prs:
-  - https://github.com/hannosirkel/orange/pull/111
+  - g1-approved
+  - portal-chat-source-and-gitops-deployed
+  - encrypted-mongodb-backup-and-isolated-restore-verified
+  - operator-authorized-early-portal-dns-publication
+  - published-google-sign-in-observed
+  - published-chat-reported-working
+  - published-openrouter-model-selector-confirmed
+open_prs: []
 blockers: []
-operator_action_required: None during implementation; approve exact portal DNS publication at G5 after G4 evidence is reviewable.
+operator_action_required: >-
+  Complete the remaining browser and account-boundary checks; an independent
+  public HTTPS monitor still needs an owner and evidence.
