@@ -5,31 +5,33 @@ contract_path: initiatives/active/ai-portal.md
 contract_digest: sha256:474e3846abf97b87767645b691c37aa36b0691b2d039e55530fa9f946a0e7483
 current_phase: published-verification
 current_gate: G4
-last_completed_step: browser-confirmed-openrouter-model-selector-after-deploys-pr-63-and-orange-pr-159
+last_completed_step: cold-browser-one-prompt-chat-reply-after-orange-pr-160
 next_action: >-
-  Finish the cold-browser response and prompt-count record, Access denial and
-  profile enforcement checks, availability alert fire-and-clear drills, and
-  independent public HTTPS monitoring. Record G5 external evidence without
-  treating early DNS publication as G4 acceptance.
+  Verify session renewal, Access denial and profile enforcement, fire and clear
+  the remaining availability alerts, and establish independent public HTTPS
+  monitoring. Record G5 external evidence without treating early DNS
+  publication as G4 acceptance.
 last_run:
   runtime: codex
-  at: 2026-09-28T22:21:32+00:00
+  at: 2026-09-28T23:44:48+00:00
 repositories:
-  architecture: ai-portal-release-state
+  architecture: ai-portal-single-signin-state
   ai-portal: 44407b8c9d4bb9237c482dfaf00c7699d24b378c
   deploys: 843c81c71d89b5afca2812ceb5169366fbd3b430
-  orange: 04af548dff714749b2060a4e9f6ba96510153c27
-  orange-inventory: f983674911b9ea4635fe35e999ca06ff3546bbb8
+  orange: 1db30e7df78b20c2be39f0e495bf812536d9acbd
+  orange-inventory: ed4330ea1174b164dee8866a3eadf69ecc6d484e
 completed_steps:
   - g1-approved
   - portal-chat-source-and-gitops-deployed
   - encrypted-mongodb-backup-and-isolated-restore-verified
   - operator-authorized-early-portal-dns-publication
   - published-google-sign-in-observed
-  - published-chat-reported-working
+  - published-chat-text-reply-confirmed
   - published-openrouter-model-selector-confirmed
-open_prs: []
+  - published-cold-browser-one-prompt-confirmed
+open_prs:
+  - https://github.com/hannosirkel/orange-inventory/pull/81
 blockers: []
 operator_action_required: >-
-  Complete the remaining browser and account-boundary checks; an independent
-  public HTTPS monitor still needs an owner and evidence.
+  Complete account-boundary and session checks; an independent public HTTPS
+  monitor still needs an owner and evidence.
