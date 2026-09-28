@@ -23,7 +23,7 @@ case: its `handoff.md` is linked from this repository's `AGENTS.md`, its
 
 | Initiative | Status |
 | --- | --- |
-| [`ai-portal`](./active/ai-portal.md) | Portal/chat plan at G1; new Access-gated identity-provider boundary needs operator approval. |
+| [`ai-portal`](./active/ai-portal.md) | Portal/chat published under an operator-approved sequencing exception; G4 verification remains open. See its [handoff](./active/ai-portal/handoff.md). |
 
 ## Planned
 
