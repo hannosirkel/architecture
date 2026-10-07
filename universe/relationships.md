@@ -99,5 +99,5 @@ hidden.
 
 | Repository | Why it differs |
 | --- | --- |
-| `ai-portal` | The repository exists and is public. The product is unimplemented and `main` has no commits. Registered, not built. |
+| `ai-portal` | Portal/chat is published. [Current application documentation](https://github.com/hannosirkel/ai-portal/blob/main/docs/current/README.md) owns its behavior; Scratch hub and Scratch AI remain planned. |
 | `entpass` | Early research. It has no deployable artifact and does not yet need application conventions. |
