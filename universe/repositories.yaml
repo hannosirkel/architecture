@@ -390,8 +390,12 @@ repositories:
 # retired with 24 rows pending and 10 deferred; the relocated ledger keeps them.
 notable_local_work:
   - repository: architecture
-    path: initiatives/active/ai-portal.md
-    status: in_progress
+    path: initiatives/planned/scratch-hub/README.md
+    status: planned
+    canonical_state: local
+  - repository: architecture
+    path: initiatives/planned/scratch-ai/README.md
+    status: planned
     canonical_state: local
   - repository: orange-inventory
     path: docs/working/2026-08-08-legacy-vm-mail.md

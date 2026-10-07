@@ -11,6 +11,7 @@ beside it. The contract states the goal and gates; `state.yaml` records progress
 
 | Initiative | Completed | Outcome |
 | --- | --- | --- |
+| [AI Portal](../docs/evidence/ai-portal/2026-10-07-closeout.md) | 2026-10-07 | Portal/chat work item closed by operator direction; outstanding verification remains in the application issue record. Scratch remains planned. |
 | [`architecture-bootstrap`](./active/architecture-bootstrap.md) | 2026-08-23 | Established this repository as the governance layer and brought twelve repositories into conformance. State in [`active/architecture-bootstrap/`](./active/architecture-bootstrap/); start from its [`handoff.md`](./active/architecture-bootstrap/handoff.md). |
 
 Completed initiatives stay under `active/` when moving them would break a
@@ -21,9 +22,7 @@ case: its `handoff.md` is linked from this repository's `AGENTS.md`, its
 
 ## Active
 
-| Initiative | Status |
-| --- | --- |
-| [`ai-portal`](./active/ai-portal.md) | Portal/chat published under an operator-approved sequencing exception; G4 verification remains open. See its [handoff](./active/ai-portal/handoff.md). |
+No active cross-repository initiative.
 
 ## Planned
 
