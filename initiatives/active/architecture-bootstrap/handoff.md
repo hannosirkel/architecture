@@ -233,26 +233,11 @@ Routed rather than done here, most serious first.
     and a live n8n workflow ID. None is a secret value. Nothing records that the
     exposure was considered and accepted; it deserves a decision either way.
 
-## Starting the AI Portal initiative
+## AI Portal follow-up
 
-Read [`initiatives/planned/ai-portal/README.md`](../../planned/ai-portal/README.md)
-first. It records the intended boundary, the owning repository, and the
-supporting ones.
-
-Then decide whether it belongs in `architecture` at all. A build owned by one
-repository starts in that repository. It belongs here only if the boundaries
-between `ai-portal`, `deploys`, `orange`, and `orange-inventory` are genuinely
-undecided.
-
-If it does:
-
-```bash
-cp -r templates/initiative initiatives/active/ai-portal
-# write initiatives/active/ai-portal.md as the contract
-```
-
-`ai-portal` currently holds three governance files and a CI workflow. It has no
-product and no scaffolding, deliberately.
+The portal/chat work item closed on 2026-10-07. See the
+[closeout record](../../../docs/evidence/ai-portal/2026-10-07-closeout.md)
+for release evidence, remaining verification, and the separate Scratch plans.
 
 ## One thing that will bite
 
