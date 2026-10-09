@@ -31,9 +31,11 @@ operator_action_required: >-
 local_state:
   note: >-
     Machine-local trial state on devbox. Not tracked in any repository.
+  handover: ~/gascity/README.md
   city: ~/gascity/lab
   rigs:
     - ~/gascity/rigs/hello-gc
     - ~/gascity/rigs/architecture
+    - ~/gascity/rigs/lunar-base  # a kept local repository, not throwaway
   city_running: false
   supervisor_service: disabled

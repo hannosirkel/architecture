@@ -224,5 +224,6 @@ rm -rf ~/gascity ~/.gc
 rm ~/.local/bin/gc ~/.local/bin/bd ~/.local/bin/dolt
 ```
 
-This sequence is **not yet verified**. It also leaves `~/.beads`, `~/.dolt`,
+Move any repository you want to keep out of `~/gascity/rigs/` first. This
+sequence is **not yet verified**. It also leaves `~/.beads`, `~/.dolt`,
 the `lsof` package, and the trust entry in `~/.codex/config.toml`.
