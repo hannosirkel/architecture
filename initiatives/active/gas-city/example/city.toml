@@ -1,0 +1,23 @@
+# City deployment settings used by the Gas City proof of concept.
+# Copy over the city.toml that `gc init --template minimal` writes.
+# Rig paths are machine-local and live in .gc/site.toml, not here.
+
+[workspace]
+provider = "claude"
+
+[providers]
+[providers.claude]
+base = "builtin:claude"
+ready_delay_ms = 0
+# The built-in default is max effort. That is too costly for a trial.
+option_defaults = { model = "sonnet", effort = "medium" }
+
+[providers.codex]
+base = "builtin:codex"
+ready_delay_ms = 0
+option_defaults = { effort = "medium" }
+
+# The only stock scheduled order that starts an LLM agent. With it enabled, a
+# maintenance agent starts unattended every four hours and once after start.
+[orders]
+skip = ["mol-dog-stale-db"]

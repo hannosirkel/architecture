@@ -22,7 +22,9 @@ case: its `handoff.md` is linked from this repository's `AGENTS.md`, its
 
 ## Active
 
-No active cross-repository initiative.
+| Initiative | Status |
+| --- | --- |
+| [`gas-city`](./active/gas-city.md) | Proof of concept. Installed on devbox and first runs done on 2026-10-09. Waits for operator approval of gate G1. State in [`active/gas-city/`](./active/gas-city/state.yaml). |
 
 ## Planned
 
