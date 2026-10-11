@@ -149,18 +149,14 @@ repositories:
     public_safe_required: true
     publication_status: currently-private
     languages: [typescript, shell]
-    languages_note: >-
-      Declared ahead of the code: the repository is empty until the initial
-      import lands, and the import is the first work its plan runs. The entry
-      comes first because `sync-baseline` writes the files the import's first
-      commit carries.
     npm_project: true
     extra_standards: [gitops-and-deployment.md]
     visibility_reason: >-
       The operator created it as a public repository in the `plepicgames`
       organisation. On 2026-10-11 the remote answered "not found" both to the
-      agent identity and without credentials, so the catalogue records what was
-      observed. Flip both fields when the remote is reachable.
+      agent identity and without credentials, so public visibility is not
+      confirmed and the catalogue records the cautious value. Set both fields
+      to the observed state when the remote is reachable.
     supports_rulesets: true
 
   lousydeal:
