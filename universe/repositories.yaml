@@ -152,11 +152,11 @@ repositories:
     npm_project: true
     extra_standards: [gitops-and-deployment.md]
     visibility_reason: >-
-      The operator created it as a public repository in the `plepicgames`
-      organisation. On 2026-10-11 the remote answered "not found" both to the
-      agent identity and without credentials, so public visibility is not
-      confirmed and the catalogue records the cautious value. Set both fields
-      to the observed state when the remote is reachable.
+      Meant to be public: it holds the published game and takes problem
+      reports from players. On 2026-10-11 the remote was private, observed
+      through the agent identity's installation on the `plepicgames`
+      organisation. Set both fields to `public` and `published` when the
+      operator publishes it.
     supports_rulesets: true
 
   lousydeal:
