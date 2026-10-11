@@ -138,6 +138,27 @@ repositories:
       # baselined, exactly as a linter baseline records today's findings.
       baseline_commit: "97d5ba2"
 
+  lunar-base:
+    description: Lunar Base online card game, served at plepicgames.com/play/lunar-base.
+    profile: application-public
+    remote: https://github.com/plepicgames/lunar-base.git
+    local_path: "~/app/lunar-base"
+    default_branch: main
+    declared_visibility: public
+    current_remote_visibility: private
+    public_safe_required: true
+    publication_status: currently-private
+    languages: [typescript, shell]
+    npm_project: true
+    extra_standards: [gitops-and-deployment.md]
+    visibility_reason: >-
+      Meant to be public: it holds the published game and takes problem
+      reports from players. On 2026-10-11 the remote was private, observed
+      through the agent identity's installation on the `plepicgames`
+      organisation. Set both fields to `public` and `published` when the
+      operator publishes it.
+    supports_rulesets: true
+
   lousydeal:
     description: lousydeal.com novelty store, certificates, and Baldrick.
     profile: application-public
@@ -415,5 +436,9 @@ notable_local_work:
     canonical_state: local
   - repository: entpass
     path: docs/working
+    status: in_progress
+    canonical_state: local
+  - repository: lunar-base
+    path: docs/working/publication/plan.md
     status: in_progress
     canonical_state: local
