@@ -1,0 +1,36 @@
+formula = "poc-change"
+description = "Implement one small change on a branch, then review it with a different provider. Stops before push."
+
+[requires]
+formula_compiler = ">=2.0.0"
+
+[vars.task]
+description = "What to change"
+required = true
+
+[vars.branch]
+description = "Branch to create for the change"
+required = true
+
+[[steps]]
+id = "implement"
+title = "Implement: {{task}}"
+description = """
+Create branch {{branch}} from the rig's default branch.
+Make this change: {{task}}
+Run the code once to check it. Commit on {{branch}}.
+Do not push. Do not open a pull request.
+"""
+metadata = { "gc.run_target" = "claude" }
+
+[[steps]]
+id = "review"
+title = "Review: {{task}}"
+description = """
+Review the commits on branch {{branch}} against the rig's default branch.
+Do not edit code. Write your findings to REVIEW.md on {{branch}} and commit it.
+State one verdict line: ACCEPT or REPAIR.
+Do not push.
+"""
+needs = ["implement"]
+metadata = { "gc.run_target" = "codex" }
