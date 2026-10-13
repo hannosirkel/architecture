@@ -222,7 +222,8 @@ Use these checks before each removal:
 
 1. Keep live workers, claimed work, dirty worktrees, open pull requests, and
    every rig's checked-out branch. Keep an uncertain case for the operator.
-2. Fetch the remote default branch. Prove the candidate tip is its ancestor,
+2. Run `git fetch --prune origin` to update the remote default branch and remove
+   deleted remote tracking refs. Prove the candidate tip is its ancestor,
    or matches the exact head SHA of a merged pull request to that branch.
    For a deliberately local-only rig, prove ancestry to its kept local default
    branch and verify the completed work outcome.
