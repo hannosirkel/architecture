@@ -190,6 +190,59 @@ gc formula show poc-change --var task=x --var branch=y
 The tmux socket name is the city name. `gc session list` shows each session
 name in its `TARGET` column.
 
+## Clear completed work
+
+Inspect every registered rig and every kept repository before cleanup. An old
+branch or bead is not proof that its work finished.
+
+```bash
+cd ~/gascity/lab
+gc rig list --json
+gc status
+gc session list --state all --json
+gc ready --limit 0 --json
+gc ready --status in_progress --limit 0 --json
+gc order list
+gc bd list --status open,in_progress,blocked --brief --json --limit 0 \
+  --max-rows 1000 --include-infra --include-gates --include-templates --include-ephemeral
+```
+
+Inspect kept rigs under `~/gascity/rigs/`, including those no longer registered.
+For each repository, run `git worktree list --porcelain` and
+`bd list --all --brief --json --limit 0`. Group worktrees by their common Git
+directory. Keep an inventory of paths, branch tips, bead IDs, and reasons.
+
+On 2026-10-13, the registered rigs are `plepic` and `lunar-base`; the latter
+uses `~/gascity/rigs/lunar-base-game`. Kept unregistered repositories are
+`hello-gc`, `architecture`, and the local-only `lunar-base` build repository.
+The [cleanup record](./evidence/2026-10-13-stale-work-cleanup.md) records this inventory.
+Never remove the local-only build repository or its history.
+
+Use these checks before each removal:
+
+1. Keep live workers, claimed work, dirty worktrees, open pull requests, and
+   every rig's checked-out branch. Keep an uncertain case for the operator.
+2. Fetch the remote default branch. Prove the candidate tip is its ancestor,
+   or matches the exact head SHA of a merged pull request to that branch.
+   For a deliberately local-only rig, prove ancestry to its kept local default
+   branch and verify the completed work outcome.
+3. Check the work bead is closed. Recheck the branch tip, clean state, and
+   current pull-request state immediately before removal.
+4. Use `gc worktree cleanup` for a workspace with its required ownership and
+   attempt metadata. Read `gc worktree cleanup --help`; never invent metadata.
+   For an older Git workspace, use `git worktree remove <path>` without force.
+5. Delete its local branch only after the worktree is removed. Delete a remote
+   branch only with an expected-SHA lease and the same merge proof.
+
+Close a stale message or synthetic convoy only when its referenced work has a
+confirmed completed outcome. Record the referenced bead and merge or commit
+proof in the close reason. Keep real unresolved issues and ambiguous records.
+Do not bulk-close records by age or erase their history.
+
+When no worker or claimed work remains, use the [stop sequence](#stop).
+Verify sessions, worktrees, branch refs, and the supervisor's stopped and disabled
+state. Cleanup does not approve a trial gate or start new work.
+
 ## Stop
 
 ```bash
