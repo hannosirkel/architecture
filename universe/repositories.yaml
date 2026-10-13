@@ -409,10 +409,6 @@ repositories:
 # retired with 24 rows pending and 10 deferred; the relocated ledger keeps them.
 notable_local_work:
   - repository: architecture
-    path: initiatives/active/openclaw-sol.md
-    status: in_progress
-    canonical_state: remote
-  - repository: architecture
     path: initiatives/active/gas-city.md
     status: active
     canonical_state: local
