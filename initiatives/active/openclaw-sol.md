@@ -19,7 +19,7 @@ Existing dirty work, secrets, primary checkout branches, and unrelated settings 
 Prepare both changes before merging either. Merge Orange first, then its inventory consumer.
 
 - [ ] Orange: update `roles/openclaw/defaults/main.yml`, `roles/openclaw/templates/openclaw.json.j2`, `tests/openclaw_templates.yml`, and `docs/current/provisioning.md`. Set the supported model identifier and configurable medium reasoning default. Verify template contracts, native repository gates, and Habit Hooks. Open a pull request.
-- [ ] Orange inventory: update the existing bot selectors only where an override is needed. Keep exact private file paths in the inventory pull request. Verify inventory gates and that both rendered configurations select the requested model and effort without disclosing secret values. Open a pull request.
+- [x] Orange inventory: inspect both bot selectors for model, version, and thinking overrides. No overrides exist on the fetched default branch. The shared Orange defaults supply both configurations; no inventory change is needed.
 
 ## Rollout verification
 
