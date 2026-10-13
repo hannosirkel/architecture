@@ -18,8 +18,10 @@ Existing dirty work, secrets, primary checkout branches, and unrelated settings 
 
 Prepare both changes before merging either. Merge Orange first, then its inventory consumer.
 
-- [ ] Orange: update `roles/openclaw/defaults/main.yml`, `roles/openclaw/templates/openclaw.json.j2`, `tests/openclaw_templates.yml`, and `docs/current/provisioning.md`. Set the supported model identifier and configurable medium reasoning default. Verify template contracts, native repository gates, and Habit Hooks. Open a pull request.
+- [x] Orange: update `roles/openclaw/defaults/main.yml`, `roles/openclaw/templates/openclaw.json.j2`, `tests/openclaw_templates.yml`, and `docs/current/provisioning.md`. Set the supported model identifier and configurable medium reasoning default. Verify template contracts, native repository gates, and Habit Hooks. Open a pull request.
 - [x] Orange inventory: inspect both bot selectors for model, version, and thinking overrides. No overrides exist on the fetched default branch. The shared Orange defaults supply both configurations; no inventory change is needed.
+
+- [x] Orange compatibility: remove the retired `default` marker in `roles/openclaw/templates/openclaw.json.j2`; verify the sole-agent schema in `tests/openclaw_templates.yml`; update `docs/current/provisioning.md`. Full local and required CI checks passed in [PR 171](https://github.com/hannosirkel/orange/pull/171).
 
 ## Rollout verification
 
@@ -31,5 +33,7 @@ Record blocked runtime checks explicitly; configuration alone does not prove rol
 
 ## Completion
 
-Link the owner pull requests and their verification results here.
-Before retiring this plan, retain operational facts in the owning repositories and record any unresolved rollout issue there.
+[PR 170](https://github.com/hannosirkel/orange/pull/170) and PR 171 are merged.
+Both runtime probes and independent read-only checks passed.
+The [dated evidence](../../docs/evidence/openclaw-sol-2026-10-13.md) retains the result.
+Operational defaults remain in Orange. No row or rollout issue remains open.
