@@ -1,41 +1,40 @@
 schema_version: 1
 initiative: gas-city
-status: BLOCKED
+status: COMPLETE
 contract_path: initiatives/active/gas-city.md
 contract_digest: "sha256:65b54e4d299795c09fb8b9f60dfcae99d03a7cd450b4b5f5a829fb776c119b46"
-current_phase: trial
-current_gate: G1
-last_completed_step: g0-install-and-first-run
+current_phase: complete
+current_gate: none
+last_completed_step: closeout
 next_action: >-
-  Wait for the operator to approve gate G1 and state its LLM budget. Then test
-  a restricted permission mode for Claude Code and Codex workers on the
-  throwaway rig. See open-questions.md, questions 1 to 3.
+  Nothing here. The operator declared the proof of concept done on
+  2026-10-15. Gas City and Orca are deployed by the devbox repository, which
+  owns them from now on. See docs/evidence/gas-city/2026-10-15-closeout.md.
 last_run:
   runtime: claude-code
   tier: mid
   model: "claude-opus-5-5"
-  at: "2026-10-09T22:45:00Z"
+  at: "2026-10-15T13:30:00Z"
 repositories:
   architecture:
-    role: contract, state, decision
+    role: contract, state, closeout
+  devbox:
+    role: deploys Gas City and Orca after closeout
 worktrees: {}
 completed_steps:
   - id: g0-install-and-first-run
     at: "2026-10-09"
     evidence: initiatives/active/gas-city/evidence/2026-10-09-install-and-first-runs.md
+  - id: closeout
+    at: "2026-10-15"
+    evidence: docs/evidence/gas-city/2026-10-15-closeout.md
 open_prs: []
-blockers:
-  - Gate G1 needs operator approval and an LLM budget.
-operator_action_required: >-
-  Approve gate G1 and state the LLM budget for gates G1 to G3.
+blockers: []
+operator_action_required: null
 local_state:
   note: >-
-    Machine-local trial state on devbox. Not tracked in any repository.
-  handover: ~/gascity/README.md
-  city: ~/gascity/lab
-  rigs:
-    - ~/gascity/rigs/hello-gc
-    - ~/gascity/rigs/architecture
-    - ~/gascity/rigs/lunar-base  # a kept local repository, not throwaway
-  city_running: false
-  supervisor_service: disabled
+    The trial city is retired and its machine-local state archived on devbox
+    under ~/backups. The deployed city and its rigs are managed by the devbox
+    repository.
+  city: ~/gascity/city
+  rigs: ~/gascity/rigs/<repository>
