@@ -401,6 +401,23 @@ repositories:
       # baselined, exactly as a linter baseline records today's findings.
       baseline_commit: "149bc56"
 
+  devbox:
+    description: Private configuration of everything inside the devbox VM - coding agents, helper scripts, NomadTTY, Gas City and Orca - with its inventory.
+    profile: inventory-private
+    remote: https://github.com/hannosirkel/devbox.git
+    local_path: "~/app/devbox"
+    default_branch: main
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: [ansible, shell, python]
+    npm_project: false
+    supports_rulesets: false
+    direct_push:
+      # The initial push of the new repository was its one direct push.
+      baseline_commit: "bd09209"
+
 # A register of active work only. Retired work leaves this list.
 #
 # The legacy-vm-shop big-build plan was retired from orange-inventory on
@@ -408,10 +425,6 @@ repositories:
 # skills/big-build/state/2026-08-08-legacy-vm-shop/, where it survives. It was
 # retired with 24 rows pending and 10 deferred; the relocated ledger keeps them.
 notable_local_work:
-  - repository: architecture
-    path: initiatives/active/gas-city.md
-    status: active
-    canonical_state: local
   - repository: architecture
     path: initiatives/planned/scratch-hub/README.md
     status: planned
