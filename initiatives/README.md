@@ -11,7 +11,7 @@ beside it. The contract states the goal and gates; `state.yaml` records progress
 
 | Initiative | Completed | Outcome |
 | --- | --- | --- |
-| [Gas City](../docs/evidence/gas-city/2026-10-15-closeout.md) | 2026-10-15 | Proof of concept closed by operator direction after gate G0. Gas City and Orca are now deployed by the `devbox` repository with the trial's worker setup unchanged. State in [`active/gas-city/`](./active/gas-city/state.yaml). |
+| [Gas City](https://github.com/hannosirkel/devbox) | 2026-10-15 | Complete. Deployment and operational documentation belong to `devbox`; no initiative work remains here. |
 | [AI Portal](../docs/evidence/ai-portal/2026-10-07-closeout.md) | 2026-10-07 | Portal/chat work item closed by operator direction; outstanding verification remains in the application issue record. Scratch remains planned. |
 | [`architecture-bootstrap`](./active/architecture-bootstrap.md) | 2026-08-23 | Established this repository as the governance layer and brought twelve repositories into conformance. State in [`active/architecture-bootstrap/`](./active/architecture-bootstrap/); start from its [`handoff.md`](./active/architecture-bootstrap/handoff.md). |
 
@@ -19,9 +19,7 @@ Completed initiatives stay under `active/` when moving them would break a
 resume path that something still references. `architecture-bootstrap` is the
 case: its `handoff.md` is linked from this repository's `AGENTS.md`, its
 `state.yaml` records the exceptions the audit still reads back, and its
-`evidence/` is cited from `standards/`. `gas-city` stays for the same reason:
-the `devbox` repository cites its usage guide and evidence for its tool pins.
-The status lives in `state.yaml`.
+`evidence/` is cited from `standards/`. Its status lives in `state.yaml`.
 
 ## Active
 
