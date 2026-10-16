@@ -11,7 +11,7 @@ beside it. The contract states the goal and gates; `state.yaml` records progress
 
 | Initiative | Completed | Outcome |
 | --- | --- | --- |
-| [Gas City](https://github.com/hannosirkel/devbox) | 2026-10-15 | Complete. Deployment and operational documentation belong to `devbox`; no initiative work remains here. |
+| Gas City | 2026-10-15 | Complete. Deployment and operational documentation belong to [devbox](../universe/repositories.yaml); no initiative work remains here. |
 | [AI Portal](../docs/evidence/ai-portal/2026-10-07-closeout.md) | 2026-10-07 | Portal/chat work item closed by operator direction; outstanding verification remains in the application issue record. Scratch remains planned. |
 | [`architecture-bootstrap`](./active/architecture-bootstrap.md) | 2026-08-23 | Established this repository as the governance layer and brought twelve repositories into conformance. State in [`active/architecture-bootstrap/`](./active/architecture-bootstrap/); start from its [`handoff.md`](./active/architecture-bootstrap/handoff.md). |
 
