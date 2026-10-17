@@ -28,6 +28,7 @@ application repositories
 ├── servitium
 ├── mihkel
 ├── robobook
+├── arcane, once it has code
 ├── ai-portal
 └── entpass, where and when deployable
     │
@@ -94,10 +95,11 @@ a governance mechanic.
 
 ## Lifecycle exceptions
 
-Two repositories do not fit the flow above, and that is recorded rather than
+Three repositories do not fit the flow above, and that is recorded rather than
 hidden.
 
 | Repository | Why it differs |
 | --- | --- |
 | `ai-portal` | Portal/chat is published. [Current application documentation](https://github.com/hannosirkel/ai-portal/blob/main/docs/current/README.md) owns its behavior; Scratch hub and Scratch AI remain planned. |
+| `arcane` | Registered, not implemented. A proof of concept of ledger and accounting flows for several OÜ companies. It does not change `robobook`. |
 | `entpass` | Early research. It has no deployable artifact and does not yet need application conventions. |

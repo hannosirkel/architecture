@@ -418,6 +418,29 @@ repositories:
       # The initial push of the new repository was its one direct push.
       baseline_commit: "bd09209"
 
+  arcane:
+    description: >-
+      Proof of concept, then build, of ledger and accounting flows for several
+      Estonian private limited companies (OÜ).
+    profile: application-private
+    remote: https://github.com/hannosirkel/arcane.git
+    local_path: "~/app/arcane"
+    default_branch: main
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: []
+    languages_note: >-
+      Empty today, because the repository holds no code. Declare a language in
+      the same change that lands its first file.
+    npm_project: false
+    supports_rulesets: false
+    lifecycle: registered-not-implemented
+    direct_push:
+      # The initial push of the new repository was its one direct push.
+      baseline_commit: "227345c"
+
 # A register of active work only. Retired work leaves this list.
 #
 # The legacy-vm-shop big-build plan was retired from orange-inventory on
