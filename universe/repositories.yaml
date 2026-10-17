@@ -420,8 +420,9 @@ repositories:
 
   arcane:
     description: >-
-      Proof of concept, then build, of ledger and accounting flows for several
-      Estonian private limited companies (OÜ).
+      Proof of concept, then build, of ledger and accounting flows for three
+      Estonian private limited companies (OÜ). The proof of concept compares an
+      ERPNext adoption with a custom build.
     profile: application-private
     remote: https://github.com/hannosirkel/arcane.git
     local_path: "~/app/arcane"
