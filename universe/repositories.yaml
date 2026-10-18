@@ -431,10 +431,10 @@ repositories:
     current_remote_visibility: private
     public_safe_required: false
     publication_status: not-applicable
-    languages: []
+    languages: [python]
     languages_note: >-
-      Empty today, because the repository holds no code. Declare a language in
-      the same change that lands its first file.
+      Declared before the first code lands: the proof of concept's harness and
+      custom build are Python, and its first pull requests follow this one.
     npm_project: false
     supports_rulesets: false
     lifecycle: registered-not-implemented
@@ -472,6 +472,10 @@ notable_local_work:
   - repository: entpass
     path: docs/working
     status: in_progress
+    canonical_state: local
+  - repository: arcane
+    path: docs/working/2026-10-17-poc-plan.md
+    status: active
     canonical_state: local
   - repository: lunar-base
     path: docs/working/publication/plan.md
