@@ -442,6 +442,28 @@ repositories:
       # The initial push of the new repository was its one direct push.
       baseline_commit: "227345c"
 
+  thesource:
+    description: >-
+      The Source board game: game design, rules, and the physical prototype.
+    profile: application-private
+    remote: https://github.com/plepicgames/thesource.git
+    local_path: "~/app/thesource"
+    default_branch: main
+    declared_visibility: private
+    current_remote_visibility: private
+    public_safe_required: false
+    publication_status: not-applicable
+    languages: []
+    languages_note: >-
+      Empty today, because the repository holds no code. Declare a language in
+      the same change that lands its first file.
+    npm_project: false
+    supports_rulesets: false
+    lifecycle: registered-not-implemented
+    direct_push:
+      # The initial push of the new repository was its one direct push.
+      baseline_commit: "c5e2539"
+
 # A register of active work only. Retired work leaves this list.
 #
 # The legacy-vm-shop big-build plan was retired from orange-inventory on

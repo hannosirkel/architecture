@@ -95,11 +95,12 @@ a governance mechanic.
 
 ## Lifecycle exceptions
 
-Three repositories do not fit the flow above, and that is recorded rather than
+Four repositories do not fit the flow above, and that is recorded rather than
 hidden.
 
 | Repository | Why it differs |
 | --- | --- |
 | `ai-portal` | Portal/chat is published. [Current application documentation](https://github.com/hannosirkel/ai-portal/blob/main/docs/current/README.md) owns its behavior; Scratch hub and Scratch AI remain planned. |
 | `arcane` | Registered, not implemented. A proof of concept of ledger and accounting flows for three OÜ companies, comparing ERPNext with a custom build. It does not change `robobook`. |
+| `thesource` | A board game in development, in the `plepicgames` organisation. Its artifact is a physical prototype, so it has no image and no deployment. |
 | `entpass` | Early research. It has no deployable artifact and does not yet need application conventions. |
