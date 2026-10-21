@@ -11,13 +11,14 @@ exclude_path = [
 ]
 
 exclude = [
-  # Five repositories are private. An anonymous checker gets 404 for one that
+  # These repositories are private. An anonymous checker gets 404 for one that
   # exists, which is a false failure here rather than a finding.
   #
   # architecture is deliberately not among them any more. Every standards link
   # the generated baseline carries points there, and those links are now
   # checked for real — which is the point of it being public.
   "^https://github\\.com/hannosirkel/(orange|orange-inventory|myskills|entpass|portfolio-bot)(/|$)",
+  "^https://github\\.com/plepicgames/thesource(/|$)",
 ]
 
 # GitHub rate-limits anonymous requests hard enough to make a run flaky.
