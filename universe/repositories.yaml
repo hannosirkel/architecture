@@ -420,9 +420,10 @@ repositories:
 
   arcane:
     description: >-
-      Proof of concept, then build, of ledger and accounting flows for three
-      Estonian private limited companies (OÜ). The proof of concept compares an
-      ERPNext adoption with a custom build.
+      Ledger and accounting application for three Estonian private limited
+      companies (OÜ): a Python back end with an API and MCP access, and a
+      TypeScript single-page GUI. Its proof of concept compared an ERPNext
+      adoption with a custom build.
     profile: application-private
     remote: https://github.com/hannosirkel/arcane.git
     local_path: "~/app/arcane"
@@ -431,13 +432,13 @@ repositories:
     current_remote_visibility: private
     public_safe_required: false
     publication_status: not-applicable
-    languages: [python]
+    languages: [python, typescript]
     languages_note: >-
-      Declared before the first code lands: the proof of concept's harness and
-      custom build are Python, and its first pull requests follow this one.
+      Python for the back end and the proof of concept. TypeScript is declared
+      before the React front end lands, per arcane's build plan of 2026-11-19.
     npm_project: false
     supports_rulesets: false
-    lifecycle: registered-not-implemented
+    lifecycle: implementation-in-progress
     direct_push:
       # The initial push of the new repository was its one direct push.
       baseline_commit: "227345c"
